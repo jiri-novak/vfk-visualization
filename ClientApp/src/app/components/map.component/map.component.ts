@@ -20,7 +20,8 @@ import { METERS_PER_UNIT, transform } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 
 import { OlStyles } from 'src/app/services/ol.styling.service';
-import { ILocalizationByKu } from '../models/models';
+import { ILocalizationByKu, IFeatureInfoData, IKeyValue } from '../models/models';
+import { stringify } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'app-map',
@@ -32,6 +33,8 @@ export class MapComponent implements OnInit {
   @ViewChild('location') locationRef: ElementRef;
   @ViewChild('map') mapRef: ElementRef;
   @ViewChild('scale') scaleRef: ElementRef;
+
+  @Output() featureInfoData: EventEmitter<IFeatureInfoData> = new EventEmitter<IFeatureInfoData>();
 
   constructor(private http: HttpClient, private olStylingService: OlStyles) {
   }
@@ -209,7 +212,7 @@ export class MapComponent implements OnInit {
       self.scaleRef.nativeElement.innerHTML = `1 : ${scale}`;
     });
 
-    this.map.on('singleclick', function(evt) {
+    this.map.on('singleclick', function (evt) {
       const view = this.getView();
       const viewResolution = view.getResolution();
       const source = self.sourceVfk;
@@ -218,18 +221,30 @@ export class MapComponent implements OnInit {
 
       self.http.get(url).subscribe(resp => {
         const features = (new GeoJSON()).readFeatures(resp);
+
+        const lvData: IKeyValue[] = [];
+        const parData: IKeyValue[] = [];
+
         for (const feature of features) {
-          console.log(feature);
           const properties = feature.getProperties();
+          const id: string = feature.getId();
 
           for (const key of Object.keys(properties)) {
             if (key === 'geometry') {
               continue;
             }
 
-            console.log(properties[key]);
+            if (!!properties[key]) {
+              if (id.startsWith('LV')) {
+                lvData.push({ key, value: properties[key]});
+              } else {
+                parData.push({ key, value: properties[key]});
+              }
+            }
           }
         }
+
+        self.featureInfoData.next({ par: parData, lv: lvData });
       });
     });
   }
@@ -303,7 +318,6 @@ export class MapComponent implements OnInit {
         FORMAT: 'image/png',
         WIDTH: '30',
         HEIGHT: '30',
-        LAYER: 'VFK:LV',
         format_options: 'layout:legend&legend_options=countMatched:true;fontAntiAliasing:true'
       }
     });

@@ -1,2 +1,11 @@
-<app-map></app-map>
-<router-outlet></router-outlet>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-8">
+        <app-map #map (featureInfoData)="sideBar.showFeatureInfoData($event)"></app-map>
+        <router-outlet></router-outlet>
+    </div>
+    <div class="col-4">
+      <app-side-bar #sideBar (localizationByKu)="map.localizeByKu($event)" (localizationByPar)="map.localizeByPar($event)" (localizationByLv)="map.localizeByLv($event)"></app-side-bar>
+    </div>
+  </div>
+</div>

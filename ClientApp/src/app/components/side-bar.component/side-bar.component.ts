@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData } from '../models/models';
+import { stringify } from '@angular/core/src/util';
 
 @Component({
   selector: 'app-side-bar',
@@ -22,6 +23,8 @@ export class SideBarComponent implements OnInit {
   lvForm: FormGroup;
   lvSubmitted = false;
 
+  featureInfoData: IFeatureInfoData;
+
   constructor(private formBuilder: FormBuilder) { }
 
   ngOnInit() {
@@ -38,6 +41,11 @@ export class SideBarComponent implements OnInit {
       kodKu: ['703567', Validators.required],
       lvId: ['536', Validators.required]
     });
+  }
+
+  showFeatureInfoData(event: any) {
+    console.log(<Map<string, string>>event.par);
+    this.featureInfoData = event;
   }
 
   onLocalizeKu() {

@@ -1,86 +1,109 @@
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Legenda:</h5>
-    <img
-      src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=VFK:LV&format_options=layout:legend&legend_options=countMatched:true;fontAntiAliasing:true"/>
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Legenda:</h5>
+      <img
+        src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=VFK:LV&format_options=layout:legend&legend_options=fontAntiAliasing:true" />
+    </div>
   </div>
-</div>
 
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Lokalizace dle:</h5>
-    <tabset type="pills" [justified]="false" [vertical]="false">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Lokalizace:</h5>
+      <tabset type="pills" [justified]="false" [vertical]="false">
 
-      <!-- KU -->
-      <tab heading="Katastrálního území">
-        <form [formGroup]="kuForm" (ngSubmit)="onLocalizeKu()">
-          <div class="form-group">
-            <label>Kód kú:</label>
-            <input type="text" formControlName="kodKu" class="form-control"
-              [ngClass]="{ 'is-invalid': kuSubmitted && kuForm.controls.kodKu.errors }" />
-            <div *ngIf="kuSubmitted && kuForm.controls.kodKu.errors" class="invalid-feedback">
-              <div *ngIf="kuForm.controls.kodKu.errors.required">Kód kú je povinný.</div>
+        <tab heading="Katastrálního území">
+          <form [formGroup]="kuForm" (ngSubmit)="onLocalizeKu()">
+            <div class="form-group">
+              <label>Kód kú:</label>
+              <input type="text" formControlName="kodKu" class="form-control"
+                [ngClass]="{ 'is-invalid': kuSubmitted && kuForm.controls.kodKu.errors }" />
+              <div *ngIf="kuSubmitted && kuForm.controls.kodKu.errors" class="invalid-feedback">
+                <div *ngIf="kuForm.controls.kodKu.errors.required">Kód kú je povinný.</div>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <button class="btn btn-success float-right">Lokalizuj</button>
-          </div>
-        </form>
-      </tab>
+            <div class="form-group">
+              <button class="btn btn-success float-right">Lokalizuj</button>
+            </div>
+          </form>
+        </tab>
 
-      <tab heading="Parcely">
-        <form [formGroup]="parForm" (ngSubmit)="onLocalizePar()">
-          <div class="form-group">
-            <label>KATUZE_KOD:</label>
-            <input type="text" formControlName="kodKu" class="form-control"
-              [ngClass]="{ 'is-invalid': submitted && parForm.controls.kodKu.errors }" />
-            <div *ngIf="submitted && parForm.controls.kodKu.errors" class="invalid-feedback">
-              <div *ngIf="parForm.controls.kodKu.errors.required">KATUZE_KOD je povinné pole.</div>
+        <tab heading="Parcely">
+          <form [formGroup]="parForm" (ngSubmit)="onLocalizePar()">
+            <div class="form-group">
+              <label>KATUZE_KOD:</label>
+              <input type="text" formControlName="kodKu" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && parForm.controls.kodKu.errors }" />
+              <div *ngIf="submitted && parForm.controls.kodKu.errors" class="invalid-feedback">
+                <div *ngIf="parForm.controls.kodKu.errors.required">KATUZE_KOD je povinné pole.</div>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label>PAR_CISLO:</label>
-            <input type="text" formControlName="parCislo" class="form-control"
-              [ngClass]="{ 'is-invalid': submitted && parForm.controls.parCislo.errors }" />
-            <div *ngIf="submitted && parForm.controls.parCislo.errors" class="invalid-feedback">
-              <div *ngIf="parForm.controls.parCislo.errors.required">PAR_CISLO je povinné pole.</div>
+            <div class="form-group">
+              <label>PAR_CISLO:</label>
+              <input type="text" formControlName="parCislo" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && parForm.controls.parCislo.errors }" />
+              <div *ngIf="submitted && parForm.controls.parCislo.errors" class="invalid-feedback">
+                <div *ngIf="parForm.controls.parCislo.errors.required">PAR_CISLO je povinné pole.</div>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <button class="btn btn-success float-right">Lokalizuj</button>
-          </div>
-        </form>
-      </tab>
+            <div class="form-group">
+              <button class="btn btn-success float-right">Lokalizuj</button>
+            </div>
+          </form>
+        </tab>
 
-      <tab heading="LV">
-        <form [formGroup]="lvForm" (ngSubmit)="onLocalizeLv()">
-          <div class="form-group">
-            <label>KATUZE_KOD:</label>
-            <input type="text" formControlName="kodKu" class="form-control"
-              [ngClass]="{ 'is-invalid': submitted && lvForm.controls.kodKu.errors }" />
-            <div *ngIf="submitted && lvForm.controls.kodKu.errors" class="invalid-feedback">
-              <div *ngIf="lvForm.controls.kodKu.errors.required">KATUZE_KOD je povinné pole.</div>
+        <tab heading="LV">
+          <form [formGroup]="lvForm" (ngSubmit)="onLocalizeLv()">
+            <div class="form-group">
+              <label>KATUZE_KOD:</label>
+              <input type="text" formControlName="kodKu" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && lvForm.controls.kodKu.errors }" />
+              <div *ngIf="submitted && lvForm.controls.kodKu.errors" class="invalid-feedback">
+                <div *ngIf="lvForm.controls.kodKu.errors.required">KATUZE_KOD je povinné pole.</div>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label>LVID:</label>
-            <input type="text" formControlName="lvId" class="form-control"
-              [ngClass]="{ 'is-invalid': submitted && lvForm.controls.lvId.errors }" />
-            <div *ngIf="submitted && lvForm.controls.lvId.errors" class="invalid-feedback">
-              <div *ngIf="lvForm.controls.lvId.errors.required">LVID je povinné pole.</div>
+            <div class="form-group">
+              <label>LVID:</label>
+              <input type="text" formControlName="lvId" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && lvForm.controls.lvId.errors }" />
+              <div *ngIf="submitted && lvForm.controls.lvId.errors" class="invalid-feedback">
+                <div *ngIf="lvForm.controls.lvId.errors.required">LVID je povinné pole.</div>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <button class="btn btn-success float-right">Lokalizuj</button>
-          </div>
-        </form>
-      </tab>
-    </tabset>
+            <div class="form-group">
+              <button class="btn btn-success float-right">Lokalizuj</button>
+            </div>
+          </form>
+        </tab>
+      </tabset>
+    </div>
   </div>
-</div>
 
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Informace</h5>
+  <div class="card" *ngIf="!!featureInfoData">
+    <div class="card-body">
+      <h5 class="card-title">Informace o parcele:</h5>
+      <table class="table">
+        <tbody>
+          <tr *ngFor="let item of featureInfoData?.par">
+            <td>{{item.key}}</td>
+            <td>{{item.value}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="!!featureInfoData">
+    <div class="card-body">
+      <h5 class="card-title">Informace o LV:</h5>
+      <table class="table">
+        <tbody>
+          <tr *ngFor="let item of featureInfoData?.lv">
+            <td>{{item.key}}</td>
+            <td>{{item.value}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
