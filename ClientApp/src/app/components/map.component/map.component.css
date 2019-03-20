@@ -1,0 +1,15 @@
+.map {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    border-right: 1px solid black;
+}
+
+.placement-info {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-right: 30px;
+    z-index: 2;
+    font-weight: bold;
+}

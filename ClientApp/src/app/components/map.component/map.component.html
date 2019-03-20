@@ -1,0 +1,17 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-8">
+      <div class="map" #map>
+        <div class="placement-info">
+          <div class="float-left">Měřítko: </div>
+          <div #scale class="float-left"></div>
+          <div class="float-left">, Souřadnice: </div>
+          <div #location class="float-left"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <app-side-bar (localizationByKu)="localizeByKu($event)" (localizationByPar)="localizeByPar($event)" (localizationByLv)="localizeByLv($event)"></app-side-bar>
+    </div>
+  </div>
+</div>
