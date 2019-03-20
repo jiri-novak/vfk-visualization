@@ -1,5 +1,13 @@
 <div class="card">
   <div class="card-body">
+    <h5 class="card-title">Legenda:</h5>
+    <img
+      src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=30&HEIGHT=30&LAYER=VFK:LV&format_options=layout:legend&legend_options=countMatched:true;fontAntiAliasing:true"/>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
     <h5 class="card-title">Lokalizace dle:</h5>
     <tabset type="pills" [justified]="false" [vertical]="false">
 
@@ -31,13 +39,13 @@
             </div>
           </div>
           <div class="form-group">
-              <label>PAR_CISLO:</label>
-              <input type="text" formControlName="parCislo" class="form-control"
-                [ngClass]="{ 'is-invalid': submitted && parForm.controls.parCislo.errors }" />
-              <div *ngIf="submitted && parForm.controls.parCislo.errors" class="invalid-feedback">
-                <div *ngIf="parForm.controls.parCislo.errors.required">PAR_CISLO je povinné pole.</div>
-              </div>
+            <label>PAR_CISLO:</label>
+            <input type="text" formControlName="parCislo" class="form-control"
+              [ngClass]="{ 'is-invalid': submitted && parForm.controls.parCislo.errors }" />
+            <div *ngIf="submitted && parForm.controls.parCislo.errors" class="invalid-feedback">
+              <div *ngIf="parForm.controls.parCislo.errors.required">PAR_CISLO je povinné pole.</div>
             </div>
+          </div>
           <div class="form-group">
             <button class="btn btn-success float-right">Lokalizuj</button>
           </div>
@@ -45,27 +53,27 @@
       </tab>
 
       <tab heading="LV">
-          <form [formGroup]="lvForm" (ngSubmit)="onLocalizeLv()">
-              <div class="form-group">
-                <label>KATUZE_KOD:</label>
-                <input type="text" formControlName="kodKu" class="form-control"
-                  [ngClass]="{ 'is-invalid': submitted && lvForm.controls.kodKu.errors }" />
-                <div *ngIf="submitted && lvForm.controls.kodKu.errors" class="invalid-feedback">
-                  <div *ngIf="lvForm.controls.kodKu.errors.required">KATUZE_KOD je povinné pole.</div>
-                </div>
-              </div>
-              <div class="form-group">
-                  <label>LVID:</label>
-                  <input type="text" formControlName="lvId" class="form-control"
-                    [ngClass]="{ 'is-invalid': submitted && lvForm.controls.lvId.errors }" />
-                  <div *ngIf="submitted && lvForm.controls.lvId.errors" class="invalid-feedback">
-                    <div *ngIf="lvForm.controls.lvId.errors.required">LVID je povinné pole.</div>
-                  </div>
-                </div>
-              <div class="form-group">
-                <button class="btn btn-success float-right">Lokalizuj</button>
-              </div>
-            </form>
+        <form [formGroup]="lvForm" (ngSubmit)="onLocalizeLv()">
+          <div class="form-group">
+            <label>KATUZE_KOD:</label>
+            <input type="text" formControlName="kodKu" class="form-control"
+              [ngClass]="{ 'is-invalid': submitted && lvForm.controls.kodKu.errors }" />
+            <div *ngIf="submitted && lvForm.controls.kodKu.errors" class="invalid-feedback">
+              <div *ngIf="lvForm.controls.kodKu.errors.required">KATUZE_KOD je povinné pole.</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>LVID:</label>
+            <input type="text" formControlName="lvId" class="form-control"
+              [ngClass]="{ 'is-invalid': submitted && lvForm.controls.lvId.errors }" />
+            <div *ngIf="submitted && lvForm.controls.lvId.errors" class="invalid-feedback">
+              <div *ngIf="lvForm.controls.lvId.errors.required">LVID je povinné pole.</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-success float-right">Lokalizuj</button>
+          </div>
+        </form>
       </tab>
     </tabset>
   </div>

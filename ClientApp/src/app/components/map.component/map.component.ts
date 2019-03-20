@@ -232,11 +232,6 @@ export class MapComponent implements OnInit {
         }
       });
     });
-
-    //this.localizeByKu$(703567).subscribe();
-    //this.localizeByParcel$(703567, '782/8').subscribe();
-    //this.localizeByLvId$(703567, 536).subscribe();
-    //this.localizeByTelId$(709803206).subscribe();
   }
 
   public localizeByLv(event: any) {
@@ -279,16 +274,6 @@ export class MapComponent implements OnInit {
       );
   }
 
-  /*
-  http://localhost:8080/geoserver/VFK/ows?
-  service=WFS&
-  version=2.0.0&
-  request=GetFeature&
-  typeName=VFK%3APAR&
-  cql_filter=PAR_CISLO='782/8' AND KATUZE_KOD=703567&
-  outputFormat=application%2Fjson
-  */
-
   private localizeToFeature$(resp: any) {
     this.sourceVector.clear();
     const features = (new GeoJSON()).readFeatures(resp);
@@ -309,10 +294,18 @@ export class MapComponent implements OnInit {
     });
   }
 
-  // private localizeByKu() {
-  //   http://localhost:8080/geoserver/VFK/ows?
-  //   service = WFS &
-  //     version=2.0.0 &
-  //       request=GetFeature & typeName=VFK % 3AKATUZE_P & cql_filter=KOD = 703567 & outputFormat=application % 2Fjson
-  // }
+  private getLegend$(): Observable<any> {
+    return this.http.get('http://localhost:8080/geoserver/VFK/wms', {
+      params: {
+        service: 'WFS',
+        version: '1.0.0',
+        request: 'GetLegendGraphic',
+        FORMAT: 'image/png',
+        WIDTH: '30',
+        HEIGHT: '30',
+        LAYER: 'VFK:LV',
+        format_options: 'layout:legend&legend_options=countMatched:true;fontAntiAliasing:true'
+      }
+    });
+  }
 }
