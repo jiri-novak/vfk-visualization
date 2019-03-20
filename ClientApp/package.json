@@ -1,6 +1,6 @@
 {
   "name": "client-app",
-  "productName": "VfkVisualization",
+  "productName": "vfk-visualization-app",
   "version": "0.0.1",
   "main": "main.js",
   "scripts": {
@@ -10,8 +10,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "package-win32": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds",
-    "electron": "ng build --base-href ./ && electron ."
+    "package-win32": "electron-packager . vfk-visualization-app --overwrite --asar --platform=win32 --arch=ia32 --prune=true --out=release-builds",
+    "electron": "ng build && electron ."
   },
   "private": true,
   "dependencies": {

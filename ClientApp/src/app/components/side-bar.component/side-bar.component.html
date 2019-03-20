@@ -33,16 +33,16 @@
             <div class="form-group">
               <label>KATUZE_KOD:</label>
               <input type="text" formControlName="kodKu" class="form-control"
-                [ngClass]="{ 'is-invalid': submitted && parForm.controls.kodKu.errors }" />
-              <div *ngIf="submitted && parForm.controls.kodKu.errors" class="invalid-feedback">
+                [ngClass]="{ 'is-invalid': parSubmitted && parForm.controls.kodKu.errors }" />
+              <div *ngIf="parSubmitted && parForm.controls.kodKu.errors" class="invalid-feedback">
                 <div *ngIf="parForm.controls.kodKu.errors.required">KATUZE_KOD je povinné pole.</div>
               </div>
             </div>
             <div class="form-group">
               <label>PAR_CISLO:</label>
               <input type="text" formControlName="parCislo" class="form-control"
-                [ngClass]="{ 'is-invalid': submitted && parForm.controls.parCislo.errors }" />
-              <div *ngIf="submitted && parForm.controls.parCislo.errors" class="invalid-feedback">
+                [ngClass]="{ 'is-invalid': parSubmitted && parForm.controls.parCislo.errors }" />
+              <div *ngIf="parSubmitted && parForm.controls.parCislo.errors" class="invalid-feedback">
                 <div *ngIf="parForm.controls.parCislo.errors.required">PAR_CISLO je povinné pole.</div>
               </div>
             </div>
@@ -57,16 +57,16 @@
             <div class="form-group">
               <label>KATUZE_KOD:</label>
               <input type="text" formControlName="kodKu" class="form-control"
-                [ngClass]="{ 'is-invalid': submitted && lvForm.controls.kodKu.errors }" />
-              <div *ngIf="submitted && lvForm.controls.kodKu.errors" class="invalid-feedback">
+                [ngClass]="{ 'is-invalid': lvSubmitted && lvForm.controls.kodKu.errors }" />
+              <div *ngIf="lvSubmitted && lvForm.controls.kodKu.errors" class="invalid-feedback">
                 <div *ngIf="lvForm.controls.kodKu.errors.required">KATUZE_KOD je povinné pole.</div>
               </div>
             </div>
             <div class="form-group">
               <label>LVID:</label>
               <input type="text" formControlName="lvId" class="form-control"
-                [ngClass]="{ 'is-invalid': submitted && lvForm.controls.lvId.errors }" />
-              <div *ngIf="submitted && lvForm.controls.lvId.errors" class="invalid-feedback">
+                [ngClass]="{ 'is-invalid': lvSubmitted && lvForm.controls.lvId.errors }" />
+              <div *ngIf="lvSubmitted && lvForm.controls.lvId.errors" class="invalid-feedback">
                 <div *ngIf="lvForm.controls.lvId.errors.required">LVID je povinné pole.</div>
               </div>
             </div>

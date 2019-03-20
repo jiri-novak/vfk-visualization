@@ -44,7 +44,6 @@ export class SideBarComponent implements OnInit {
   }
 
   showFeatureInfoData(event: any) {
-    console.log(<Map<string, string>>event.par);
     this.featureInfoData = event;
   }
 
