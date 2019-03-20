@@ -23,9 +23,10 @@
               </div>
             </div>
             <div class="form-group">
-              <button class="btn btn-success float-right">Lokalizuj</button>
+              <button class="btn btn-success float-left">Lokalizuj</button>
             </div>
           </form>
+          <button class="btn btn-info float-right" (click)="cancelSelection()">Zruš zvýraznění</button>
         </tab>
 
         <tab heading="Parcely">
@@ -47,9 +48,10 @@
               </div>
             </div>
             <div class="form-group">
-              <button class="btn btn-success float-right">Lokalizuj</button>
+              <button class="btn btn-success float-left">Lokalizuj</button>
             </div>
           </form>
+          <button class="btn btn-info float-right" (click)="cancelSelection()">Zruš zvýraznění</button>
         </tab>
 
         <tab heading="LV">
@@ -71,9 +73,10 @@
               </div>
             </div>
             <div class="form-group">
-              <button class="btn btn-success float-right">Lokalizuj</button>
+              <button class="btn btn-success float-left">Lokalizuj</button>
             </div>
           </form>
+          <button class="btn btn-info float-right" (click)="cancelSelection()">Zruš zvýraznění</button>
         </tab>
       </tabset>
     </div>
@@ -81,29 +84,32 @@
 
   <div class="card" *ngIf="!!featureInfoData">
     <div class="card-body">
-      <h5 class="card-title">Informace o parcele:</h5>
-      <table class="table">
-        <tbody>
-          <tr *ngFor="let item of featureInfoData?.par">
-            <td>{{item.key}}</td>
-            <td>{{item.value}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+      <h5 class="card-title">Informace:</h5>
+      <tabset type="pills" [justified]="false" [vertical]="false">
 
-  <div class="card" *ngIf="!!featureInfoData">
-    <div class="card-body">
-      <h5 class="card-title">Informace o LV:</h5>
-      <table class="table">
-        <tbody>
-          <tr *ngFor="let item of featureInfoData?.lv">
-            <td>{{item.key}}</td>
-            <td>{{item.value}}</td>
-          </tr>
-        </tbody>
-      </table>
+        <tab heading="Parcela">
+          <table class="table">
+            <tbody>
+              <tr *ngFor="let item of featureInfoData?.par">
+                <td>{{item.key}}</td>
+                <td>{{item.value}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </tab>
+
+        <tab heading="LV">
+          <table class="table">
+            <tbody>
+              <tr *ngFor="let item of featureInfoData?.lv">
+                <td>{{item.key}}</td>
+                <td>{{item.value}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </tab>
+
+      </tabset>
     </div>
   </div>
 </div>

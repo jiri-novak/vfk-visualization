@@ -13,6 +13,7 @@ export class SideBarComponent implements OnInit {
   @Output() localizationByKu: EventEmitter<ILocalizationByKu> = new EventEmitter<ILocalizationByKu>();
   @Output() localizationByPar: EventEmitter<ILocalizationByPar> = new EventEmitter<ILocalizationByPar>();
   @Output() localizationByLv: EventEmitter<ILocalizationByLv> = new EventEmitter<ILocalizationByLv>();
+  @Output() localizationCancel: EventEmitter<void> = new EventEmitter<void>();
 
   kuForm: FormGroup;
   kuSubmitted = false;
@@ -45,6 +46,10 @@ export class SideBarComponent implements OnInit {
 
   showFeatureInfoData(event: any) {
     this.featureInfoData = event;
+  }
+
+  cancelSelection() {
+    this.localizationCancel.next();
   }
 
   onLocalizeKu() {

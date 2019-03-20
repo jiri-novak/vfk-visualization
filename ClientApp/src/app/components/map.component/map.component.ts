@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import Feature from 'ol/Feature';
+import Geometry from 'ol/geom/Geometry';
 import View from 'ol/View';
 import { defaults } from 'ol/control';
 import { createStringXY } from 'ol/coordinate';
@@ -20,8 +21,7 @@ import { METERS_PER_UNIT, transform } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 
 import { OlStyles } from 'src/app/services/ol.styling.service';
-import { ILocalizationByKu, IFeatureInfoData, IKeyValue } from '../models/models';
-import { stringify } from '@angular/compiler/src/util';
+import { IFeatureInfoData, IKeyValue } from '../models/models';
 
 @Component({
   selector: 'app-map',
@@ -212,39 +212,51 @@ export class MapComponent implements OnInit {
       self.scaleRef.nativeElement.innerHTML = `1 : ${scale}`;
     });
 
-    this.map.on('singleclick', function (evt) {
-      const view = this.getView();
-      const viewResolution = view.getResolution();
-      const source = self.sourceVfk;
-      const url = source.getGetFeatureInfoUrl(evt.coordinate, viewResolution, view.getProjection(),
-        { INFO_FORMAT: 'application/json', FEATURE_COUNT: 50 });
+    this.map.on('singleclick', function(evt) {
+      const step = 0.5;
+      const x: number = evt.coordinate[0];
+      const y: number = evt.coordinate[1];
+      const bbox = `${x - step},${y - step},${x + step},${y + step}`;
 
-      self.http.get(url).subscribe(resp => {
-        const features = (new GeoJSON()).readFeatures(resp);
+      forkJoin(
+        self.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1),
+        self.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1)
+      ).subscribe(([respLv, respPar]) => {
+        const dataLv: IKeyValue[] = [];
+        const featureLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
 
-        const lvData: IKeyValue[] = [];
-        const parData: IKeyValue[] = [];
+        if (featureLv.length > 0) {
+          self.sourceVector.clear();
+          self.sourceVector.addFeature(featureLv[0]);
 
-        for (const feature of features) {
-          const properties = feature.getProperties();
-          const id: string = feature.getId();
-
-          for (const key of Object.keys(properties)) {
+          const propertiesLv = featureLv[0].getProperties();
+          for (const key of Object.keys(propertiesLv)) {
             if (key === 'geometry') {
               continue;
             }
 
-            if (!!properties[key]) {
-              if (id.startsWith('LV')) {
-                lvData.push({ key, value: properties[key]});
-              } else {
-                parData.push({ key, value: properties[key]});
-              }
+            if (!!propertiesLv[key]) {
+              dataLv.push({ key, value: propertiesLv[key] });
             }
           }
         }
 
-        self.featureInfoData.next({ par: parData, lv: lvData });
+        const dataPar: IKeyValue[] = [];
+        const featurePar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
+        if (featurePar.length > 0) {
+          const propertiesPar = featurePar[0].getProperties();
+          for (const key of Object.keys(propertiesPar)) {
+            if (key === 'geometry') {
+              continue;
+            }
+
+            if (!!propertiesPar[key]) {
+              dataPar.push({ key, value: propertiesPar[key] });
+            }
+          }
+        }
+
+        self.featureInfoData.next({ par: dataPar, lv: dataLv });
       });
     });
   }
@@ -261,11 +273,9 @@ export class MapComponent implements OnInit {
     this.localizeByPar$(event.katuzeKod, event.parCislo).subscribe();
   }
 
-  private localizeByTel$(telId: number): Observable<any> {
-    return this.getFeatureGeoJson$('VFK:LV', `TEL_ID=${telId}`)
-      .pipe(
-        map(resp => this.localizeToFeature$(resp))
-      );
+  public cancelLocalization() {
+    this.sourceVector.clear();
+    this.sourceVector.refresh();
   }
 
   private localizeByLv$(kuKod: number, lvId: number): Observable<any> {
@@ -297,16 +307,32 @@ export class MapComponent implements OnInit {
   }
 
   private getFeatureGeoJson$(typeName: string, cqlFilter: string): Observable<any> {
-    return this.http.get('http://localhost:8080/geoserver/VFK/ows', {
-      params: {
-        service: 'WFS',
-        version: '2.0.0',
-        request: 'GetFeature',
-        outputFormat: 'application/json',
-        typeName,
-        cql_filter: cqlFilter
-      }
-    });
+    const params = {
+      service: 'WFS',
+      version: '2.0.0',
+      request: 'GetFeature',
+      srsName: 'EPSG:5514',
+      outputFormat: 'application/json',
+      typeName,
+      cql_filter: cqlFilter
+    };
+
+    return this.http.get('http://localhost:8080/geoserver/VFK/ows', { params });
+  }
+
+  private getFeatureByBboxGeoJson$(typeName: string, bbox: string, count: number): Observable<any> {
+    const params = {
+      service: 'WFS',
+      version: '2.0.0',
+      request: 'GetFeature',
+      srsName: 'EPSG:5514',
+      outputFormat: 'application/json',
+      count: `${count}`,
+      typeName,
+      bbox
+    };
+
+    return this.http.get('http://localhost:8080/geoserver/VFK/ows', { params });
   }
 
   private getLegend$(): Observable<any> {
