@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData } from '../models/models';
-import { stringify } from '@angular/core/src/util';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv } from '../models/models';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-side-bar',
@@ -15,6 +15,8 @@ export class SideBarComponent implements OnInit {
   @Output() localizationByLv: EventEmitter<ILocalizationByLv> = new EventEmitter<ILocalizationByLv>();
   @Output() localizationCancel: EventEmitter<void> = new EventEmitter<void>();
 
+  modalRef: BsModalRef;
+
   kuForm: FormGroup;
   kuSubmitted = false;
 
@@ -24,13 +26,19 @@ export class SideBarComponent implements OnInit {
   lvForm: FormGroup;
   lvSubmitted = false;
 
+  lvInfoForm: FormGroup;
+  lvInfoSubmitted = false;
+
   legendCollapsed = true;
   localizationCollapsed = false;
   infoCollapsed = false;
+  selectedCollapsed = true;
+
+  selected: IVybraneLv[] = [];
 
   featureInfoData: IFeatureInfoData;
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder, private modalService: BsModalService) { }
 
   ngOnInit() {
     this.kuForm = this.formBuilder.group({
@@ -46,6 +54,10 @@ export class SideBarComponent implements OnInit {
       kodKu: ['703567', Validators.required],
       lvId: ['536', Validators.required]
     });
+
+    this.lvInfoForm = this.formBuilder.group({
+      cena: ['']
+    });
   }
 
   showFeatureInfoData(event: any) {
@@ -54,6 +66,29 @@ export class SideBarComponent implements OnInit {
 
   cancelSelection() {
     this.localizationCancel.next();
+  }
+
+  openModal(template: TemplateRef<any>) {
+    this.lvInfoForm.reset();
+    const existing = this.selected.find(x => x.telId === this.featureInfoData.telId);
+    if (!!existing) {
+      this.lvInfoForm.controls.cena.setValue(existing.cena);
+    }
+    this.modalRef = this.modalService.show(template, { class: 'modal-lg modal-dialog modal-dialog-centered' });
+  }
+
+  markIt() {
+    const existing = this.selected.find(x => x.telId === this.featureInfoData.telId);
+    if (!!existing) {
+      existing.cena = this.lvInfoForm.value.cena;
+    } else {
+      this.selected.push({ telId: this.featureInfoData.telId, cena: this.lvInfoForm.value.cena });
+    }
+    this.modalRef.hide();
+  }
+
+  delete(item: IVybraneLv) {
+    this.selected = this.selected.filter(x => x.telId !== item.telId);
   }
 
   onLocalizeKu() {

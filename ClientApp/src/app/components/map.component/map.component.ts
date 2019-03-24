@@ -38,7 +38,6 @@ export class MapComponent implements OnInit {
 
   constructor(private http: HttpClient, private olStylingService: OlStyles, private serverAppService: ServerAppService) {
     this.lvAttrTranslate = new Map([
-      ['CENA_M2', { label: 'nabídková cena / m<sup>2</sup>:', order: 1, unit: ' Kč' }],
       ['OBEC', { label: 'obec:', order: 2, unit: '' }],
       ['KU', { label: 'k.ú.:', order: 3, unit: '' }],
       ['LVID', { label: 'číslo:', order: 4, unit: '' }],
@@ -51,8 +50,7 @@ export class MapComponent implements OnInit {
       ['V_LPIS_PR', { label: 'LPIS:', order: 11, unit: ' %' }],
       ['TYP_VL', { label: 'typ vl.:', order: 12, unit: '', transformFunc: this.transformTypVlastnictvi }],
       ['P_VL', { label: 'poč. vl.:', order: 13, unit: '' }],
-      ['KATUZE_KOD', { label: 'kód k.ú.:', order: 14, unit: '' }],
-      ['TEL_ID', { label: 'id:', order: 15, unit: '' }],
+      ['KATUZE_KOD', { label: 'kód k.ú.:', order: 14, unit: '' }]
     ]);
 
     this.parAttrTranslate = new Map([
@@ -275,14 +273,17 @@ export class MapComponent implements OnInit {
         if (featuresLv.length > 0 && featuresPar.length > 0) {
           self.sourceVector.addFeature(featuresLv[0]);
 
-          dataLv = self.getData(featuresLv[0].getProperties(), self.lvAttrTranslate);
-          dataPar = self.getData(featuresPar[0].getProperties(), self.parAttrTranslate);
+          const propertiesLv = featuresLv[0].getProperties();
+          const propertiesPar = featuresPar[0].getProperties();
+          const telId = propertiesLv.TEL_ID;
 
-          const telId = dataLv.find(d => d.id === 'TEL_ID');
-          self.serverAppService.getVlastnici(telId.value).subscribe(vlastnici => {
+          dataLv = self.getData(propertiesLv, self.lvAttrTranslate);
+          dataPar = self.getData(propertiesPar, self.parAttrTranslate);
+
+          self.serverAppService.getVlastnici(telId).subscribe(vlastnici => {
             dataVl = vlastnici.map(v => self.getData(v, self.vlAttrTranslate));
 
-            self.featureInfoData.next({ par: dataPar, lv: dataLv, vl: dataVl });
+            self.featureInfoData.next({ par: dataPar, lv: dataLv, vl: dataVl, telId });
           });
         }
       });

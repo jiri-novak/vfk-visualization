@@ -54,3 +54,15 @@ p {
 .buttons {
     margin-bottom: 50px;
 }
+
+.button-action {
+  margin-top: 5px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.selected-lvs {
+  min-height: 150px;
+  max-height: 150px;
+  overflow: auto;
+}

@@ -13,6 +13,7 @@ export interface ILocalizationByLv {
 }
 
 export interface IFeatureInfoData {
+  telId: string;
   par: ISortableLabel[];
   lv: ISortableLabel[];
   vl: ISortableLabel[][];
@@ -41,4 +42,9 @@ export interface IVlastnik {
   podilM2: number;
   typ: string;
   zemedelec: boolean;
+}
+
+export interface IVybraneLv {
+  telId: string;
+  cena: number;
 }

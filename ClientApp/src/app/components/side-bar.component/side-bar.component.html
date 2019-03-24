@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="card">
-    <h5 class="card-title" (click)="legendCollapsed = !legendCollapsed">Legenda:</h5>
+    <b class="card-title" (click)="legendCollapsed = !legendCollapsed">Legenda:</b>
     <div class="card-body">
       <img [collapse]="legendCollapsed"
         src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=VFK:LV&format_options=layout:legend&legend_options=fontAntiAliasing:true" />
@@ -8,7 +8,7 @@
   </div>
 
   <div class="card">
-    <h5 class="card-title" (click)="localizationCollapsed = !localizationCollapsed">Lokalizace:</h5>
+    <b class="card-title" (click)="localizationCollapsed = !localizationCollapsed">Lokalizace:</b>
     <div class="card-body">
       <tabset [justified]="false" [vertical]="false" [collapse]="localizationCollapsed">
 
@@ -104,8 +104,36 @@
     </div>
   </div>
 
+  <div class="card">
+    <div class="card-title">
+      <b (click)="selectedCollapsed = !selectedCollapsed">Vybrané LV:</b>
+      <i class="fa fa-download pull-right button-edit" aria-hidden="true"
+        (click)="markIt(template); $event.preventDefault()">
+      </i>
+    </div>
+    <div class="card-body selected-lvs">
+      <table class="table">
+        <tbody>
+          <!-- <tr>
+            <th>Id LV</th>
+            <th colspan="2">Cena</th>
+          </tr> -->
+          <tr *ngFor="let item of selected">
+            <td>{{item.telId}}</td>
+            <td>{{item.cena}}</td>
+            <td><i class="fa fa-trash pull-right button-action" (click)="delete(item);"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="card" *ngIf="!!featureInfoData">
-    <h5 class="card-title" (click)="infoCollapsed = !infoCollapsed">Informace:</h5>
+    <div class="card-title">
+      <b (click)="infoCollapsed = !infoCollapsed">Informace:</b>
+      <i class="fa fa-edit pull-right button-action" aria-hidden="true"
+        (click)="openModal(template); $event.preventDefault()"> </i>
+    </div>
     <div class="card-body">
       <tabset [collapse]="infoCollapsed" [justified]="false" [vertical]="false">
 
@@ -161,3 +189,24 @@
     </div>
   </div>
 </div>
+
+<ng-template #template>
+  <div class="modal-body text-center">
+    <p>Vyplňte prosím dodatečné informace k LV:</p>
+
+    <form class="form-horizontal" [formGroup]="lvInfoForm" (ngSubmit)="markIt()">
+      <div class="form-group form-group-sm col-sm-12">
+        <div class="row">
+          <label class="col-sm-4 col-form-label">Nabídková cena m<sup>2</sup>:</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="number" formControlName="cena" class="form-control"
+              [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }" />
+          </div>
+        </div>
+      </div>
+      <div class="form-group buttons col-sm-12">
+        <button class="btn btn-success pull-right">Ok</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
