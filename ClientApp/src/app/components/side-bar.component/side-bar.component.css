@@ -1,12 +1,44 @@
 .card {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .form-group {
-  margin-top: 5px;
+  margin-bottom: 2px;
 }
 
 .container {
   overflow: auto;
   height: 100vh;
+}
+
+.card-title {
+  font-size: 12pt
+}
+
+.card-body {
+  font-size: 10pt
+}
+
+input, button {
+  font-size: 10pt
+}
+
+.label {
+  vertical-align: bottom
+}
+
+.form-horizontal {
+  margin-top: 10px;
+}
+
+td {
+  padding: 2px;
+}
+
+table {
+  margin-top: 10px;
+}
+
+p {
+  vertical-align: middle
 }

@@ -13,11 +13,25 @@ export interface ILocalizationByLv {
 }
 
 export interface IFeatureInfoData {
-  par: IKeyValue[];
-  lv: IKeyValue[];
+  par: IValue[];
+  lv: IValue[];
 }
 
-export interface IKeyValue {
+export interface IValue {
   key: string;
+  valueWithUnit: string;
+}
+
+export interface ISortableLabelDefinition {
+  label: string;
+  unit: string;
+  order: number;
+}
+
+export interface ISortableLabel {
+  id: string;
+  label: string;
   value: string;
+  unit: string;
+  order: number;
 }

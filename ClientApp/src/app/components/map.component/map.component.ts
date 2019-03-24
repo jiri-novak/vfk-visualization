@@ -4,11 +4,10 @@ import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import Feature from 'ol/Feature';
-import Geometry from 'ol/geom/Geometry';
 import View from 'ol/View';
 import { defaults } from 'ol/control';
 import { createStringXY } from 'ol/coordinate';
-import Map from 'ol/Map';
+import OlMap from 'ol/Map';
 import Tile from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
 import Projection from 'ol/proj/Projection';
@@ -17,11 +16,11 @@ import LayerGroup from 'ol/layer/Group';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
-import { METERS_PER_UNIT, transform } from 'ol/proj';
+import { METERS_PER_UNIT } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 
 import { OlStyles } from 'src/app/services/ol.styling.service';
-import { IFeatureInfoData, IKeyValue } from '../models/models';
+import { IFeatureInfoData, ISortableLabel, ISortableLabelDefinition, IValue } from '../models/models';
 
 @Component({
   selector: 'app-map',
@@ -37,7 +36,37 @@ export class MapComponent implements OnInit {
   @Output() featureInfoData: EventEmitter<IFeatureInfoData> = new EventEmitter<IFeatureInfoData>();
 
   constructor(private http: HttpClient, private olStylingService: OlStyles) {
+    this.lvAttrTranslate = new Map([
+      ['CENA_M2', { label: 'nabídková cena / m<sup>2</sup>', order: 1, unit: ' Kč' }],
+      ['OBEC', { label: 'obec', order: 2, unit: '' }],
+      ['KU', { label: 'kú', order: 3, unit: '' }],
+      ['LVID', { label: 'číslo', order: 4, unit: '' }],
+      ['VYMERA', { label: 'výměra', order: 5, unit: ' m<sup>2</sup>' }],
+      ['V_BPEJ', { label: 'výměra BPEJ', order: 6, unit: ' m<sup>2</sup>' }],
+      ['ORNA', { label: 'orná', order: 7, unit: ' m<sup>2</sup>' }],
+      ['TTP', { label: 'ttp', order: 8, unit: ' m<sup>2</sup>' }],
+      ['PRU_BPEJ', { label: 'cena BPEJ/m<sup>2</sup>', order: 9, unit: ' Kč' }],
+      ['PARCEL', { label: 'poč. parcel', order: 10, unit: '' }],
+      ['V_LPIS_PR', { label: 'LPIS', order: 11, unit: ' %' }],
+      ['TYP_VL', { label: 'typ vl.', order: 12, unit: '' }],
+      ['P_VL', { label: 'poč. vl.', order: 13, unit: '' }],
+      ['KATUZE_KOD', { label: 'kód k.ú.', order: 14, unit: '' }],
+    ]);
+
+    this.parAttrTranslate = new Map([
+      ['KU', { label: 'ku', order: 1, unit: '' }],
+      ['KATUZE_KOD', { label: 'kód k.ú.', order: 2, unit: '' }],
+      ['LVID', { label: 'číslo LV', order: 3, unit: '' }],
+      ['PAR_CISLO', { label: 'číslo', order: 4, unit: '' }],
+      ['DRUH', { label: 'druh', order: 5, unit: '' }],
+      ['VYUZITI', { label: 'využití', order: 6, unit: '' }],
+      ['VYMERA', { label: 'výměra', order: 7, unit: ' m<sup>2</sup>' }],
+      ['V_LV_PR', { label: 'výměra z LV', order: 8, unit: ' %' }],
+    ]);
   }
+
+  private lvAttrTranslate: Map<string, ISortableLabelDefinition>;
+  private parAttrTranslate: Map<string, ISortableLabelDefinition>;
 
   epsg5514Ne: Projection;
   epsg5514: Projection;
@@ -54,7 +83,7 @@ export class MapComponent implements OnInit {
   layerZm10: Tile;
   layerKm: Tile;
 
-  map: Map;
+  map: OlMap;
   view: View;
   mousePosition: MousePosition;
   layerSwitcher: LayerSwitcher;
@@ -173,7 +202,7 @@ export class MapComponent implements OnInit {
 
     this.layerSwitcher = new LayerSwitcher();
 
-    this.map = new Map({
+    this.map = new OlMap({
       target: this.mapRef.nativeElement,
       controls: defaults({
         attribution: false
@@ -212,7 +241,7 @@ export class MapComponent implements OnInit {
       self.scaleRef.nativeElement.innerHTML = `1 : ${scale}`;
     });
 
-    this.map.on('singleclick', function(evt) {
+    this.map.on('singleclick', evt => {
       const step = 0.5;
       const x: number = evt.coordinate[0];
       const y: number = evt.coordinate[1];
@@ -222,42 +251,57 @@ export class MapComponent implements OnInit {
         self.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1),
         self.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1)
       ).subscribe(([respLv, respPar]) => {
-        const dataLv: IKeyValue[] = [];
-        const featureLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
+        const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
+        const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
 
-        if (featureLv.length > 0) {
-          self.sourceVector.clear();
-          self.sourceVector.addFeature(featureLv[0]);
+        let dataLv: IValue[] = [];
+        let dataPar: IValue[] = [];
 
-          const propertiesLv = featureLv[0].getProperties();
-          for (const key of Object.keys(propertiesLv)) {
-            if (key === 'geometry') {
-              continue;
-            }
+        self.sourceVector.clear();
 
-            if (!!propertiesLv[key]) {
-              dataLv.push({ key, value: propertiesLv[key] });
-            }
-          }
+        if (featuresLv.length > 0) {
+          self.sourceVector.addFeature(featuresLv[0]);
+          dataLv = self.getData(featuresLv, self.lvAttrTranslate);
         }
 
-        const dataPar: IKeyValue[] = [];
-        const featurePar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
-        if (featurePar.length > 0) {
-          const propertiesPar = featurePar[0].getProperties();
-          for (const key of Object.keys(propertiesPar)) {
-            if (key === 'geometry') {
-              continue;
-            }
-
-            if (!!propertiesPar[key]) {
-              dataPar.push({ key, value: propertiesPar[key] });
-            }
-          }
+        if (featuresPar.length > 0) {
+          dataPar = self.getData(featuresPar, self.parAttrTranslate);
         }
 
         self.featureInfoData.next({ par: dataPar, lv: dataLv });
       });
+    });
+  }
+
+  private getData(features: Array<Feature>, translate: Map<string, ISortableLabelDefinition>): IValue[] {
+    const data: ISortableLabel[] = [];
+
+    if (features.length > 0) {
+      const properties = features[0].getProperties();
+      for (const key of Object.keys(properties)) {
+        if (!translate.has(key)) {
+          continue;
+        }
+
+        const isEmpty = !properties[key];
+        const d = translate.get(key);
+        data.push({ id: key, label: d.label, value: properties[key], unit: isEmpty ? null : d.unit, order: d.order });
+      }
+    }
+
+    data.sort((a: ISortableLabel, b: ISortableLabel) => {
+      if (a.order < b.order) {
+        return -1;
+      }
+      if (a.order > b.order) {
+        return 1;
+      }
+      // a must be equal to b
+      return 0;
+    });
+
+    return data.map(x => {
+      return { key: x.label, valueWithUnit: !!x.value || !!x.unit ? `${x.value} ${x.unit}` : null };
     });
   }
 
@@ -286,7 +330,7 @@ export class MapComponent implements OnInit {
   }
 
   private localizeByKu$(kuKod: number): Observable<any> {
-    return this.getFeatureGeoJson$('VFK:KATUZE_P', `KOD=${kuKod}`)
+    return this.getFeatureGeoJson$('VFK:KU', `KOD=${kuKod}`)
       .pipe(
         map(resp => this.localizeToFeature$(resp))
       );
