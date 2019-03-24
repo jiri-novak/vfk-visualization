@@ -20,7 +20,8 @@ import { METERS_PER_UNIT } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 
 import { OlStyles } from 'src/app/services/ol.styling.service';
-import { IFeatureInfoData, ISortableLabel, ISortableLabelDefinition, IValue } from '../models/models';
+import { IFeatureInfoData, ISortableLabel, ISortableLabelDefinition } from '../models/models';
+import { ServerAppService } from 'src/app/services/serverapp.service';
 
 @Component({
   selector: 'app-map',
@@ -35,38 +36,49 @@ export class MapComponent implements OnInit {
 
   @Output() featureInfoData: EventEmitter<IFeatureInfoData> = new EventEmitter<IFeatureInfoData>();
 
-  constructor(private http: HttpClient, private olStylingService: OlStyles) {
+  constructor(private http: HttpClient, private olStylingService: OlStyles, private serverAppService: ServerAppService) {
     this.lvAttrTranslate = new Map([
-      ['CENA_M2', { label: 'nabídková cena / m<sup>2</sup>', order: 1, unit: ' Kč' }],
-      ['OBEC', { label: 'obec', order: 2, unit: '' }],
-      ['KU', { label: 'kú', order: 3, unit: '' }],
-      ['LVID', { label: 'číslo', order: 4, unit: '' }],
-      ['VYMERA', { label: 'výměra', order: 5, unit: ' m<sup>2</sup>' }],
-      ['V_BPEJ', { label: 'výměra BPEJ', order: 6, unit: ' m<sup>2</sup>' }],
-      ['ORNA', { label: 'orná', order: 7, unit: ' m<sup>2</sup>' }],
-      ['TTP', { label: 'ttp', order: 8, unit: ' m<sup>2</sup>' }],
-      ['PRU_BPEJ', { label: 'cena BPEJ/m<sup>2</sup>', order: 9, unit: ' Kč' }],
-      ['PARCEL', { label: 'poč. parcel', order: 10, unit: '' }],
-      ['V_LPIS_PR', { label: 'LPIS', order: 11, unit: ' %' }],
-      ['TYP_VL', { label: 'typ vl.', order: 12, unit: '' }],
-      ['P_VL', { label: 'poč. vl.', order: 13, unit: '' }],
-      ['KATUZE_KOD', { label: 'kód k.ú.', order: 14, unit: '' }],
+      ['CENA_M2', { label: 'nabídková cena / m<sup>2</sup>:', order: 1, unit: ' Kč' }],
+      ['OBEC', { label: 'obec:', order: 2, unit: '' }],
+      ['KU', { label: 'k.ú.:', order: 3, unit: '' }],
+      ['LVID', { label: 'číslo:', order: 4, unit: '' }],
+      ['VYMERA', { label: 'výměra:', order: 5, unit: ' m<sup>2</sup>' }],
+      ['V_BPEJ', { label: 'výměra BPEJ:', order: 6, unit: ' m<sup>2</sup>' }],
+      ['ORNA', { label: 'orná:', order: 7, unit: ' m<sup>2</sup>' }],
+      ['TTP', { label: 'ttp:', order: 8, unit: ' m<sup>2</sup>' }],
+      ['PRU_BPEJ', { label: 'cena BPEJ/m<sup>2</sup>:', order: 9, unit: ' Kč' }],
+      ['PARCEL', { label: 'poč. parcel:', order: 10, unit: '' }],
+      ['V_LPIS_PR', { label: 'LPIS:', order: 11, unit: ' %' }],
+      ['TYP_VL', { label: 'typ vl.:', order: 12, unit: '', transformFunc: this.transformTypVlastnictvi }],
+      ['P_VL', { label: 'poč. vl.:', order: 13, unit: '' }],
+      ['KATUZE_KOD', { label: 'kód k.ú.:', order: 14, unit: '' }],
+      ['TEL_ID', { label: 'id:', order: 15, unit: '' }],
     ]);
 
     this.parAttrTranslate = new Map([
-      ['KU', { label: 'ku', order: 1, unit: '' }],
-      ['KATUZE_KOD', { label: 'kód k.ú.', order: 2, unit: '' }],
-      ['LVID', { label: 'číslo LV', order: 3, unit: '' }],
-      ['PAR_CISLO', { label: 'číslo', order: 4, unit: '' }],
-      ['DRUH', { label: 'druh', order: 5, unit: '' }],
-      ['VYUZITI', { label: 'využití', order: 6, unit: '' }],
-      ['VYMERA', { label: 'výměra', order: 7, unit: ' m<sup>2</sup>' }],
-      ['V_LV_PR', { label: 'výměra z LV', order: 8, unit: ' %' }],
+      ['KU', { label: 'k.ú.:', order: 1, unit: '' }],
+      ['KATUZE_KOD', { label: 'kód k.ú.:', order: 2, unit: '' }],
+      ['LVID', { label: 'číslo LV:', order: 3, unit: '' }],
+      ['PAR_CISLO', { label: 'číslo:', order: 4, unit: '' }],
+      ['DRUH', { label: 'druh:', order: 5, unit: '' }],
+      ['VYUZITI', { label: 'využití:', order: 6, unit: '' }],
+      ['VYMERA', { label: 'výměra:', order: 7, unit: ' m<sup>2</sup>' }],
+      ['V_LV_PR', { label: 'výměra z LV:', order: 8, unit: ' %' }],
+    ]);
+
+    this.vlAttrTranslate = new Map([
+      ['jmeno', { label: 'jméno:', order: 1, unit: '' }],
+      ['adresa', { label: 'adresa:', order: 2, unit: '' }],
+      ['podil', { label: 'podíl:', order: 3, unit: ' %' }],
+      ['podilM2', { label: 'podíl:', order: 4, unit: ' m<sup>2</sup>' }],
+      ['typ', { label: 'typ:', order: 5, unit: '', transformFunc: this.transformTypVlastnictvi }],
+      ['zemedelec', { label: 'zemědělec:', order: 6, unit: '', transformFunc: this.transformTrueFalse }],
     ]);
   }
 
   private lvAttrTranslate: Map<string, ISortableLabelDefinition>;
   private parAttrTranslate: Map<string, ISortableLabelDefinition>;
+  private vlAttrTranslate: Map<string, ISortableLabelDefinition>;
 
   epsg5514Ne: Projection;
   epsg5514: Projection;
@@ -249,44 +261,61 @@ export class MapComponent implements OnInit {
 
       forkJoin(
         self.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1),
-        self.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1)
+        self.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1),
       ).subscribe(([respLv, respPar]) => {
         const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
         const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
 
-        let dataLv: IValue[] = [];
-        let dataPar: IValue[] = [];
+        let dataLv: ISortableLabel[] = [];
+        let dataPar: ISortableLabel[] = [];
+        let dataVl: ISortableLabel[][] = [];
 
         self.sourceVector.clear();
 
-        if (featuresLv.length > 0) {
+        if (featuresLv.length > 0 && featuresPar.length > 0) {
           self.sourceVector.addFeature(featuresLv[0]);
-          dataLv = self.getData(featuresLv, self.lvAttrTranslate);
-        }
 
-        if (featuresPar.length > 0) {
-          dataPar = self.getData(featuresPar, self.parAttrTranslate);
-        }
+          dataLv = self.getData(featuresLv[0].getProperties(), self.lvAttrTranslate);
+          dataPar = self.getData(featuresPar[0].getProperties(), self.parAttrTranslate);
 
-        self.featureInfoData.next({ par: dataPar, lv: dataLv });
+          const telId = dataLv.find(d => d.id === 'TEL_ID');
+          self.serverAppService.getVlastnici(telId.value).subscribe(vlastnici => {
+            dataVl = vlastnici.map(v => self.getData(v, self.vlAttrTranslate));
+
+            self.featureInfoData.next({ par: dataPar, lv: dataLv, vl: dataVl });
+          });
+        }
       });
     });
   }
 
-  private getData(features: Array<Feature>, translate: Map<string, ISortableLabelDefinition>): IValue[] {
+  private getData(properties: any, translate: Map<string, ISortableLabelDefinition>): ISortableLabel[] {
     const data: ISortableLabel[] = [];
 
-    if (features.length > 0) {
-      const properties = features[0].getProperties();
-      for (const key of Object.keys(properties)) {
-        if (!translate.has(key)) {
-          continue;
-        }
-
-        const isEmpty = !properties[key];
-        const d = translate.get(key);
-        data.push({ id: key, label: d.label, value: properties[key], unit: isEmpty ? null : d.unit, order: d.order });
+    for (const key of Object.keys(properties)) {
+      if (!translate.has(key)) {
+        continue;
       }
+
+      const metadata = translate.get(key);
+      const unit = !!properties[key] ? metadata.unit : null;
+      const value = metadata.transformFunc == null
+        ? properties[key]
+        : metadata.transformFunc(properties[key]);
+      const valueWithUnit = value != null
+        ? unit != null
+          ? `${value} ${unit}`
+          : value
+        : null;
+
+      data.push({
+        id: key,
+        label: metadata.label,
+        value,
+        unit,
+        order: metadata.order,
+        valueWithUnit
+      });
     }
 
     data.sort((a: ISortableLabel, b: ISortableLabel) => {
@@ -300,9 +329,30 @@ export class MapComponent implements OnInit {
       return 0;
     });
 
-    return data.map(x => {
-      return { key: x.label, valueWithUnit: !!x.value || !!x.unit ? `${x.value} ${x.unit}` : null };
-    });
+    return data;
+  }
+
+  private transformTypVlastnictvi(value: string): string {
+    if (value === 'OFO') {
+      return 'fyzická';
+    } else if (value === 'OPO') {
+      return 'právnická';
+    } else if (value === 'OST') {
+      return 'kombinace';
+    } else if (value === 'STAT') {
+      return 'státní';
+    } else if (value === 'BSM') {
+      return 'manželé';
+    }
+
+    return value;
+  }
+
+  private transformTrueFalse(value: string): string {
+    if (value === 'true') {
+      return 'ano';
+    }
+    return 'ne';
   }
 
   public localizeByLv(event: any) {

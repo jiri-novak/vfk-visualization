@@ -1,16 +1,16 @@
-<div class="container">
+<div class="container-fluid">
   <div class="card">
+    <h5 class="card-title" (click)="legendCollapsed = !legendCollapsed">Legenda:</h5>
     <div class="card-body">
-      <h5 class="card-title">Legenda:</h5>
-      <img
+      <img [collapse]="legendCollapsed"
         src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=VFK:LV&format_options=layout:legend&legend_options=fontAntiAliasing:true" />
     </div>
   </div>
 
   <div class="card">
+    <h5 class="card-title" (click)="localizationCollapsed = !localizationCollapsed">Lokalizace:</h5>
     <div class="card-body">
-      <h5 class="card-title">Lokalizace:</h5>
-      <tabset [justified]="false" [vertical]="false">
+      <tabset [justified]="false" [vertical]="false" [collapse]="localizationCollapsed">
 
         <tab heading="Katastrálního území">
           <form class="form-horizontal" [formGroup]="kuForm" (ngSubmit)="onLocalizeKu()">
@@ -26,11 +26,12 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group buttons">
               <button class="btn btn-success float-left">Lokalizuj</button>
+              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
+                zvýraznění</button>
             </div>
           </form>
-          <button class="btn btn-link float-right" (click)="cancelSelection()">Zruš zvýraznění</button>
         </tab>
 
         <tab heading="Parcely">
@@ -59,11 +60,12 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group buttons">
               <button class="btn btn-success float-left">Lokalizuj</button>
+              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
+                zvýraznění</button>
             </div>
           </form>
-          <button class="btn btn-link float-right" (click)="cancelSelection()">Zruš zvýraznění</button>
         </tab>
 
         <tab heading="LV">
@@ -92,27 +94,27 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group buttons">
               <button class="btn btn-success float-left">Lokalizuj</button>
+              <button class="btn btn-link float-right" (click)="cancelSelection()">Zruš zvýraznění</button>
             </div>
           </form>
-          <button class="btn btn-link float-right" (click)="cancelSelection()">Zruš zvýraznění</button>
         </tab>
       </tabset>
     </div>
   </div>
 
   <div class="card" *ngIf="!!featureInfoData">
+    <h5 class="card-title" (click)="infoCollapsed = !infoCollapsed">Informace:</h5>
     <div class="card-body">
-      <h5 class="card-title">Informace:</h5>
-      <tabset [justified]="false" [vertical]="false">
+      <tabset [collapse]="infoCollapsed" [justified]="false" [vertical]="false">
 
         <tab heading="LV">
           <table class="table">
             <tbody>
               <tr *ngFor="let item of featureInfoData?.lv">
                 <td>
-                  <div [innerHTML]="item.key"></div>
+                  <div [innerHTML]="item.label"></div>
                 </td>
                 <td>
                   <div [innerHTML]="item.valueWithUnit"></div>
@@ -127,7 +129,25 @@
             <tbody>
               <tr *ngFor="let item of featureInfoData?.par">
                 <td>
-                  <div [innerHTML]="item.key"></div>
+                  <div [innerHTML]="item.label"></div>
+                </td>
+                <td>
+                  <div [innerHTML]="item.valueWithUnit"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </tab>
+
+        <tab heading="Vlastníci">
+          <table class="table" *ngFor="let vlastnik of featureInfoData?.vl; let i = index">
+            <tbody>
+              <tr>
+                <th colspan="2">{{i+1}}. vlastník</th>
+              </tr>
+              <tr *ngFor="let item of vlastnik">
+                <td>
+                  <div [innerHTML]="item.label"></div>
                 </td>
                 <td>
                   <div [innerHTML]="item.valueWithUnit"></div>

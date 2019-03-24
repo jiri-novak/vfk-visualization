@@ -1,44 +1,56 @@
 .card {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .form-group {
-  margin-bottom: 2px;
+    margin-bottom: 2px;
 }
 
-.container {
-  overflow: auto;
-  height: 100vh;
+.container-fluid {
+    overflow: auto;
+    height: 100vh;
+    margin: 0px;
 }
 
 .card-title {
-  font-size: 12pt
+    padding: 15px;
+    margin: 0;
+    font-size: 12pt
 }
 
 .card-body {
-  font-size: 10pt
+    padding-bottom: 0px;
+    padding-right: 15px;
+    padding-top: 0px;
+    padding-left: 15px;
+    font-size: 10pt
 }
 
-input, button {
-  font-size: 10pt
+input,
+button {
+    font-size: 10pt
 }
 
 .label {
-  vertical-align: bottom
+    vertical-align: bottom
 }
 
 .form-horizontal {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 td {
-  padding: 2px;
+    padding: 2px;
 }
 
 table {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 p {
-  vertical-align: middle
+    vertical-align: middle
+}
+
+.buttons {
+    margin-bottom: 50px;
 }

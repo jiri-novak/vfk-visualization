@@ -1,4 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+
 @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 @import '../node_modules/ol/ol.css';
 @import '../node_modules/ol-layerswitcher/src/ol-layerswitcher.css';
+
+
+.panel-group .panel .panel-heading {
+    background-color: white;
+    margin: 0;
+    padding: 0;
+}

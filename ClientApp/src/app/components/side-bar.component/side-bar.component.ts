@@ -24,6 +24,10 @@ export class SideBarComponent implements OnInit {
   lvForm: FormGroup;
   lvSubmitted = false;
 
+  legendCollapsed = true;
+  localizationCollapsed = false;
+  infoCollapsed = false;
+
   featureInfoData: IFeatureInfoData;
 
   constructor(private formBuilder: FormBuilder) { }

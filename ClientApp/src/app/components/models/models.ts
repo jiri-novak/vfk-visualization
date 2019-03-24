@@ -13,19 +13,16 @@ export interface ILocalizationByLv {
 }
 
 export interface IFeatureInfoData {
-  par: IValue[];
-  lv: IValue[];
-}
-
-export interface IValue {
-  key: string;
-  valueWithUnit: string;
+  par: ISortableLabel[];
+  lv: ISortableLabel[];
+  vl: ISortableLabel[][];
 }
 
 export interface ISortableLabelDefinition {
   label: string;
   unit: string;
   order: number;
+  transformFunc?: (s) => string;
 }
 
 export interface ISortableLabel {
@@ -33,5 +30,15 @@ export interface ISortableLabel {
   label: string;
   value: string;
   unit: string;
+  valueWithUnit: string;
   order: number;
+}
+
+export interface IVlastnik {
+  jmeno: string;
+  adresa: string;
+  podil: number;
+  podilM2: number;
+  typ: string;
+  zemedelec: boolean;
 }
