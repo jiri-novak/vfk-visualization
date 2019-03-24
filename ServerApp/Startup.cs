@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ServerApp.Converters;
+using ServerApp.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace ServerApp
@@ -39,6 +40,7 @@ namespace ServerApp
             services.AddDbContext<VfkDataContext>();
             services.AddScoped<VfkDataRepository>();
             services.AddScoped<VfkDataConverter>();
+            services.AddScoped<VfkDataService>();
 
             services.AddSwaggerGen(c =>
             {

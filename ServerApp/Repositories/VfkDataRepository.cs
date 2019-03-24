@@ -11,6 +11,10 @@ public class VfkDataRepository
     }
 
     public IEnumerable<VfkData> Get(int telId) {
-        return vfkDbContext.Entries.Where(x => x.TelId == telId.ToString());
+        return vfkDbContext.Entries.Where(x => x.TelId == telId);
+    }
+
+    public IEnumerable<VfkData> Get(IList<int> telIds) {
+        return vfkDbContext.Entries.Where(x => telIds.Contains(x.TelId));
     }
 }

@@ -38,8 +38,8 @@ export interface ISortableLabel {
 export interface IVlastnik {
   jmeno: string;
   adresa: string;
-  podil: number;
-  podilM2: number;
+  podil?: number;
+  podilM2?: number;
   typ: string;
   zemedelec: boolean;
 }

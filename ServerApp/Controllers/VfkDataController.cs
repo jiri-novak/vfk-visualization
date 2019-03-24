@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ServerApp.Converters;
+using ServerApp.Services;
 
 namespace ServerApp.Controllers
 {
@@ -11,12 +12,12 @@ namespace ServerApp.Controllers
     [ApiController]
     public class VfkDataController : ControllerBase
     {
-        private readonly VfkDataRepository repository;
+        private readonly VfkDataService service;
         private readonly VfkDataConverter converter;
 
-        public VfkDataController(VfkDataRepository repository, VfkDataConverter converter)
+        public VfkDataController(VfkDataService service, VfkDataConverter converter)
         {
-            this.repository = repository;
+            this.service = service;
             this.converter = converter;
         }
 
@@ -27,21 +28,17 @@ namespace ServerApp.Controllers
             if (!telId.HasValue)
                 return BadRequest();
 
-            return Ok(repository.Get(telId.Value).Select(converter.ToModel).ToArray());
+            return Ok(service.Get(telId.Value).Select(converter.ToModel).ToArray());
         }
 
-        // [Route("sessionId")]
-        // [HttpGet]
-        // public ActionResult<IEnumerable<VfkData>> Get(string sessionId)
-        // {
-        //     return Ok(repository.Get(1934034101).ToArray());
-        // }
-
-        [Route("sessionId")]
+        [Route("generate/excel")]
         [HttpPost]
-        public ActionResult<FileContentResult> Export(string sessionId)
+        public IActionResult Export([FromBody] IEnumerable<LvRefModel> data)
         {
-            throw new NotImplementedException();
+            if (!data.Any())
+                return BadRequest();
+
+            return File(service.Export(data), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nabidka_{DateTime.Now.ToShortDateString()}.xlsx");
         }
     }
 }

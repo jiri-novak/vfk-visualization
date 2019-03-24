@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/c
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv } from '../models/models';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { ServerAppService } from 'src/app/services/serverapp.service';
 
 @Component({
   selector: 'app-side-bar',
@@ -38,7 +39,7 @@ export class SideBarComponent implements OnInit {
 
   featureInfoData: IFeatureInfoData;
 
-  constructor(private formBuilder: FormBuilder, private modalService: BsModalService) { }
+  constructor(private formBuilder: FormBuilder, private modalService: BsModalService, private serverAppService: ServerAppService) { }
 
   ngOnInit() {
     this.kuForm = this.formBuilder.group({
@@ -85,6 +86,10 @@ export class SideBarComponent implements OnInit {
       this.selected.push({ telId: this.featureInfoData.telId, cena: this.lvInfoForm.value.cena });
     }
     this.modalRef.hide();
+  }
+
+  export() {
+    this.serverAppService.export(this.selected);
   }
 
   delete(item: IVybraneLv) {

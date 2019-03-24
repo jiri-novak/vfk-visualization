@@ -108,7 +108,7 @@
     <div class="card-title">
       <b (click)="selectedCollapsed = !selectedCollapsed">Vybrané LV:</b>
       <i class="fa fa-download pull-right button-edit" aria-hidden="true"
-        (click)="markIt(template); $event.preventDefault()">
+        (click)="export(); $event.preventDefault()">
       </i>
     </div>
     <div class="card-body selected-lvs">
