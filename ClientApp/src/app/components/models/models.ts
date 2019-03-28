@@ -47,4 +47,6 @@ export interface IVlastnik {
 export interface IVybraneLv {
   telId: string;
   cena: number;
+  ku: string;
+  cislo: string;
 }

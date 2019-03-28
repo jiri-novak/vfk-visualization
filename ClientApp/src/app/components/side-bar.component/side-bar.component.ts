@@ -78,14 +78,23 @@ export class SideBarComponent implements OnInit {
     this.modalRef = this.modalService.show(template, { class: 'modal-lg modal-dialog modal-dialog-centered' });
   }
 
+  closeModal() {
+    this.modalRef.hide();
+  }
+
   markIt() {
     const existing = this.selected.find(x => x.telId === this.featureInfoData.telId);
     if (!!existing) {
       existing.cena = this.lvInfoForm.value.cena;
     } else {
-      this.selected.push({ telId: this.featureInfoData.telId, cena: this.lvInfoForm.value.cena });
+      this.selected.push({
+        ku: this.featureInfoData.lv.find(x => x.label === 'k.ú.:').valueWithUnit,
+        cislo: this.featureInfoData.lv.find(x => x.label === 'číslo:').valueWithUnit,
+        telId: this.featureInfoData.telId,
+        cena: this.lvInfoForm.value.cena
+      });
     }
-    this.modalRef.hide();
+    this.closeModal();
   }
 
   export() {

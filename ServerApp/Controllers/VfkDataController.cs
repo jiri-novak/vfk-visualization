@@ -38,7 +38,7 @@ namespace ServerApp.Controllers
             if (!data.Any())
                 return BadRequest();
 
-            return File(service.Export(data), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nabidka_{DateTime.Now.ToShortDateString()}.xlsx");
+            return File(service.Export(data), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nabidka_{DateTime.Now:s}.xlsx");
         }
     }
 }

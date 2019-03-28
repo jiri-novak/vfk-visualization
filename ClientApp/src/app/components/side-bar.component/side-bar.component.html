@@ -8,6 +8,21 @@
   </div>
 
   <div class="card">
+    <div class="card-title">
+      <b (click)="selectedCollapsed = !selectedCollapsed">Vybrané LV:</b>
+      <div class="btn-group pull-right" role="group">
+        <button type="button" class="btn btn-secondary" (click)="openModal(selectedLvs);">
+          <span class="badge badge-default">{{selected.length}}</span>
+        </button>
+        <button type="button" class="btn btn-primary">
+          <i class="fa fa-download" aria-hidden="true" (click)="export();">
+          </i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <b class="card-title" (click)="localizationCollapsed = !localizationCollapsed">Lokalizace:</b>
     <div class="card-body">
       <tabset [justified]="false" [vertical]="false" [collapse]="localizationCollapsed">
@@ -104,35 +119,14 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">
-      <b (click)="selectedCollapsed = !selectedCollapsed">Vybrané LV:</b>
-      <i class="fa fa-download pull-right button-edit" aria-hidden="true"
-        (click)="export(); $event.preventDefault()">
-      </i>
-    </div>
-    <div class="card-body selected-lvs">
-      <table class="table">
-        <tbody>
-          <!-- <tr>
-            <th>Id LV</th>
-            <th colspan="2">Cena</th>
-          </tr> -->
-          <tr *ngFor="let item of selected">
-            <td>{{item.telId}}</td>
-            <td>{{item.cena}}</td>
-            <td><i class="fa fa-trash pull-right button-action" (click)="delete(item);"></i></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
   <div class="card" *ngIf="!!featureInfoData">
     <div class="card-title">
       <b (click)="infoCollapsed = !infoCollapsed">Informace:</b>
-      <i class="fa fa-edit pull-right button-action" aria-hidden="true"
-        (click)="openModal(template); $event.preventDefault()"> </i>
+      <div class="btn-group pull-right" role="group">
+        <button type="button" class="btn btn-primary">
+          <i class="fa fa-edit" aria-hidden="true" (click)="openModal(price);"> </i>
+        </button>
+      </div>
     </div>
     <div class="card-body">
       <tabset [collapse]="infoCollapsed" [justified]="false" [vertical]="false">
@@ -190,7 +184,7 @@
   </div>
 </div>
 
-<ng-template #template>
+<ng-template #price>
   <div class="modal-body text-center">
     <p>Vyplňte prosím dodatečné informace k LV:</p>
 
@@ -208,5 +202,36 @@
         <button class="btn btn-success pull-right">Ok</button>
       </div>
     </form>
+  </div>
+</ng-template>
+
+<ng-template #selectedLvs>
+  <div class="modal-body text-center">
+    <p>Seznam vybraných LV:</p>
+    <div class="col-sm-12 selected-lvs">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>K.ú.</th>
+            <th>Číslo</th>
+            <th>Id LV:</th>
+            <th>Cena:</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of selected">
+            <td>{{item.ku}}</td>
+            <td>{{item.cislo}}</td>
+            <td>{{item.telId}}</td>
+            <td>{{item.cena}}</td>
+            <td><i class="fa fa-trash pull-right button-action" (click)="delete(item);"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="buttons col-sm-12">
+      <button class="btn btn-success pull-right" (click)="closeModal()">Ok</button>
+    </div>
   </div>
 </ng-template>
