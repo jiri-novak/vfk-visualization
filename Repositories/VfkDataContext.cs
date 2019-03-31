@@ -7,7 +7,7 @@ public class VfkDataContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Filename=d:\\Workspace\\study\\david-wms\\vfk_db_utf8.db3", options =>
+        optionsBuilder.UseSqlite("Filename=vfk_db_utf8.db3", options =>
         {
             options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
         });
