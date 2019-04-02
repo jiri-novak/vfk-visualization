@@ -5,8 +5,10 @@
       <router-outlet></router-outlet>
     </div>
     <div class="col-4">
-      <app-side-bar #sideBar (localizationByKu)="map.localizeByKu($event)"
-        (localizationByPar)="map.localizeByPar($event)" (localizationByLv)="map.localizeByLv($event)"
+      <app-side-bar #sideBar
+        (localizationByKu)="map.localizeByKu($event)"
+        (localizationByPar)="map.localizeByPar($event)"
+        (localizationByLv)="map.localizeByLv($event)"
         (localizationCancel)="map.cancelLocalization()"></app-side-bar>
     </div>
   </div>

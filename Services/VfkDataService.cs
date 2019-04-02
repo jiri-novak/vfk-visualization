@@ -17,7 +17,7 @@ namespace ServerApp.Services
             this.repository = repository;
         }
 
-        public IEnumerable<VfkData> Get(int telId)
+        public IEnumerable<VfkData> Get(long telId)
         {
             return repository.Get(telId);
         }

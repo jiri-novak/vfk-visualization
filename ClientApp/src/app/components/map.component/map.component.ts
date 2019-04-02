@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, forkJoin, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import Feature from 'ol/Feature';
@@ -22,6 +22,7 @@ import LayerSwitcher from 'ol-layerswitcher';
 import { OlStyles } from 'src/app/services/ol.styling.service';
 import { IFeatureInfoData, ISortableLabel, ISortableLabelDefinition } from '../models/models';
 import { ServerAppService } from 'src/app/services/serverapp.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-map',
@@ -34,9 +35,15 @@ export class MapComponent implements OnInit {
   @ViewChild('map') mapRef: ElementRef;
   @ViewChild('scale') scaleRef: ElementRef;
 
+  public busy: Subscription;
+
   @Output() featureInfoData: EventEmitter<IFeatureInfoData> = new EventEmitter<IFeatureInfoData>();
 
-  constructor(private http: HttpClient, private olStylingService: OlStyles, private serverAppService: ServerAppService) {
+  constructor(
+    private http: HttpClient,
+    private toastrService: ToastrService,
+    private olStylingService: OlStyles,
+    private serverAppService: ServerAppService) {
     this.lvAttrTranslate = new Map([
       ['OBEC', { label: 'obec:', order: 2, unit: '' }],
       ['KU', { label: 'k.ú.:', order: 3, unit: '' }],
@@ -257,7 +264,7 @@ export class MapComponent implements OnInit {
       const y: number = evt.coordinate[1];
       const bbox = `${x - step},${y - step},${x + step},${y + step}`;
 
-      forkJoin(
+      this.busy = forkJoin(
         self.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1),
         self.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1),
       ).subscribe(([respLv, respPar]) => {
@@ -280,12 +287,14 @@ export class MapComponent implements OnInit {
           dataLv = self.getData(propertiesLv, self.lvAttrTranslate);
           dataPar = self.getData(propertiesPar, self.parAttrTranslate);
 
-          self.serverAppService.getVlastnici(telId).subscribe(vlastnici => {
+          self.serverAppService.getLvInfo(telId).subscribe(vlastnici => {
             dataVl = vlastnici.map(v => self.getData(v, self.vlAttrTranslate));
 
             self.featureInfoData.next({ par: dataPar, lv: dataLv, vl: dataVl, telId });
-          });
+          }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
         }
+      }, () => {
+        this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace');
       });
     });
   }
@@ -357,15 +366,18 @@ export class MapComponent implements OnInit {
   }
 
   public localizeByLv(event: any) {
-    this.localizeByLv$(event.katuzeKod, event.lvId).subscribe();
+    this.busy = this.localizeByLv$(event.katuzeKod, event.lvId).subscribe(
+      () => {}, () => this.toastrService.error('Nepodařilo lokalizovat se zadané LV', 'Lokalizace dle LV'));
   }
 
   public localizeByKu(event: any) {
-    this.localizeByKu$(event.katuzeKod).subscribe();
+    this.busy = this.localizeByKu$(event.katuzeKod).subscribe(
+      () => {}, () => this.toastrService.error('Nepodařilo lokalizovat se zadané k.ú.', 'Lokalizace dle k.ú.'));
   }
 
   public localizeByPar(event: any) {
-    this.localizeByPar$(event.katuzeKod, event.parCislo).subscribe();
+    this.busy = this.localizeByPar$(event.katuzeKod, event.parCislo).subscribe(
+      () => {}, () => this.toastrService.error('Nepodařilo lokalizovat se zadanou parcelu', 'Lokalizace dle parcely'));
   }
 
   public cancelLocalization() {
@@ -428,19 +440,5 @@ export class MapComponent implements OnInit {
     };
 
     return this.http.get('http://localhost:8080/geoserver/VFK/ows', { params });
-  }
-
-  private getLegend$(): Observable<any> {
-    return this.http.get('http://localhost:8080/geoserver/VFK/wms', {
-      params: {
-        service: 'WFS',
-        version: '1.0.0',
-        request: 'GetLegendGraphic',
-        FORMAT: 'image/png',
-        WIDTH: '30',
-        HEIGHT: '30',
-        format_options: 'layout:legend&legend_options=countMatched:true;fontAntiAliasing:true'
-      }
-    });
   }
 }

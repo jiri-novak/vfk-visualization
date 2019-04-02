@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/ServerApp.csproj"
+                "${workspaceFolder}/VfkVisualization.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

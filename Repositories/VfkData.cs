@@ -125,5 +125,5 @@ public class VfkData
     [EpplusIgnore]
     public int KatuzeKod { get; set; }
     [EpplusIgnore]
-    public int TelId { get; set; }
+    public long TelId { get; set; }
 }

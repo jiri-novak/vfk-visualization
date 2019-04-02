@@ -23,7 +23,7 @@ namespace ServerApp.Controllers
 
         [Route("{telId}")]
         [HttpGet]
-        public ActionResult<IEnumerable<VfkData>> Get([FromRoute] int? telId)
+        public ActionResult<IEnumerable<VfkData>> Get([FromRoute] long? telId)
         {
             if (!telId.HasValue)
                 return BadRequest();

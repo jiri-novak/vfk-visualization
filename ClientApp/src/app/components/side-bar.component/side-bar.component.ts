@@ -1,3 +1,5 @@
+import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv } from '../models/models';
@@ -15,6 +17,8 @@ export class SideBarComponent implements OnInit {
   @Output() localizationByPar: EventEmitter<ILocalizationByPar> = new EventEmitter<ILocalizationByPar>();
   @Output() localizationByLv: EventEmitter<ILocalizationByLv> = new EventEmitter<ILocalizationByLv>();
   @Output() localizationCancel: EventEmitter<void> = new EventEmitter<void>();
+
+  public busy: Subscription;
 
   modalRef: BsModalRef;
 
@@ -39,7 +43,11 @@ export class SideBarComponent implements OnInit {
 
   featureInfoData: IFeatureInfoData;
 
-  constructor(private formBuilder: FormBuilder, private modalService: BsModalService, private serverAppService: ServerAppService) { }
+  constructor(
+    private toastrService: ToastrService,
+    private formBuilder: FormBuilder,
+    private modalService: BsModalService,
+    private serverAppService: ServerAppService) { }
 
   ngOnInit() {
     this.kuForm = this.formBuilder.group({
@@ -97,8 +105,15 @@ export class SideBarComponent implements OnInit {
     this.closeModal();
   }
 
+  unMarkAll() {
+    this.selected = [];
+  }
+
   export() {
-    this.serverAppService.export(this.selected);
+    this.busy = this.serverAppService.export(this.selected)
+      .subscribe(
+        () => this.toastrService.success('Sestava vybraných LV úspěšně vygenerována.', 'Generování XLSX'),
+        () => this.toastrService.error('Sestavu vybraných LV se nepodařilo vygenerovat.', 'Generování XLSX'));
   }
 
   delete(item: IVybraneLv) {

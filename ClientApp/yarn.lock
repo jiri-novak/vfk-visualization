@@ -4580,10 +4580,24 @@ neo-async@^2.5.0, neo-async@^2.6.0:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.0.tgz#b9d15e4d71c6762908654b5183ed38b753340835"
   integrity sha512-MFh0d/Wa7vkKO3Y3LlacqAEeHK0mckVqzDieUKTT+KGxi+zIpeVsFxymkIiRpbpDziHc290Xr9A1O4Om7otoRA==
 
+ng-busy@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/ng-busy/-/ng-busy-7.0.0.tgz#0e973fd4428d2379dc5fe3e0125e2e1f2622cd98"
+  integrity sha512-VFa4NFA9R7XN4V/iBwOoOy9LioFqRA/BLmieyQ1req/nj+ZzRHub0Sz2eDr69xv1idxXW2ppMJlJvmAPzYivLQ==
+  dependencies:
+    tslib "^1.9.0"
+
 ngx-bootstrap@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ngx-bootstrap/-/ngx-bootstrap-3.2.0.tgz#ece7c48af0bc260462c3f77de14f22d4b3dde149"
   integrity sha512-oLSLIWZgRiIfcuxyXLMZUOhX3wZtg6lpuMbdo/0UzMDg2bSOe1XPskcKZ/iuOa3FOlU9rjuYMzswHYYV5f/QCA==
+
+ngx-toastr@^10.0.2:
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/ngx-toastr/-/ngx-toastr-10.0.2.tgz#afc51eba792fb569f82c1563fecd5c34dc0968c7"
+  integrity sha512-sHlVAzRnuGYPR24l/C8+ftgWQuAJQ7XFNY55xCrPzSK8+jPg4ZViY6xSEQ5Aw0OXmjsa5aeBqWwAg5CVb1t7cg==
+  dependencies:
+    tslib "^1.9.0"
 
 nice-try@^1.0.4:
   version "1.0.5"

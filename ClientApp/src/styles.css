@@ -1,9 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-@import '../node_modules/ol/ol.css';
-@import '../node_modules/ol-layerswitcher/src/ol-layerswitcher.css';
-@import '../node_modules/font-awesome/css/font-awesome.css';
+@import '~bootstrap/dist/css/bootstrap.min.css';
+@import '~ol/ol.css';
+@import '~ol-layerswitcher/src/ol-layerswitcher.css';
+@import '~font-awesome/css/font-awesome.css';
+@import '~ngx-toastr/toastr.css';
 
 .panel-group .panel .panel-heading {
     background-color: white;
@@ -16,4 +17,82 @@
   top: 10px;
   right: 10px;
   text-align: left;
+}
+
+.ng-busy {
+  z-index: 1002;
+}
+
+.ng-busy,
+.ng-busy > *,
+.ng-busy > ng-component > * {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+}
+
+.ng-busy-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1001;
+  background: transparent;
+  opacity: 0.75;
+}
+
+.spinner-point {
+  margin: 0 auto;
+  width: 70px;
+  text-align: center;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.spinner-point > div {
+  width: 18px;
+  height: 18px;
+  background-color: gray;
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.spinner-point .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.spinner-point .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
+}
+
+@keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
 }
