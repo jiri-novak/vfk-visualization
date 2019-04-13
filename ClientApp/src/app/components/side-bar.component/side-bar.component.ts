@@ -77,13 +77,13 @@ export class SideBarComponent implements OnInit {
     this.localizationCancel.next();
   }
 
-  openModal(template: TemplateRef<any>) {
+  openModal(template: TemplateRef<any>, c: string) {
     this.lvInfoForm.reset();
     const existing = this.selected.find(x => x.telId === this.featureInfoData.telId);
     if (!!existing) {
       this.lvInfoForm.controls.cena.setValue(existing.cena);
     }
-    this.modalRef = this.modalService.show(template, { class: 'modal-lg modal-dialog modal-dialog-centered' });
+    this.modalRef = this.modalService.show(template, { class: `${c} modal-dialog modal-dialog-centered` });
   }
 
   closeModal() {
@@ -99,7 +99,8 @@ export class SideBarComponent implements OnInit {
         ku: this.featureInfoData.lv.find(x => x.label === 'k.ú.:').valueWithUnit,
         cislo: this.featureInfoData.lv.find(x => x.label === 'číslo:').valueWithUnit,
         telId: this.featureInfoData.telId,
-        cena: this.lvInfoForm.value.cena
+        cena: this.lvInfoForm.value.cena,
+        inEdit: false
       });
     }
     this.closeModal();
@@ -118,6 +119,14 @@ export class SideBarComponent implements OnInit {
 
   delete(item: IVybraneLv) {
     this.selected = this.selected.filter(x => x.telId !== item.telId);
+  }
+
+  edit(item: IVybraneLv) {
+    item.inEdit = true;
+  }
+
+  confirm(item: IVybraneLv) {
+    item.inEdit = false;
   }
 
   onLocalizeKu() {

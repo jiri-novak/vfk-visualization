@@ -287,7 +287,7 @@ export class MapComponent implements OnInit {
           dataLv = self.getData(propertiesLv, self.lvAttrTranslate);
           dataPar = self.getData(propertiesPar, self.parAttrTranslate);
 
-          self.serverAppService.getLvInfo(telId).subscribe(vlastnici => {
+          this.busy = self.serverAppService.getLvInfo(telId).subscribe(vlastnici => {
             dataVl = vlastnici.map(v => self.getData(v, self.vlAttrTranslate));
 
             self.featureInfoData.next({ par: dataPar, lv: dataLv, vl: dataVl, telId });

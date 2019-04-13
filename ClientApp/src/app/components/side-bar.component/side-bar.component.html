@@ -1,8 +1,9 @@
 <div class="container-fluid" [ngBusy]="busy">
+
   <div class="card">
-    <b class="card-title" (click)="legendCollapsed = !legendCollapsed">Legenda:</b>
+    <div class="card-title" (click)="legendCollapsed = !legendCollapsed"><b>Legenda:</b></div>
     <div class="card-body">
-      <img [collapse]="legendCollapsed"
+      <img [collapse]="legendCollapsed" style="padding-bottom: 10px"
         src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=VFK:LV&format_options=layout:legend&legend_options=fontAntiAliasing:true" />
     </div>
   </div>
@@ -11,7 +12,7 @@
     <div class="card-title">
       <b (click)="selectedCollapsed = !selectedCollapsed">Vybrané LV:</b>
       <div class="btn-group pull-right" role="group">
-        <button type="button" class="btn btn-secondary" (click)="openModal(selectedLvs);">
+        <button type="button" class="btn btn-secondary" (click)="openModal(selectedLvs, 'modal-lg');">
           <span class="badge badge-default"><b>{{selected.length}}</b></span>
         </button>
         <button type="button" class="btn btn-primary" (click)="export();" [disabled]="selected.length < 1">
@@ -77,7 +78,8 @@
             </div>
             <div class="form-group buttons">
               <button class="btn btn-success float-left">Lokalizuj</button>
-              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš zvýraznění</button>
+              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
+                zvýraznění</button>
             </div>
           </form>
         </tab>
@@ -110,7 +112,8 @@
             </div>
             <div class="form-group buttons">
               <button class="btn btn-success float-left">Lokalizuj</button>
-              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš zvýraznění</button>
+              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
+                zvýraznění</button>
             </div>
           </form>
         </tab>
@@ -122,7 +125,7 @@
     <div class="card-title">
       <b (click)="infoCollapsed = !infoCollapsed">Informace:</b>
       <div class="btn-group pull-right" role="group">
-        <button type="button" class="btn btn-primary" (click)="openModal(price);">
+        <button type="button" class="btn btn-primary" (click)="openModal(price, 'modal-sm');">
           <i class="fa fa-edit" aria-hidden="true"> </i>
         </button>
       </div>
@@ -130,10 +133,26 @@
     <div class="card-body">
       <tabset [collapse]="infoCollapsed" [justified]="false" [vertical]="false">
 
-        <tab heading="LV">
+        <tab heading="LV + Vlastnictví">
           <table class="table">
             <tbody>
               <tr *ngFor="let item of featureInfoData?.lv">
+                <td>
+                  <div [innerHTML]="item.label"></div>
+                </td>
+                <td>
+                  <div [innerHTML]="item.valueWithUnit"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table class="table" *ngFor="let vlastnik of featureInfoData?.vl; let i = index">
+            <tbody>
+              <tr>
+                <th colspan="2">{{i+1}}. vlastník</th>
+              </tr>
+              <tr *ngFor="let item of vlastnik">
                 <td>
                   <div [innerHTML]="item.label"></div>
                 </td>
@@ -160,24 +179,6 @@
           </table>
         </tab>
 
-        <tab heading="Vlastníci">
-          <table class="table" *ngFor="let vlastnik of featureInfoData?.vl; let i = index">
-            <tbody>
-              <tr>
-                <th colspan="2">{{i+1}}. vlastník</th>
-              </tr>
-              <tr *ngFor="let item of vlastnik">
-                <td>
-                  <div [innerHTML]="item.label"></div>
-                </td>
-                <td>
-                  <div [innerHTML]="item.valueWithUnit"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </tab>
-
       </tabset>
     </div>
   </div>
@@ -185,20 +186,20 @@
 
 <ng-template #price>
   <div class="modal-body text-center">
-    <p><b>Vyplňte prosím dodatečné informace k LV:</b></p>
+    <p><b>Dodatečné informace k LV:</b></p>
 
     <form class="form-horizontal" [formGroup]="lvInfoForm" (ngSubmit)="markIt()">
       <div class="form-group form-group-sm col-sm-12">
         <div class="row">
-          <label class="col-sm-4 col-form-label">Nabídková cena m<sup>2</sup>:</label>
-          <div class="col-sm-8">
-            <input class="form-control" type="number" formControlName="cena" class="form-control"
-              [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }" />
-          </div>
+          <label class="col-sm-6 col-form-label align-middle">Nabídková cena m<sup>2</sup>:</label>
+          <input class="col-sm-6 align-middle form-control" type="number" formControlName="cena"
+            [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }" />
         </div>
-      </div>
-      <div class="form-group buttons col-sm-12">
-        <button class="btn btn-success pull-right">Ok</button>
+        <div class="row pull-right">
+          <button class="btn btn-success">
+            <i class="fa fa-check"></i>
+          </button>
+        </div>
       </div>
     </form>
   </div>
@@ -223,8 +224,25 @@
             <td>{{item.ku}}</td>
             <td>{{item.cislo}}</td>
             <td>{{item.telId}}</td>
-            <td>{{item.cena}}</td>
-            <td><i class="fa fa-trash pull-right button-action" (click)="delete(item);"></i></td>
+            <td style="width: 100px; text-align: right" *ngIf="!item.inEdit">{{item.cena}}</td>
+            <td style="width: 100px; text-align: right" *ngIf="item.inEdit"><input type="number" [(ngModel)]="item.cena"
+                style="width: 60px; text-align: right" /></td>
+            <td>
+              <div class="btn-group pull-right" role="group">
+                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="delete(item);"
+                  title="Smazat">
+                  <i class="fa fa-trash"></i>
+                </button>
+                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="edit(item);"
+                  [disabled]="item.inEdit" title="Editovat">
+                  <i class="fa fa-edit"></i>
+                </button>
+                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="confirm(item);"
+                  [disabled]="!item.inEdit" title="Potvrdit editaci">
+                  <i class="fa fa-check"></i>
+                </button>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

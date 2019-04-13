@@ -49,4 +49,6 @@ export interface IVybraneLv {
   cena: number;
   ku: string;
   cislo: string;
+
+  inEdit: boolean;
 }
