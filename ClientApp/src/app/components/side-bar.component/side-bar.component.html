@@ -154,10 +154,10 @@
               </tr>
               <tr *ngFor="let item of vlastnik">
                 <td>
-                  <div [innerHTML]="item.label"></div>
+                  <div [ngClass]="item.class" [innerHTML]="item.label"></div>
                 </td>
                 <td>
-                  <div [innerHTML]="item.valueWithUnit"></div>
+                  <div [ngClass]="item.class" [innerHTML]="item.valueWithUnit"></div>
                 </td>
               </tr>
             </tbody>

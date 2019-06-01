@@ -17,7 +17,7 @@ namespace ServerApp.Converters
                 Podil = d.PodilProcenta,
                 PodilM2 = d.PodilM2,
                 Typ = d.TypVlastnika,
-                Zemedelec = string.IsNullOrEmpty(d.Zemedelec) ? (bool?)null : Convert.ToBoolean(d.Zemedelec)
+                Zemedelec = string.IsNullOrEmpty(d.Zemedelec) ? (bool?)null : d.Zemedelec == "true"
             };
         }
     }

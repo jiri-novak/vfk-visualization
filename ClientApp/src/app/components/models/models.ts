@@ -24,12 +24,14 @@ export interface ISortableLabelDefinition {
   unit: string;
   order: number;
   transformFunc?: (s) => string;
+  ccsClassFunc?: (v) => string;
 }
 
 export interface ISortableLabel {
   id: string;
   label: string;
   value: string;
+  class: string;
   unit: string;
   valueWithUnit: string;
   order: number;

@@ -77,7 +77,7 @@ export class MapComponent implements OnInit {
       ['podil', { label: 'podíl:', order: 3, unit: ' %' }],
       ['podilM2', { label: 'podíl:', order: 4, unit: ' m<sup>2</sup>' }],
       ['typ', { label: 'typ:', order: 5, unit: '', transformFunc: this.transformTypVlastnictvi }],
-      ['zemedelec', { label: 'zemědělec:', order: 6, unit: '', transformFunc: this.transformTrueFalse }],
+      ['zemedelec', { label: 'zemědělec:', order: 6, unit: '', transformFunc: this.transformTrueFalse, ccsClassFunc: this.zvyrazniZemedelce }],
     ]);
   }
 
@@ -317,6 +317,9 @@ export class MapComponent implements OnInit {
           ? `${value} ${unit}`
           : value
         : null;
+      const cssClass = metadata.ccsClassFunc == null
+        ? ''
+        : metadata.ccsClassFunc(properties[key]);
 
       data.push({
         id: key,
@@ -324,6 +327,7 @@ export class MapComponent implements OnInit {
         value,
         unit,
         order: metadata.order,
+        class: cssClass,
         valueWithUnit
       });
     }
@@ -358,26 +362,33 @@ export class MapComponent implements OnInit {
     return value;
   }
 
-  private transformTrueFalse(value: string): string {
-    if (value === 'true') {
+  private transformTrueFalse(value: boolean): string {
+    if (value) {
       return 'ano';
     }
     return 'ne';
   }
 
+  private zvyrazniZemedelce(value: boolean): string {
+    if (value) {
+      return 'red';
+    }
+    return '';
+  }
+
   public localizeByLv(event: any) {
     this.busy = this.localizeByLv$(event.katuzeKod, event.lvId).subscribe(
-      () => {}, () => this.toastrService.error('Nepodařilo lokalizovat se zadané LV', 'Lokalizace dle LV'));
+      () => { }, () => this.toastrService.error('Nepodařilo lokalizovat se zadané LV', 'Lokalizace dle LV'));
   }
 
   public localizeByKu(event: any) {
     this.busy = this.localizeByKu$(event.katuzeKod).subscribe(
-      () => {}, () => this.toastrService.error('Nepodařilo lokalizovat se zadané k.ú.', 'Lokalizace dle k.ú.'));
+      () => { }, () => this.toastrService.error('Nepodařilo lokalizovat se zadané k.ú.', 'Lokalizace dle k.ú.'));
   }
 
   public localizeByPar(event: any) {
     this.busy = this.localizeByPar$(event.katuzeKod, event.parCislo).subscribe(
-      () => {}, () => this.toastrService.error('Nepodařilo lokalizovat se zadanou parcelu', 'Lokalizace dle parcely'));
+      () => { }, () => this.toastrService.error('Nepodařilo lokalizovat se zadanou parcelu', 'Lokalizace dle parcely'));
   }
 
   public cancelLocalization() {

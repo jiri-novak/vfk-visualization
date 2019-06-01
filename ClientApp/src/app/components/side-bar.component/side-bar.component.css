@@ -65,3 +65,7 @@ p {
   height: 400px;
   overflow: auto;
 }
+
+.red {
+  color: red;
+}
