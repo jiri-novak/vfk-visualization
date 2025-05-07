@@ -4,5 +4,6 @@ namespace ServerApp.Controllers
     {
         public long TelId { get; set; }
         public double? Cena { get; set; }
+        public string? Poznamka { get; set; }
     }
 }

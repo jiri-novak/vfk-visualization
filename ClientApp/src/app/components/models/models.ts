@@ -51,6 +51,7 @@ export interface IVybraneLv {
   cena: number;
   ku: string;
   cislo: string;
+  poznamka: string;
 
   inEdit: boolean;
 }

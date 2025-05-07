@@ -68,7 +68,7 @@ export class MapComponent implements OnInit {
       ['DRUH', { label: 'druh:', order: 5, unit: '' }],
       ['VYUZITI', { label: 'využití:', order: 6, unit: '' }],
       ['VYMERA', { label: 'výměra:', order: 7, unit: ' m<sup>2</sup>' }],
-      ['V_LV_PR', { label: 'výměra z LV:', order: 8, unit: ' %' }],
+      ['V_LV_PR', { label: 'výměra z LV:', order: 8, unit: ' m<sup>2</sup>' }],
     ]);
 
     this.vlAttrTranslate = new Map([
@@ -93,12 +93,14 @@ export class MapComponent implements OnInit {
   sourceOrtofoto: TileWMS;
   sourceZm10: TileWMS;
   sourceKm: TileWMS;
+  sourceLpis: TileWMS;
 
   layerVector: VectorLayer;
   layerVfk: Tile;
   layerOrtofoto: Tile;
   layerZm10: Tile;
   layerKm: Tile;
+  layerLpis: Tile;
 
   map: OlMap;
   view: View;
@@ -164,6 +166,16 @@ export class MapComponent implements OnInit {
       }
     });
 
+    this.sourceLpis = new TileWMS({
+      url: 'https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi',
+      projection: this.epsg5514,
+      params: {
+        FORMAT: 'image/png',
+        LAYERS: 'DPB_KUL',
+        tiled: true
+      }
+    });
+
     this.sourceVector = new VectorSource();
 
     this.layerZm10 = new Tile({
@@ -194,8 +206,15 @@ export class MapComponent implements OnInit {
       source: this.sourceKm
     });
 
-    this.layerVector = new VectorLayer({
+    this.layerLpis = new Tile({
+      title: 'LPIS',
+      visible: false,
       zIndex: 11,
+      source: this.sourceLpis
+    });
+
+    this.layerVector = new VectorLayer({
+      zIndex: 12,
       visible: true,
       source: this.sourceVector,
       style: (feature: Feature) => this.olStylingService.styles[feature.getGeometry().getType()]
@@ -229,6 +248,12 @@ export class MapComponent implements OnInit {
       ]),
       layers: [
         this.layerVector,
+        new LayerGroup({
+          title: 'LPIS',
+          layers: [
+            this.layerLpis
+          ]
+        }),
         new LayerGroup({
           title: 'Podkladové mapy:',
           layers: [

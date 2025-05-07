@@ -65,7 +65,8 @@ export class SideBarComponent implements OnInit {
     });
 
     this.lvInfoForm = this.formBuilder.group({
-      cena: ['']
+      cena: [''],
+      poznamka: ['']
     });
   }
 
@@ -82,8 +83,9 @@ export class SideBarComponent implements OnInit {
     const existing = this.selected.find(x => x.telId === this.featureInfoData.telId);
     if (!!existing) {
       this.lvInfoForm.controls.cena.setValue(existing.cena);
+      this.lvInfoForm.controls.poznamka.setValue(existing.poznamka);
     }
-    this.modalRef = this.modalService.show(template, { class: `${c} modal-dialog modal-dialog-centered` });
+    this.modalRef = this.modalService.show(template, { class: `${c} modal-dialog modal-xl modal-dialog-centered` });
   }
 
   closeModal() {
@@ -100,6 +102,7 @@ export class SideBarComponent implements OnInit {
         cislo: this.featureInfoData.lv.find(x => x.label === 'číslo:').valueWithUnit,
         telId: this.featureInfoData.telId,
         cena: this.lvInfoForm.value.cena,
+        poznamka: this.lvInfoForm.value.poznamka,
         inEdit: false
       });
     }

@@ -195,6 +195,11 @@
           <input class="col-sm-6 align-middle form-control" type="number" formControlName="cena"
             [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }" />
         </div>
+        <div class="row">
+          <label class="col-sm-6 col-form-label align-middle">Poznámka:</label>
+          <textarea class="col-sm-6 align-middle form-control" formControlName="poznamka" rows="10"
+            [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }"></textarea>
+        </div>
         <div class="row pull-right">
           <button class="btn btn-success">
             <i class="fa fa-check"></i>
@@ -216,6 +221,7 @@
             <th>Číslo</th>
             <th>Id LV:</th>
             <th>Cena:</th>
+            <th>Poznámka:</th>
             <th></th>
           </tr>
         </thead>
@@ -224,9 +230,14 @@
             <td>{{item.ku}}</td>
             <td>{{item.cislo}}</td>
             <td>{{item.telId}}</td>
-            <td style="width: 100px; text-align: right" *ngIf="!item.inEdit">{{item.cena}}</td>
-            <td style="width: 100px; text-align: right" *ngIf="item.inEdit"><input type="number" [(ngModel)]="item.cena"
-                style="width: 60px; text-align: right" /></td>
+            <td style="width: 100px; text-align: center" *ngIf="!item.inEdit">{{item.cena}}</td>
+            <td style="width: 100px; text-align: center" *ngIf="item.inEdit">
+              <input type="number" [(ngModel)]="item.cena" style="width: 60px; text-align: right" />
+            </td>
+            <td style="width: 300px; text-align: center" *ngIf="!item.inEdit">{{item.poznamka}}</td>
+            <td style="width: 300px; text-align: center" *ngIf="item.inEdit">
+              <textarea rows="10" style="width: 100%;" [(ngModel)]="item.poznamka"></textarea>
+            </td>
             <td>
               <div class="btn-group pull-right" role="group">
                 <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="delete(item);"
