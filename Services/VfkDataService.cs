@@ -109,7 +109,7 @@ namespace ServerApp.Services
             {
                 var ws = p.Workbook.Worksheets.Add("Nabídka");
 
-                var membersToInclude = typeof(VfkData)
+                var membersToInclude = typeof(VfkDataExcel)
                             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                             .Where(a => !Attribute.IsDefined(a, typeof(EpplusIgnore)))
                             .ToArray();
