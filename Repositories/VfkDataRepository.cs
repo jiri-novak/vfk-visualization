@@ -15,6 +15,13 @@ public class VfkDataRepository
     }
 
     public IEnumerable<VfkData> Get(IList<long> telIds) {
-        return vfkDbContext.Entries.Where(x => telIds.Contains(x.TelId));
+        // return vfkDbContext.Entries.Where(x => telIds.Contains(x.TelId));
+        foreach (var telId in telIds)
+        {
+            foreach (var data in Get(telId))
+            {
+                yield return data;
+            }
+        }
     }
 }
