@@ -7,14 +7,13 @@ public class VfkDataContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Filename=vfk_db_utf8.db3", options =>
+        optionsBuilder.UseSqlite("Filename=c:\\Users\\jirin\\Downloads\\App_publikace_vfk\\App_publikace_vfk\\dataDirApp\\vfk_db_utf8.db3", options =>
         {
             options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
         });
 
         base.OnConfiguring(optionsBuilder);
     }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -85,9 +84,8 @@ public class VfkDataContext : DbContext
             e.Property(x => x.KatuzeKod).HasColumnName("KATUZE_KODINTEGER");
             e.Property(x => x.TelId).HasColumnName("TEL_IDINTEGER");
 
-			e.HasIndex(x => x.TelId).HasName("tel_id_idx");
+			e.HasIndex(x => x.TelId).HasDatabaseName("tel_id_idx");
         });
-
 
         base.OnModelCreating(modelBuilder);
     }
