@@ -47,39 +47,36 @@ export function busyConfigFactory(): BusyConfig {
 }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    MapComponent,
-    SideBarComponent,
-    CustomBusyComponent
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    FormsModule,
-    HttpClientModule,
-    AppRoutingModule,
-    TabsModule.forRoot(),
-    AlertModule.forRoot(),
-    AccordionModule.forRoot(),
-    CollapseModule.forRoot(),
-    ModalModule.forRoot(),
-    ToastrModule.forRoot({
-      timeOut: 5000,
-      autoDismiss: true,
-      positionClass: 'toast-bottom-right',
-      preventDuplicates: true,
-    }),
-    NgBusyModule.forRoot(busyConfigFactory())
-  ],
-  entryComponents: [
-    CustomBusyComponent
-  ],
-  providers: [
-    OlStyles,
-    ServerAppService
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        MapComponent,
+        SideBarComponent,
+        CustomBusyComponent
+    ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        FormsModule,
+        HttpClientModule,
+        AppRoutingModule,
+        TabsModule.forRoot(),
+        AlertModule.forRoot(),
+        AccordionModule.forRoot(),
+        CollapseModule.forRoot(),
+        ModalModule.forRoot(),
+        ToastrModule.forRoot({
+            timeOut: 5000,
+            autoDismiss: true,
+            positionClass: 'toast-bottom-right',
+            preventDuplicates: true,
+        }),
+        NgBusyModule.forRoot(busyConfigFactory())
+    ],
+    providers: [
+        OlStyles,
+        ServerAppService
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
