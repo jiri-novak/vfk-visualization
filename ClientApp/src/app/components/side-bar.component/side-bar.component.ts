@@ -1,7 +1,7 @@
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv } from '../models/models';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ServerAppService } from 'src/app/services/serverapp.service';
@@ -22,16 +22,16 @@ export class SideBarComponent implements OnInit {
 
   modalRef: BsModalRef;
 
-  kuForm: FormGroup;
+  kuForm: UntypedFormGroup;
   kuSubmitted = false;
 
-  parForm: FormGroup;
+  parForm: UntypedFormGroup;
   parSubmitted = false;
 
-  lvForm: FormGroup;
+  lvForm: UntypedFormGroup;
   lvSubmitted = false;
 
-  lvInfoForm: FormGroup;
+  lvInfoForm: UntypedFormGroup;
   lvInfoSubmitted = false;
 
   legendCollapsed = true;
@@ -45,7 +45,7 @@ export class SideBarComponent implements OnInit {
 
   constructor(
     private toastrService: ToastrService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private modalService: BsModalService,
     private serverAppService: ServerAppService) { }
 
