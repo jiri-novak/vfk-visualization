@@ -13,7 +13,7 @@ import { NgBusyModule, BusyConfig, BUSY_CONFIG_DEFAULTS } from 'ng-busy';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { MapComponent } from './components/map.component/map.component';
 import { SideBarComponent } from './components/side-bar.component/side-bar.component';
@@ -46,19 +46,16 @@ export function busyConfigFactory(): BusyConfig {
   };
 }
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AppComponent,
         MapComponent,
         SideBarComponent,
         CustomBusyComponent
     ],
-    imports: [
-        BrowserModule,
+    bootstrap: [AppComponent], imports: [BrowserModule,
         BrowserAnimationsModule,
         ReactiveFormsModule,
         FormsModule,
-        HttpClientModule,
         AppRoutingModule,
         TabsModule.forRoot(),
         AlertModule.forRoot(),
@@ -71,12 +68,9 @@ export function busyConfigFactory(): BusyConfig {
             positionClass: 'toast-bottom-right',
             preventDuplicates: true,
         }),
-        NgBusyModule.forRoot(busyConfigFactory())
-    ],
-    providers: [
+        NgBusyModule.forRoot(busyConfigFactory())], providers: [
         OlStyles,
-        ServerAppService
-    ],
-    bootstrap: [AppComponent]
-})
+        ServerAppService,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }
