@@ -4,7 +4,6 @@
 @import '~ol/ol.css';
 @import '~ol-layerswitcher/src/ol-layerswitcher.css';
 @import '~font-awesome/css/font-awesome.css';
-@import '~ngx-toastr/toastr.css';
 
 .panel-group .panel .panel-heading {
     background-color: white;
