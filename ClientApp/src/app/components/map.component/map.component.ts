@@ -25,9 +25,10 @@ import { ServerAppService } from 'src/app/services/serverapp.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+    selector: 'app-map',
+    templateUrl: './map.component.html',
+    styleUrls: ['./map.component.css'],
+    standalone: false
 })
 export class MapComponent implements OnInit {
 

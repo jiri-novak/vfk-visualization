@@ -22,14 +22,15 @@ import { OlStyles } from './services/ol.styling.service';
 import { ServerAppService } from './services/serverapp.service';
 
 @Component({
-  selector: 'app-busy',
-  template: `
+    selector: 'app-busy',
+    template: `
   <div class="spinner-point">
       <div class="bounce1"></div>
       <div class="bounce2"></div>
       <div class="bounce3"></div>
   </div>
-  `
+  `,
+    standalone: false
 })
 export class CustomBusyComponent {}
 
