@@ -5,268 +5,304 @@
     <div class="card-body">
       <img [collapse]="legendCollapsed" style="padding-bottom: 10px"
         src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=VFK:LV&format_options=layout:legend&legend_options=fontAntiAliasing:true" />
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">
-      <b (click)="selectedCollapsed = !selectedCollapsed">Vybrané LV:</b>
-      <div class="btn-group pull-right" role="group">
-        <button type="button" class="btn btn-secondary" (click)="openModal(selectedLvs, 'modal-lg');">
-          <span class="badge badge-default"><b>{{selected.length}}</b></span>
-        </button>
-        <button type="button" class="btn btn-primary" (click)="export();" [disabled]="selected.length < 1">
-          <i class="fa fa-download" aria-hidden="true">
-          </i>
-        </button>
       </div>
     </div>
-  </div>
 
-  <div class="card">
-    <b class="card-title" (click)="localizationCollapsed = !localizationCollapsed">Lokalizace:</b>
-    <div class="card-body">
-      <tabset [justified]="false" [vertical]="false" [collapse]="localizationCollapsed">
-
-        <tab heading="Katastrálního území">
-          <form class="form-horizontal" [formGroup]="kuForm" (ngSubmit)="onLocalizeKu()">
-            <div class="form-group form-group-sm col-sm-12">
-              <div class="row">
-                <label class="col-sm-4 col-form-label">Kód kú:</label>
-                <div class="col-sm-8">
-                  <input class="form-control" type="text" formControlName="kodKu" class="form-control"
-                    [ngClass]="{ 'is-invalid': kuSubmitted && kuForm.controls.kodKu.errors }" />
-                  <div *ngIf="kuSubmitted && kuForm.controls.kodKu.errors" class="invalid-feedback">
-                    <div *ngIf="kuForm.controls.kodKu.errors.required">Kód kú je povinný.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="form-group buttons">
-              <button class="btn btn-success float-left">Lokalizuj</button>
-              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
-                zvýraznění</button>
-            </div>
-          </form>
-        </tab>
-
-        <tab heading="Parcely">
-          <form class="form-horizontal" [formGroup]="parForm" (ngSubmit)="onLocalizePar()">
-            <div class="form-group form-group-sm col-sm-12">
-              <div class="row">
-                <label class="col-sm-4 col-form-label">Kód kú:</label>
-                <div class="col-sm-8">
-                  <input type="text" formControlName="kodKu" class="form-control"
-                    [ngClass]="{ 'is-invalid': parSubmitted && parForm.controls.kodKu.errors }" />
-                  <div *ngIf="parSubmitted && parForm.controls.kodKu.errors" class="invalid-feedback">
-                    <div *ngIf="parForm.controls.kodKu.errors.required">Kód kú je povinný.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="form-group form-group-sm col-sm-12">
-              <div class="row">
-                <label class="col-sm-4 col-form-label">Číslo:</label>
-                <div class="col-sm-8">
-                  <input type="text" formControlName="parCislo" class="form-control"
-                    [ngClass]="{ 'is-invalid': parSubmitted && parForm.controls.parCislo.errors }" />
-                  <div *ngIf="parSubmitted && parForm.controls.parCislo.errors" class="invalid-feedback">
-                    <div *ngIf="parForm.controls.parCislo.errors.required">Parcelní číslo je povinné.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="form-group buttons">
-              <button class="btn btn-success float-left">Lokalizuj</button>
-              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
-                zvýraznění</button>
-            </div>
-          </form>
-        </tab>
-
-        <tab heading="LV">
-          <form class="form-horizontal" [formGroup]="lvForm" (ngSubmit)="onLocalizeLv()">
-            <div class="form-group form-group-sm col-sm-12">
-              <div class="row">
-                <label class="col-sm-4 col-form-label">Kód kú:</label>
-                <div class="col-sm-8">
-                  <input type="text" formControlName="kodKu" class="form-control"
-                    [ngClass]="{ 'is-invalid': lvSubmitted && lvForm.controls.kodKu.errors }" />
-                  <div *ngIf="lvSubmitted && lvForm.controls.kodKu.errors" class="invalid-feedback">
-                    <div *ngIf="lvForm.controls.kodKu.errors.required">Kód kú je povinný.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="form-group form-group-sm col-sm-12">
-              <div class="row">
-                <label class="col-sm-4 col-form-label">Číslo:</label>
-                <div class="col-sm-8">
-                  <input type="text" formControlName="lvId" class="form-control"
-                    [ngClass]="{ 'is-invalid': lvSubmitted && lvForm.controls.lvId.errors }" />
-                  <div *ngIf="lvSubmitted && lvForm.controls.lvId.errors" class="invalid-feedback">
-                    <div *ngIf="lvForm.controls.lvId.errors.required">Číslo LV je povinné.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="form-group buttons">
-              <button class="btn btn-success float-left">Lokalizuj</button>
-              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
-                zvýraznění</button>
-            </div>
-          </form>
-        </tab>
-      </tabset>
-    </div>
-  </div>
-
-  <div class="card" *ngIf="!!featureInfoData">
-    <div class="card-title">
-      <b (click)="infoCollapsed = !infoCollapsed">Informace:</b>
-      <div class="btn-group pull-right" role="group">
-        <button type="button" class="btn btn-primary" (click)="openModal(price, 'modal-sm');">
-          <i class="fa fa-edit" aria-hidden="true"> </i>
-        </button>
-      </div>
-    </div>
-    <div class="card-body">
-      <tabset [collapse]="infoCollapsed" [justified]="false" [vertical]="false">
-
-        <tab heading="LV + Vlastnictví">
-          <table class="table">
-            <tbody>
-              <tr *ngFor="let item of featureInfoData?.lv">
-                <td>
-                  <div [innerHTML]="item.label"></div>
-                </td>
-                <td>
-                  <div [innerHTML]="item.valueWithUnit"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <table class="table" *ngFor="let vlastnik of featureInfoData?.vl; let i = index">
-            <tbody>
-              <tr>
-                <th colspan="2">{{i+1}}. vlastník</th>
-              </tr>
-              <tr *ngFor="let item of vlastnik">
-                <td>
-                  <div [ngClass]="item.class" [innerHTML]="item.label"></div>
-                </td>
-                <td>
-                  <div [ngClass]="item.class" [innerHTML]="item.valueWithUnit"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </tab>
-
-        <tab heading="Parcela">
-          <table class="table">
-            <tbody>
-              <tr *ngFor="let item of featureInfoData?.par">
-                <td>
-                  <div [innerHTML]="item.label"></div>
-                </td>
-                <td>
-                  <div [innerHTML]="item.valueWithUnit"></div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </tab>
-
-      </tabset>
-    </div>
-  </div>
-</div>
-
-<ng-template #price>
-  <div class="modal-body text-center">
-    <p><b>Dodatečné informace k LV:</b></p>
-
-    <form class="form-horizontal" [formGroup]="lvInfoForm" (ngSubmit)="markIt()">
-      <div class="form-group form-group-sm col-sm-12">
-        <div class="row">
-          <label class="col-sm-6 col-form-label align-middle">Nabídková cena m<sup>2</sup>:</label>
-          <input class="col-sm-6 align-middle form-control" type="number" formControlName="cena"
-            [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }" />
-        </div>
-        <div class="row">
-          <label class="col-sm-6 col-form-label align-middle">Poznámka:</label>
-          <textarea class="col-sm-6 align-middle form-control" formControlName="poznamka" rows="10"
-            [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }"></textarea>
-        </div>
-        <div class="row pull-right">
-          <button class="btn btn-success">
-            <i class="fa fa-check"></i>
+    <div class="card">
+      <div class="card-title">
+        <b (click)="selectedCollapsed = !selectedCollapsed">Vybrané LV:</b>
+        <div class="btn-group pull-right" role="group">
+          <button type="button" class="btn btn-secondary" (click)="openModal(selectedLvs, 'modal-lg');">
+            <span class="badge badge-default"><b>{{selected.length}}</b></span>
+          </button>
+          <button type="button" class="btn btn-primary" (click)="export();" [disabled]="selected.length < 1">
+            <i class="fa fa-download" aria-hidden="true">
+            </i>
           </button>
         </div>
       </div>
-    </form>
-  </div>
-</ng-template>
+    </div>
 
-<ng-template #selectedLvs>
-  <div class="modal-body text-center">
-    <p><b>Seznam vybraných LV:</b></p>
-    <div class="col-sm-12 selected-lvs">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>K.ú.</th>
-            <th>Číslo</th>
-            <th>Id LV:</th>
-            <th>Cena:</th>
-            <th>Poznámka:</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of selected">
-            <td>{{item.ku}}</td>
-            <td>{{item.cislo}}</td>
-            <td>{{item.telId}}</td>
-            <td style="width: 100px; text-align: center" *ngIf="!item.inEdit">{{item.cena}}</td>
-            <td style="width: 100px; text-align: center" *ngIf="item.inEdit">
-              <input type="number" [(ngModel)]="item.cena" style="width: 60px; text-align: right" />
-            </td>
-            <td style="width: 300px; text-align: center" *ngIf="!item.inEdit">{{item.poznamka}}</td>
-            <td style="width: 300px; text-align: center" *ngIf="item.inEdit">
-              <textarea rows="10" style="width: 100%;" [(ngModel)]="item.poznamka"></textarea>
-            </td>
-            <td>
-              <div class="btn-group pull-right" role="group">
-                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="delete(item);"
-                  title="Smazat">
-                  <i class="fa fa-trash"></i>
-                </button>
-                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="edit(item);"
-                  [disabled]="item.inEdit" title="Editovat">
-                  <i class="fa fa-edit"></i>
-                </button>
-                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="confirm(item);"
-                  [disabled]="!item.inEdit" title="Potvrdit editaci">
-                  <i class="fa fa-check"></i>
-                </button>
+    <div class="card">
+      <b class="card-title" (click)="localizationCollapsed = !localizationCollapsed">Lokalizace:</b>
+      <div class="card-body">
+        <tabset [justified]="false" [vertical]="false" [collapse]="localizationCollapsed">
+
+          <tab heading="Katastrálního území">
+            <form class="form-horizontal" [formGroup]="kuForm" (ngSubmit)="onLocalizeKu()">
+              <div class="form-group form-group-sm col-sm-12">
+                <div class="row">
+                  <label class="col-sm-4 col-form-label">Kód kú:</label>
+                  <div class="col-sm-8">
+                    <input class="form-control" type="text" formControlName="kodKu" class="form-control"
+                      [ngClass]="{ 'is-invalid': kuSubmitted && kuForm.controls.kodKu.errors }" />
+                      @if (kuSubmitted && kuForm.controls.kodKu.errors) {
+                        <div class="invalid-feedback">
+                          @if (kuForm.controls.kodKu.errors.required) {
+                            <div>Kód kú je povinný.</div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group buttons">
+                  <button class="btn btn-success float-left">Lokalizuj</button>
+                  <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
+                  zvýraznění</button>
+                </div>
+              </form>
+            </tab>
+
+            <tab heading="Parcely">
+              <form class="form-horizontal" [formGroup]="parForm" (ngSubmit)="onLocalizePar()">
+                <div class="form-group form-group-sm col-sm-12">
+                  <div class="row">
+                    <label class="col-sm-4 col-form-label">Kód kú:</label>
+                    <div class="col-sm-8">
+                      <input type="text" formControlName="kodKu" class="form-control"
+                        [ngClass]="{ 'is-invalid': parSubmitted && parForm.controls.kodKu.errors }" />
+                        @if (parSubmitted && parForm.controls.kodKu.errors) {
+                          <div class="invalid-feedback">
+                            @if (parForm.controls.kodKu.errors.required) {
+                              <div>Kód kú je povinný.</div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group form-group-sm col-sm-12">
+                    <div class="row">
+                      <label class="col-sm-4 col-form-label">Číslo:</label>
+                      <div class="col-sm-8">
+                        <input type="text" formControlName="parCislo" class="form-control"
+                          [ngClass]="{ 'is-invalid': parSubmitted && parForm.controls.parCislo.errors }" />
+                          @if (parSubmitted && parForm.controls.parCislo.errors) {
+                            <div class="invalid-feedback">
+                              @if (parForm.controls.parCislo.errors.required) {
+                                <div>Parcelní číslo je povinné.</div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group buttons">
+                      <button class="btn btn-success float-left">Lokalizuj</button>
+                      <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
+                      zvýraznění</button>
+                    </div>
+                  </form>
+                </tab>
+
+                <tab heading="LV">
+                  <form class="form-horizontal" [formGroup]="lvForm" (ngSubmit)="onLocalizeLv()">
+                    <div class="form-group form-group-sm col-sm-12">
+                      <div class="row">
+                        <label class="col-sm-4 col-form-label">Kód kú:</label>
+                        <div class="col-sm-8">
+                          <input type="text" formControlName="kodKu" class="form-control"
+                            [ngClass]="{ 'is-invalid': lvSubmitted && lvForm.controls.kodKu.errors }" />
+                            @if (lvSubmitted && lvForm.controls.kodKu.errors) {
+                              <div class="invalid-feedback">
+                                @if (lvForm.controls.kodKu.errors.required) {
+                                  <div>Kód kú je povinný.</div>
+                                }
+                              </div>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group form-group-sm col-sm-12">
+                        <div class="row">
+                          <label class="col-sm-4 col-form-label">Číslo:</label>
+                          <div class="col-sm-8">
+                            <input type="text" formControlName="lvId" class="form-control"
+                              [ngClass]="{ 'is-invalid': lvSubmitted && lvForm.controls.lvId.errors }" />
+                              @if (lvSubmitted && lvForm.controls.lvId.errors) {
+                                <div class="invalid-feedback">
+                                  @if (lvForm.controls.lvId.errors.required) {
+                                    <div>Číslo LV je povinné.</div>
+                                  }
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group buttons">
+                          <button class="btn btn-success float-left">Lokalizuj</button>
+                          <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
+                          zvýraznění</button>
+                        </div>
+                      </form>
+                    </tab>
+                  </tabset>
+                </div>
               </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="buttons col-sm-12">
-      <div class="btn-group pull-right" role="group">
-        <button type="button" class="btn btn-danger" (click)="unMarkAll();" style="width: 40px;">
-          <i class="fa fa-trash"></i>
-        </button>
-        <button type="button" class="btn btn-success" (click)="closeModal()" style="width: 40px;">
-          <i class="fa fa-check"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-</ng-template>
+
+              @if (!!featureInfoData) {
+                <div class="card">
+                  <div class="card-title">
+                    <b (click)="infoCollapsed = !infoCollapsed">Informace:</b>
+                    <div class="btn-group pull-right" role="group">
+                      <button type="button" class="btn btn-primary" (click)="openModal(price, 'modal-sm');">
+                        <i class="fa fa-edit" aria-hidden="true"> </i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <tabset [collapse]="infoCollapsed" [justified]="false" [vertical]="false">
+                      <tab heading="LV + Vlastnictví">
+                        <table class="table">
+                          <tbody>
+                            @for (item of featureInfoData?.lv; track item) {
+                              <tr>
+                                <td>
+                                  <div [innerHTML]="item.label"></div>
+                                </td>
+                                <td>
+                                  <div [innerHTML]="item.valueWithUnit"></div>
+                                </td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                        @for (vlastnik of featureInfoData?.vl; track vlastnik; let i = $index) {
+                          <table class="table">
+                            <tbody>
+                              <tr>
+                                <th colspan="2">{{i+1}}. vlastník</th>
+                              </tr>
+                              @for (item of vlastnik; track item) {
+                                <tr>
+                                  <td>
+                                    <div [ngClass]="item.class" [innerHTML]="item.label"></div>
+                                  </td>
+                                  <td>
+                                    <div [ngClass]="item.class" [innerHTML]="item.valueWithUnit"></div>
+                                  </td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        }
+                      </tab>
+                      <tab heading="Parcela">
+                        <table class="table">
+                          <tbody>
+                            @for (item of featureInfoData?.par; track item) {
+                              <tr>
+                                <td>
+                                  <div [innerHTML]="item.label"></div>
+                                </td>
+                                <td>
+                                  <div [innerHTML]="item.valueWithUnit"></div>
+                                </td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </tab>
+                    </tabset>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <ng-template #price>
+              <div class="modal-body text-center">
+                <p><b>Dodatečné informace k LV:</b></p>
+
+                <form class="form-horizontal" [formGroup]="lvInfoForm" (ngSubmit)="markIt()">
+                  <div class="form-group form-group-sm col-sm-12">
+                    <div class="row">
+                      <label class="col-sm-6 col-form-label align-middle">Nabídková cena m<sup>2</sup>:</label>
+                      <input class="col-sm-6 align-middle form-control" type="number" formControlName="cena"
+                        [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }" />
+                      </div>
+                      <div class="row">
+                        <label class="col-sm-6 col-form-label align-middle">Poznámka:</label>
+                        <textarea class="col-sm-6 align-middle form-control" formControlName="poznamka" rows="10"
+                        [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }"></textarea>
+                      </div>
+                      <div class="row pull-right">
+                        <button class="btn btn-success">
+                          <i class="fa fa-check"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </ng-template>
+
+              <ng-template #selectedLvs>
+                <div class="modal-body text-center">
+                  <p><b>Seznam vybraných LV:</b></p>
+                  <div class="col-sm-12 selected-lvs">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>K.ú.</th>
+                          <th>Číslo</th>
+                          <th>Id LV:</th>
+                          <th>Cena:</th>
+                          <th>Poznámka:</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (item of selected; track item) {
+                          <tr>
+                            <td>{{item.ku}}</td>
+                            <td>{{item.cislo}}</td>
+                            <td>{{item.telId}}</td>
+                            @if (!item.inEdit) {
+                              <td style="width: 100px; text-align: center">{{item.cena}}</td>
+                            }
+                            @if (item.inEdit) {
+                              <td style="width: 100px; text-align: center">
+                                <input type="number" [(ngModel)]="item.cena" style="width: 60px; text-align: right" />
+                              </td>
+                            }
+                            @if (!item.inEdit) {
+                              <td style="width: 300px; text-align: center">{{item.poznamka}}</td>
+                            }
+                            @if (item.inEdit) {
+                              <td style="width: 300px; text-align: center">
+                                <textarea rows="10" style="width: 100%;" [(ngModel)]="item.poznamka"></textarea>
+                              </td>
+                            }
+                            <td>
+                              <div class="btn-group pull-right" role="group">
+                                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="delete(item);"
+                                  title="Smazat">
+                                  <i class="fa fa-trash"></i>
+                                </button>
+                                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="edit(item);"
+                                  [disabled]="item.inEdit" title="Editovat">
+                                  <i class="fa fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="confirm(item);"
+                                  [disabled]="!item.inEdit" title="Potvrdit editaci">
+                                  <i class="fa fa-check"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="buttons col-sm-12">
+                    <div class="btn-group pull-right" role="group">
+                      <button type="button" class="btn btn-danger" (click)="unMarkAll();" style="width: 40px;">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                      <button type="button" class="btn btn-success" (click)="closeModal()" style="width: 40px;">
+                        <i class="fa fa-check"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
