@@ -25,16 +25,16 @@ import { ServerAppService } from 'src/app/services/serverapp.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-    selector: 'app-map',
-    templateUrl: './map.component.html',
-    styleUrls: ['./map.component.css'],
-    standalone: false
+  selector: 'app-map',
+  templateUrl: './map.component.html',
+  styleUrls: ['./map.component.css'],
+  standalone: false
 })
 export class MapComponent implements OnInit {
 
-  @ViewChild('location') locationRef: ElementRef;
-  @ViewChild('map') mapRef: ElementRef;
-  @ViewChild('scale') scaleRef: ElementRef;
+  @ViewChild('location', { static: true }) locationRef: ElementRef;
+  @ViewChild('map', { static: true }) mapRef: ElementRef;
+  @ViewChild('scale', { static: true }) scaleRef: ElementRef;
 
   public busy: Subscription;
 
@@ -290,10 +290,10 @@ export class MapComponent implements OnInit {
       const y: number = evt.coordinate[1];
       const bbox = `${x - step},${y - step},${x + step},${y + step}`;
 
-      this.busy = forkJoin(
+      this.busy = forkJoin([
         self.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1),
         self.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1),
-      ).subscribe(([respLv, respPar]) => {
+      ]).subscribe(([respLv, respPar]) => {
         const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
         const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
 

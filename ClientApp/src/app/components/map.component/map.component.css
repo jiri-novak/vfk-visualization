@@ -3,6 +3,7 @@
     height: 100vh;
     overflow: hidden;
     border-right: 1px solid black;
+    position: relative;
 }
 
 .placement-info {

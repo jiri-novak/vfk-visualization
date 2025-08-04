@@ -22,17 +22,17 @@ import { OlStyles } from './services/ol.styling.service';
 import { ServerAppService } from './services/serverapp.service';
 
 @Component({
-    selector: 'app-busy',
-    template: `
+  selector: 'app-busy',
+  template: `
   <div class="spinner-point">
       <div class="bounce1"></div>
       <div class="bounce2"></div>
       <div class="bounce3"></div>
   </div>
   `,
-    standalone: false
+  standalone: false
 })
-export class CustomBusyComponent {}
+export class CustomBusyComponent { }
 
 export function busyConfigFactory(): BusyConfig {
   return {
@@ -47,31 +47,33 @@ export function busyConfigFactory(): BusyConfig {
   };
 }
 
-@NgModule({ declarations: [
-        AppComponent,
-        MapComponent,
-        SideBarComponent,
-        CustomBusyComponent
-    ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        BrowserAnimationsModule,
-        ReactiveFormsModule,
-        FormsModule,
-        AppRoutingModule,
-        TabsModule.forRoot(),
-        AlertModule.forRoot(),
-        AccordionModule.forRoot(),
-        CollapseModule.forRoot(),
-        ModalModule.forRoot(),
-        ToastrModule.forRoot({
-            timeOut: 5000,
-            autoDismiss: true,
-            positionClass: 'toast-bottom-right',
-            preventDuplicates: true,
-        }),
-        NgBusyModule.forRoot(busyConfigFactory())], providers: [
-        OlStyles,
-        ServerAppService,
-        provideHttpClient(withInterceptorsFromDi())
-    ] })
+@NgModule({
+  declarations: [
+    AppComponent,
+    MapComponent,
+    SideBarComponent,
+    CustomBusyComponent
+  ],
+  bootstrap: [AppComponent], imports: [BrowserModule,
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
+    FormsModule,
+    AppRoutingModule,
+    TabsModule.forRoot(),
+    AlertModule.forRoot(),
+    AccordionModule.forRoot(),
+    CollapseModule.forRoot(),
+    ModalModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      autoDismiss: true,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+    }),
+    NgBusyModule.forRoot(busyConfigFactory())], providers: [
+      OlStyles,
+      ServerAppService,
+      provideHttpClient(withInterceptorsFromDi())
+    ]
+})
 export class AppModule { }
