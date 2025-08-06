@@ -180,35 +180,45 @@ export class MapComponent implements OnInit {
     this.sourceVector = new VectorSource();
 
     this.layerZm10 = new Tile({
-      title: 'Základní mapa',
-      type: 'base',
+      properties: {
+        title: 'Základní mapa',
+        type: 'base',
+      },
       visible: true,
       source: this.sourceZm10
     });
 
     this.layerOrtofoto = new Tile({
-      title: 'Ortofoto',
-      type: 'base',
+      properties: {
+        title: 'Ortofoto',
+        type: 'base',
+      },
       visible: false,
       source: this.sourceOrtofoto
     });
 
     this.layerVfk = new Tile({
-      title: 'Data VFK',
+      properties: {
+        title: 'Data VFK',
+      },
       visible: true,
       zIndex: 9,
       source: this.sourceVfk
     });
 
     this.layerKm = new Tile({
-      title: 'Katastrální mapa',
+      properties: {
+        title: 'Katastrální mapa',
+      },
       visible: false,
       zIndex: 10,
       source: this.sourceKm
     });
 
     this.layerLpis = new Tile({
-      title: 'LPIS',
+      properties: {
+        title: 'LPIS',
+      },
       visible: false,
       zIndex: 11,
       source: this.sourceLpis
@@ -233,7 +243,7 @@ export class MapComponent implements OnInit {
         coordinateFormat: createStringXY(5),
         projection: this.epsg5514,
         target: this.locationRef.nativeElement,
-        undefinedHTML: '&nbsp;'
+        // undefinedHTML: '&nbsp;'
       }
     );
 
@@ -250,20 +260,26 @@ export class MapComponent implements OnInit {
       layers: [
         this.layerVector,
         new LayerGroup({
-          title: 'LPIS',
+          properties: {
+            title: 'LPIS',
+          },
           layers: [
             this.layerLpis
           ]
         }),
         new LayerGroup({
-          title: 'Podkladové mapy:',
+          properties: {
+            title: 'Podkladové mapy:',
+          },
           layers: [
             this.layerZm10,
             this.layerOrtofoto
           ]
         }),
         new LayerGroup({
-          title: 'Katastr nemovistostí:',
+          properties: {
+            title: 'Katastr nemovistostí:',
+          },
           layers: [
             this.layerKm,
             this.layerVfk
