@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using ServerApp.Services;
 
 public class VfkData

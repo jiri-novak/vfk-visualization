@@ -215,15 +215,15 @@
                 <p><b>Dodatečné informace k LV:</b></p>
 
                 <form class="form-horizontal" [formGroup]="lvInfoForm" (ngSubmit)="markIt()">
-                  <div class="form-group form-group-sm col-sm-12">
+                  <div class="form-group form-group-sm">
                     <div class="row">
-                      <label class="col-sm-6 col-form-label align-middle">Nabídková cena m<sup>2</sup>:</label>
-                      <input class="col-sm-6 align-middle form-control" type="number" formControlName="cena"
+                      <label class="col col-form-label align-middle">Nabídková cena m<sup>2</sup>:</label>
+                      <input class="col align-middle form-control" type="number" formControlName="cena"
                         [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }" />
                       </div>
                       <div class="row">
-                        <label class="col-sm-6 col-form-label align-middle">Poznámka:</label>
-                        <textarea class="col-sm-6 align-middle form-control" formControlName="poznamka" rows="10"
+                        <label class="col col-form-label align-middle">Poznámka:</label>
+                        <textarea class="col align-middle form-control" formControlName="poznamka" rows="10"
                         [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }"></textarea>
                       </div>
                       <div class="row pull-right">

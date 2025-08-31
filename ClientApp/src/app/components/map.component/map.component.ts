@@ -241,7 +241,7 @@ export class MapComponent implements OnInit {
       {
         className: 'custom-mouse-position',
         coordinateFormat: createStringXY(5),
-        projection: this.epsg5514,
+        // projection: this.epsg5514,
         target: this.locationRef.nativeElement,
         // undefinedHTML: '&nbsp;'
       }
