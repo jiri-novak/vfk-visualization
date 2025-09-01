@@ -1,24 +1,25 @@
 
 using System;
 using ServerApp.Models;
+using VfkVisualization.Repositories;
 
-namespace ServerApp.Converters
+namespace ServerApp.Converters;
+
+public class VfkDataConverter
 {
-    public class VfkDataConverter
+    public VfkDataModel ToModel(VfkData d)
     {
-        public VfkDataModel ToModel(VfkData d)
-        {
-            var cOr = string.IsNullOrEmpty(d.CisloOrientacni) ? "" : $"/{d.CisloOrientacni}";
+        var cOr = string.IsNullOrEmpty(d.CisloOrientacni) ? "" : $"/{d.CisloOrientacni}";
 
-            return new VfkDataModel
-            {
-                Jmeno = string.IsNullOrEmpty(d.Jmeno) ? d.Nazev : $"{d.Jmeno} {d.Prijmeni}",
-                Adresa = $"{d.Ulice} {d.CpCe} {d.CisloDomovni}{cOr}, {d.CastObce}, {d.Psc} {d.ObecVl}",
-                Podil = d.PodilProcenta,
-                PodilM2 = d.PodilM2,
-                Typ = d.TypVlastnika,
-                Zemedelec = string.IsNullOrEmpty(d.Zemedelec) ? (bool?)null : d.Zemedelec == "true"
-            };
-        }
+        return new VfkDataModel
+        {
+            Pracoviste = d.Pracoviste,
+            Jmeno = string.IsNullOrEmpty(d.Jmeno) ? d.Nazev : $"{d.Jmeno} {d.Prijmeni}",
+            Adresa = $"{d.Ulice} {d.CpCe} {d.CisloDomovni}{cOr}, {d.CastObce}, {d.Psc} {d.ObecVl}",
+            Podil = d.PodilProcenta,
+            PodilM2 = d.PodilM2,
+            Typ = d.TypVlastnika,
+            Zemedelec = string.IsNullOrEmpty(d.Zemedelec) ? (bool?)null : d.Zemedelec == "true"
+        };
     }
 }

@@ -1,23 +1,23 @@
+using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using Microsoft.Extensions.Options;
+using ServerApp.Options;
 
-public class VfkDataContext : DbContext
+namespace VfkVisualization.Repositories;
+
+public class VfkDataReadOnlyContext(IOptions<DbOptions> options) : DbContext
 {
-    public DbSet<VfkData> Entries { get; set; }
+    public IQueryable<VfkData> Entries => Set<VfkData>().AsNoTracking();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Filename=c:\\Users\\jirin\\Downloads\\App_publikace_vfk\\App_publikace_vfk\\dataDirApp\\vfk_db_utf8.db3", options =>
-        {
-            options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-        });
-
+        optionsBuilder.UseSqlite(options.Value.VfkReadOnly);
         base.OnConfiguring(optionsBuilder);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Map table names
         modelBuilder.Entity<VfkData>().ToTable("data_vfk", "main");
         modelBuilder.Entity<VfkData>(e =>
         {
@@ -83,10 +83,14 @@ public class VfkDataContext : DbContext
             e.Property(x => x.PrumerneBpej).HasColumnName("PRUMERNE_BPEJtext");
             e.Property(x => x.KatuzeKod).HasColumnName("KATUZE_KODINTEGER");
             e.Property(x => x.TelId).HasColumnName("TEL_IDINTEGER");
-
-			e.HasIndex(x => x.TelId).HasDatabaseName("tel_id_idx");
+            e.Property(x => x.Poznamka).HasColumnName("POZNAMKAtext");
         });
 
         base.OnModelCreating(modelBuilder);
+    }
+    
+    public override int SaveChanges()
+    {
+        throw new InvalidOperationException("This context is read-only.");
     }
 }

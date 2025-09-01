@@ -1,25 +1,36 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using VfkVisualization.Repositories;
 
-namespace ServerApp
+namespace VfkVisualization;
+
+public class Program
 {
-    public class Program
+    public static async Task Main(string[] args)
     {
-        public static void Main(string[] args)
+        var host = CreateWebHostBuilder(args).Build();
+            
+        using (var scope = host.Services.CreateScope())
         {
-            CreateWebHostBuilder(args).Build().Run();
+            var db = scope.ServiceProvider.GetRequiredService<VfkDataReadWriteContext>();
+            await db.Database.MigrateAsync();
         }
+            
+        await host.RunAsync();
+    }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-        {
-            var appSettingsConfiguration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
+    private static IWebHostBuilder CreateWebHostBuilder(string[] args)
+    {
+        var appSettingsConfiguration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
 
-            return WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .UseUrls(appSettingsConfiguration["Urls"]);
-        }
+        return WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>()
+            .UseUrls(appSettingsConfiguration["Urls"]);
     }
 }

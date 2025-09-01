@@ -1,8 +1,7 @@
 using System;
 
-namespace ServerApp.Services
+namespace ServerApp.Services;
+
+public class EpplusIgnore : Attribute
 {
-    public class EpplusIgnore : Attribute
-    {
-    }
 }

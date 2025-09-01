@@ -5,40 +5,41 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ServerApp.Converters;
 using ServerApp.Services;
+using VfkVisualization.Repositories;
+using VfkVisualization.Services;
 
-namespace ServerApp.Controllers
+namespace ServerApp.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class VfkDataController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class VfkDataController : ControllerBase
+    private readonly VfkDataService service;
+    private readonly VfkDataConverter converter;
+
+    public VfkDataController(VfkDataService service, VfkDataConverter converter)
     {
-        private readonly VfkDataService service;
-        private readonly VfkDataConverter converter;
+        this.service = service;
+        this.converter = converter;
+    }
 
-        public VfkDataController(VfkDataService service, VfkDataConverter converter)
-        {
-            this.service = service;
-            this.converter = converter;
-        }
+    [Route("{telId}")]
+    [HttpGet]
+    public ActionResult<IEnumerable<VfkData>> Get([FromRoute] long? telId)
+    {
+        if (!telId.HasValue)
+            return BadRequest();
 
-        [Route("{telId}")]
-        [HttpGet]
-        public ActionResult<IEnumerable<VfkData>> Get([FromRoute] long? telId)
-        {
-            if (!telId.HasValue)
-                return BadRequest();
+        return Ok(service.Get(telId.Value).Select(converter.ToModel).ToArray());
+    }
 
-            return Ok(service.Get(telId.Value).Select(converter.ToModel).ToArray());
-        }
+    [Route("generate/excel")]
+    [HttpPost]
+    public IActionResult Export([FromBody] IReadOnlyCollection<LvRefModel> data)
+    {
+        if (!data.Any())
+            return BadRequest();
 
-        [Route("generate/excel")]
-        [HttpPost]
-        public IActionResult Export([FromBody] IEnumerable<LvRefModel> data)
-        {
-            if (!data.Any())
-                return BadRequest();
-
-            return File(service.Export(data), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nabidka_{DateTime.Now:s}.xlsx");
-        }
+        return File(service.Export(data), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nabidka_{DateTime.Now:s}.xlsx");
     }
 }
