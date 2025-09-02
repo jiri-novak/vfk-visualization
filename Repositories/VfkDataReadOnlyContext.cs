@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using ServerApp.Options;
+using VfkVisualization.Options;
 
 namespace VfkVisualization.Repositories;
 

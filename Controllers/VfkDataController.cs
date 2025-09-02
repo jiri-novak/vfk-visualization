@@ -1,45 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ServerApp.Converters;
-using ServerApp.Services;
+using VfkVisualization.Extensions;
+using VfkVisualization.Models;
 using VfkVisualization.Repositories;
 using VfkVisualization.Services;
 
-namespace ServerApp.Controllers;
+namespace VfkVisualization.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class VfkDataController : ControllerBase
+public class VfkDataController(VfkDataService service) : ControllerBase
 {
-    private readonly VfkDataService service;
-    private readonly VfkDataConverter converter;
-
-    public VfkDataController(VfkDataService service, VfkDataConverter converter)
-    {
-        this.service = service;
-        this.converter = converter;
-    }
-
-    [Route("{telId}")]
-    [HttpGet]
+    [HttpGet("{telId}")]
     public ActionResult<IEnumerable<VfkData>> Get([FromRoute] long? telId)
     {
         if (!telId.HasValue)
             return BadRequest();
 
-        return Ok(service.Get(telId.Value).Select(converter.ToModel).ToArray());
+        return Ok(service.Get(telId.Value).Select(x => x.ToModel()).ToArray());
     }
 
-    [Route("generate/excel")]
-    [HttpPost]
+    [HttpPost("generate/excel")]
     public IActionResult Export([FromBody] IReadOnlyCollection<LvRefModel> data)
     {
         if (!data.Any())
             return BadRequest();
 
         return File(service.Export(data), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nabidka_{DateTime.Now:s}.xlsx");
+    }
+
+    [HttpPost("export")]
+    public IActionResult CreateExport([FromBody] CreateExportModel export)
+    {
+        service.CreateExport(export);
+        return Ok();
+    }
+
+    [HttpGet("export")]
+    public IActionResult GetExistingExports([FromQuery] string startsWith)
+    {
+        var existing = service.GetExistingExports(startsWith).Select(x => x.ToModel());
+        return Ok(existing);
+    }
+
+    [HttpGet("session")]
+    public IActionResult GetSession()
+    {
+        var session = service.GetOrCreateSession().ToModel();
+        return Ok(session);
+    }
+
+    [HttpPost("session/katuze")]
+    public IActionResult SetActiveKatuze([FromBody] SetActiveKatuzeModel activeKatuze)
+    {
+        var session = service.SetActiveKatuze(activeKatuze);
+        return Ok(session);
     }
 }

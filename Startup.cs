@@ -4,8 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using ServerApp.Converters;
-using ServerApp.Options;
+using VfkVisualization.Options;
 using VfkVisualization.Repositories;
 using VfkVisualization.Services;
 
@@ -30,7 +29,6 @@ public class Startup(IConfiguration configuration)
         services.AddDbContext<VfkDataReadOnlyContext>();
         services.AddDbContext<VfkDataReadWriteContext>();
         services.AddScoped<VfkDataRepository>();
-        services.AddScoped<VfkDataConverter>();
         services.AddScoped<VfkDataService>();
 
         services.AddSwaggerGen(c =>

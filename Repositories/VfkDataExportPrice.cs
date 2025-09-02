@@ -10,9 +10,9 @@ public class VfkDataExportPrice
 
     public int CenaNabidkova { get; set; }
     
-    public string Poznamka { get; set; }
+    public required string Poznamka { get; set; }
     
-    public string ExportId { get; set; }
+    public required string ExportId { get; set; }
 
-    public VfkDataExport Export { get; set; } = null!;
+    public required VfkDataExport Export { get; set; } = null!;
 }

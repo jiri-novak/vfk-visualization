@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using OfficeOpenXml;
-using ServerApp.Controllers;
-using ServerApp.Services;
+using VfkVisualization.Models;
 using VfkVisualization.Repositories;
 
 namespace VfkVisualization.Services;
@@ -45,7 +44,7 @@ public class VfkDataService(VfkDataRepository repository)
 
             var membersToInclude = typeof(VfkData)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(a => !Attribute.IsDefined(a, typeof(EpplusIgnore)))
+                .Where(a => !Attribute.IsDefined(a, typeof(VfkData.EpplusIgnore)))
                 .ToArray();
 
             ws.Cells.LoadFromCollection(excelData, true, OfficeOpenXml.Table.TableStyles.Light1, BindingFlags.Instance | BindingFlags.Public, membersToInclude);
@@ -55,5 +54,25 @@ public class VfkDataService(VfkDataRepository repository)
 
         ms.Seek(0, SeekOrigin.Begin);
         return ms;
+    }
+
+    public void CreateExport(CreateExportModel export)
+    {
+        repository.CreateExport(export.Name);
+    }
+
+    public IEnumerable<VfkDataExport> GetExistingExports(string startsWith)
+    {
+        return repository.GetExports(startsWith);
+    }
+
+    public VfkDataSession GetOrCreateSession()
+    {
+        return repository.GetOrCreateSession();
+    }
+
+    public VfkDataSession SetActiveKatuze(SetActiveKatuzeModel activeKatuze)
+    {
+        return repository.SetActiveKatuze(activeKatuze.Code, activeKatuze.Name);
     }
 }

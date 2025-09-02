@@ -15,7 +15,7 @@ namespace VfkVisualization.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
 
             modelBuilder.Entity("VfkVisualization.Repositories.VfkDataExport", b =>
                 {
@@ -26,10 +26,6 @@ namespace VfkVisualization.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT")
                         .HasColumnName("created_at_utc");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("TEXT")
-                        .HasColumnName("file_name");
 
                     b.HasKey("Id");
 
@@ -55,12 +51,40 @@ namespace VfkVisualization.Migrations
                         .HasColumnName("cena_nabidkova");
 
                     b.Property<string>("Poznamka")
+                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("poznamka");
 
                     b.HasKey("ExportId", "TelId", "CreatedAtUtc");
 
                     b.ToTable("vfk_export_price", (string)null);
+                });
+
+            modelBuilder.Entity("VfkVisualization.Repositories.VfkDataSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ActiveExportId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("active_export_id");
+
+                    b.Property<int?>("ActiveKatuzeKod")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("active_katuze_kod");
+
+                    b.Property<string>("ActiveKatuzeName")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("active_katuze_name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActiveExportId")
+                        .IsUnique();
+
+                    b.ToTable("vfk_session", (string)null);
                 });
 
             modelBuilder.Entity("VfkVisualization.Repositories.VfkDataExportPrice", b =>
@@ -74,9 +98,20 @@ namespace VfkVisualization.Migrations
                     b.Navigation("Export");
                 });
 
+            modelBuilder.Entity("VfkVisualization.Repositories.VfkDataSession", b =>
+                {
+                    b.HasOne("VfkVisualization.Repositories.VfkDataExport", "ActiveExport")
+                        .WithOne("Session")
+                        .HasForeignKey("VfkVisualization.Repositories.VfkDataSession", "ActiveExportId");
+
+                    b.Navigation("ActiveExport");
+                });
+
             modelBuilder.Entity("VfkVisualization.Repositories.VfkDataExport", b =>
                 {
                     b.Navigation("Prices");
+
+                    b.Navigation("Session");
                 });
 #pragma warning restore 612, 618
         }

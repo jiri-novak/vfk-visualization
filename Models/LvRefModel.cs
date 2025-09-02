@@ -1,8 +1,8 @@
-namespace ServerApp.Controllers;
+namespace VfkVisualization.Models;
 
 public class LvRefModel
 {
     public long TelId { get; set; }
     public double? Cena { get; set; }
-    public string Poznamka { get; set; }
+    public string? Poznamka { get; set; }
 }

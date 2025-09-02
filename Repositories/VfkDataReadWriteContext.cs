@@ -1,13 +1,15 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using ServerApp.Options;
+using VfkVisualization.Options;
 
 namespace VfkVisualization.Repositories;
 
 public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
 {
     public DbSet<VfkDataExport> Exports => Set<VfkDataExport>();
+    
+    public DbSet<VfkDataSession> Sessions => Set<VfkDataSession>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -23,8 +25,11 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                 e.ToTable("vfk_export");
                 e.HasKey(x => x.Id);
                 e.Property(x => x.Id).HasColumnName("id");
-                e.Property(x => x.FileName).HasColumnName("file_name");
                 e.Property(x => x.CreatedAtUtc).HasColumnName("created_at_utc");
+                e.HasMany(x => x.Prices)
+                    .WithOne(x => x.Export)
+                    .HasForeignKey(x => x.ExportId)
+                    .IsRequired();
             });
         
         modelBuilder
@@ -38,11 +43,19 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                 e.Property(x => x.CreatedAtUtc).HasColumnName("created_at_utc");
                 e.HasKey(x => new { x.ExportId, x.TelId, x.CreatedAtUtc });
             });
-        
-        modelBuilder.Entity<VfkDataExport>()
-            .HasMany(e => e.Prices)
-            .WithOne(e => e.Export)
-            .HasForeignKey(e => e.ExportId)
-            .IsRequired();
+
+        modelBuilder.Entity<VfkDataSession>(e =>
+        {
+            e.ToTable("vfk_session");
+            e.Property(x => x.Id).HasColumnName("id");
+            e.Property(x => x.ActiveKatuzeKod).HasColumnName("active_katuze_kod");
+            e.Property(x => x.ActiveKatuzeName).HasColumnName("active_katuze_name");
+            e.Property(x => x.ActiveExportId).HasColumnName("active_export_id");
+            e.HasOne(x => x.ActiveExport)
+                .WithOne(x => x.Session)
+                .HasForeignKey<VfkDataSession>(x => x.ActiveExportId)
+                .IsRequired(false);
+        });
+
     }
 }

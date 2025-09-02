@@ -1,4 +1,4 @@
-namespace ServerApp.Options;
+namespace VfkVisualization.Options;
 
 public class DbOptions
 {
