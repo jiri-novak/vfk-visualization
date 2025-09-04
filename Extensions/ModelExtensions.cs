@@ -22,18 +22,18 @@ internal static class ModelExtensions
         };
     }
 
-    public static ExportModel ToModel(this VfkDataExport e)
+    public static ExportIdModel ToIdModel(this VfkDataExport e)
     {
-        return new ExportModel
+        return new ExportIdModel
         {
             Id = e.Id,
             CreatedAt = e.CreatedAtUtc.ToLocalTime(),
         };
     }
     
-    public static ExportPricesModel ToPricesModel(this VfkDataExport e)
+    public static ExportModel ToModel(this VfkDataExport e)
     {
-        return new ExportPricesModel
+        return new ExportModel
         {
             Id = e.Id,
             CreatedAt = e.CreatedAtUtc.ToLocalTime(),
@@ -46,7 +46,7 @@ internal static class ModelExtensions
         return new PriceModel
         {
             TelId = p.TelId,
-            CreatedAtUtc = p.CreatedAtUtc,
+            CreatedAtUtc = p.CreatedAtUtc.ToLocalTime(),
             CenaNabidkova = p.CenaNabidkova,
             Poznamka = p.Poznamka
         };
@@ -58,7 +58,16 @@ internal static class ModelExtensions
         {
             ActiveKatuzeKod = s.ActiveKatuzeKod,
             ActiveKatuzeName = s.ActiveKatuzeName,
-            ActiveExport = s.ActiveExport?.ToPricesModel(),
+            ActiveExport = s.ActiveExport?.ToModel(),
+        };
+    }
+
+    public static KuModel ToModel(this Ku k)
+    {
+        return new KuModel
+        {
+            Id = k.Id,
+            Name = k.Name,
         };
     }
 }

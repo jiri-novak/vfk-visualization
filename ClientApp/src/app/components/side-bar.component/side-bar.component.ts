@@ -1,8 +1,8 @@
 import { ToastrService } from 'ngx-toastr';
-import { Subscription } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv, IKatuze } from '../models/models';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 
@@ -23,6 +23,9 @@ export class SideBarComponent implements OnInit {
 
   modalRef: BsModalRef;
 
+  memberIdAutoCompleteFormControl: UntypedFormGroup;
+  filteredOptions: IKatuze[];
+
   kuForm: UntypedFormGroup;
   kuSubmitted = false;
 
@@ -35,6 +38,7 @@ export class SideBarComponent implements OnInit {
   lvInfoForm: UntypedFormGroup;
   lvInfoSubmitted = false;
 
+  sessionCollapsed = false;
   legendCollapsed = true;
   localizationCollapsed = false;
   infoCollapsed = false;
@@ -51,6 +55,19 @@ export class SideBarComponent implements OnInit {
     private serverAppService: ServerAppService) { }
 
   ngOnInit() {
+    this.busy = this.serverAppService.getSession().subscribe(session => {
+      console.log(session);
+    }, () => this.toastrService.error('Nepodařilo se načíst informace o aktivní relaci.', 'Informace'));
+
+    this.memberIdAutoCompleteFormControl.valueChanges
+      .pipe(debounceTime(10))
+      .subscribe(data => {
+        this.serverAppService.getKus(data).subscribe(response => {
+          this.filteredOptions = response;
+          console.log(response);
+        });
+      });
+
     this.kuForm = this.formBuilder.group({
       kodKu: ['703567', Validators.required]
     });
@@ -69,6 +86,16 @@ export class SideBarComponent implements OnInit {
       cena: [''],
       poznamka: ['']
     });
+  }
+
+  displayFn(memberid): string | undefined {
+    // if (memberid != undefined && memberid != null && memberid > 0) {
+    //   return this.filteredOptions.find(x => x.Id == memberid).CustomerId;
+    // }
+    // else {
+    //   return "";
+    // }
+    return "";
   }
 
   showFeatureInfoData(event: IFeatureInfoData) {

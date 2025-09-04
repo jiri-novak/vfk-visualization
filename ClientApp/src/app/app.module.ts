@@ -21,6 +21,9 @@ import { SideBarComponent } from './components/side-bar.component/side-bar.compo
 import { OlStyles } from './services/ol.styling.service';
 import { ServerAppService } from './services/serverapp.service';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+
 @Component({
   selector: 'app-busy',
   template: `
@@ -48,13 +51,24 @@ export function busyConfigFactory(): BusyConfig {
 }
 
 @NgModule({
+  exports: [
+    MatFormFieldModule,
+    MatAutocompleteModule
+  ],
+})
+export class MaterialModule {};
+
+@NgModule({
   declarations: [
     AppComponent,
     MapComponent,
     SideBarComponent,
     CustomBusyComponent
   ],
-  bootstrap: [AppComponent], imports: [BrowserModule,
+  bootstrap: [AppComponent],
+  imports: [
+    MaterialModule,
+    BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
     FormsModule,

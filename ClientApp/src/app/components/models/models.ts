@@ -55,3 +55,27 @@ export interface IVybraneLv {
 
   inEdit: boolean;
 }
+
+export interface ISession {
+  activeKatuzeKod?: number;
+  activeKatuzeNazev?: string;
+  activeExport?: IExport;
+}
+
+export interface IExport {
+  id: string;
+  createdAt: Date;
+  prices: IPrice[];
+}
+
+export interface IPrice {
+  telId: number;
+  createdAt: Date;
+  cenaNabidkova?: number;
+  poznamka?: string;
+}
+
+export interface IKatuze {
+  id: number;
+  name: string;
+}

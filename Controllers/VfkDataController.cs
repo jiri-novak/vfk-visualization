@@ -57,14 +57,14 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpGet("kus")]
     public IActionResult GetKus([FromQuery] string? startsWith = null)
     {
-        var kus = service.GetKus(startsWith);
+        var kus = service.GetKus(startsWith).Select(x => x.ToModel());
         return Ok(kus);
     }
     
     [HttpGet("export")]
     public IActionResult GetExistingExports([FromQuery] string? startsWith = null)
     {
-        var existing = service.GetExistingExports(startsWith).Select(x => x.ToModel());
+        var existing = service.GetExistingExports(startsWith).Select(x => x.ToIdModel());
         return Ok(existing);
     }
     
@@ -73,7 +73,7 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     {
         var existing = service.GetExport(id);
         if (existing == null) return NotFound();
-        return Ok(existing.ToPricesModel());
+        return Ok(existing.ToModel());
     }
 
     [HttpGet("session")]

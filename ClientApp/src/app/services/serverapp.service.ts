@@ -1,18 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IVlastnik, IVybraneLv } from '../components/models/models';
-import { ToastrService } from 'ngx-toastr';
+import { IKatuze, ISession, IVlastnik, IVybraneLv } from '../components/models/models';
 import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ServerAppService {
-  constructor(private http: HttpClient, private toastr: ToastrService) {
-
+  constructor(private http: HttpClient) {
   }
 
   public getLvInfo(telId: string): Observable<IVlastnik[]> {
     return this.http.get<IVlastnik[]>(`api/VfkData/${telId}`);
+  }
+
+  public getSession(): Observable<ISession> {
+    return this.http.get<ISession>(`api/vfkData/session`);
+  }
+
+  public getKus(startsWith?: string): Observable<IKatuze[]> {
+    const params = new HttpParams().append('startsWith', startsWith);
+    return this.http.get<IKatuze[]>(`api/vfkData/kus`, {params});
   }
 
   public export(vybranaLv: IVybraneLv[]): Observable<any> {
