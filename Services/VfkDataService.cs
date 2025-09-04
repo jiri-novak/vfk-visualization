@@ -16,19 +16,19 @@ public class VfkDataService(VfkDataRepository repository)
         return repository.Get(telId);
     }
 
-    public Stream Export(IReadOnlyCollection<LvRefModel> lvRefs)
+    public Stream Export(VfkDataExport export)
     {
-        var refs = lvRefs.ToDictionary(x => x.TelId, x => x);
-        var data = repository.Get(lvRefs.Select(x => x.TelId).ToList());
+        var refs = export.Prices.ToDictionary(x => x.TelId, x => x);
+        var data = repository.Get(export.Prices.Select(x => x.TelId).ToList());
         var excelData = new List<VfkData>();
 
         foreach (var d in data)
         {
             var @ref = refs[d.TelId];
                 
-            if (@ref.Cena.HasValue)
+            if (@ref.CenaNabidkova.HasValue)
             {
-                d.CenaM2 = @ref.Cena.Value;
+                d.CenaM2 = @ref.CenaNabidkova.Value;
             }
 
             d.Poznamka = @ref.Poznamka;
@@ -61,9 +61,19 @@ public class VfkDataService(VfkDataRepository repository)
         repository.CreateExport(export.Name);
     }
 
-    public IEnumerable<VfkDataExport> GetExistingExports(string startsWith)
+    public IEnumerable<Ku> GetKus(string? startsWith)
+    {
+        return repository.GetKus(startsWith);
+    }
+    
+    public IEnumerable<VfkDataExport> GetExistingExports(string? startsWith)
     {
         return repository.GetExports(startsWith);
+    }
+
+    public VfkDataExport? GetExport(string id)
+    {
+        return repository.GetExport(id);
     }
 
     public VfkDataSession GetOrCreateSession()
@@ -74,5 +84,20 @@ public class VfkDataService(VfkDataRepository repository)
     public VfkDataSession SetActiveKatuze(SetActiveKatuzeModel activeKatuze)
     {
         return repository.SetActiveKatuze(activeKatuze.Code, activeKatuze.Name);
+    }
+
+    public VfkDataSession SetActiveExport(SetActiveExportModel activeExport)
+    {
+        return repository.SetActiveExport(activeExport.ExportId);
+    }
+
+    public void SetPrice(long telId, string exportId, int? price)
+    {
+        repository.SetPrice(telId, exportId, price);
+    }
+
+    public void SetComment(long telId, string exportId, string? comment)
+    {
+        repository.SetComment(telId, exportId, comment);
     }
 }

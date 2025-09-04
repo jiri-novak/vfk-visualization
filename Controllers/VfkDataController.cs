@@ -22,13 +22,29 @@ public class VfkDataController(VfkDataService service) : ControllerBase
         return Ok(service.Get(telId.Value).Select(x => x.ToModel()).ToArray());
     }
 
-    [HttpPost("generate/excel")]
-    public IActionResult Export([FromBody] IReadOnlyCollection<LvRefModel> data)
+    [HttpPost("{telId}/price")]
+    public IActionResult SetPrice([FromRoute] long telId, [FromBody] SetPriceModel model)
     {
-        if (!data.Any())
-            return BadRequest();
+        service.SetPrice(telId, model.ExportId, model.Price);
+        return Ok();
+    }
+    
+    [HttpPost("{telId}/comment")]
+    public IActionResult SetComment([FromRoute] long telId, [FromBody] SetCommentModel model)
+    {
+        service.SetComment(telId, model.ExportId, model.Comment);
+        return Ok();
+    }
 
-        return File(service.Export(data), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nabidka_{DateTime.Now:s}.xlsx");
+    [HttpPost("generate/excel")]
+    public IActionResult Export([FromBody] GenerateExcelModel model)
+    {
+        var export = service.GetExport(model.ExportId);
+        
+        if (export == null)
+            return NotFound();
+
+        return File(service.Export(export), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nabidka_{DateTime.Now:s}.xlsx");
     }
 
     [HttpPost("export")]
@@ -38,11 +54,26 @@ public class VfkDataController(VfkDataService service) : ControllerBase
         return Ok();
     }
 
+    [HttpGet("kus")]
+    public IActionResult GetKus([FromQuery] string? startsWith = null)
+    {
+        var kus = service.GetKus(startsWith);
+        return Ok(kus);
+    }
+    
     [HttpGet("export")]
-    public IActionResult GetExistingExports([FromQuery] string startsWith)
+    public IActionResult GetExistingExports([FromQuery] string? startsWith = null)
     {
         var existing = service.GetExistingExports(startsWith).Select(x => x.ToModel());
         return Ok(existing);
+    }
+    
+    [HttpGet("export/{id}")]
+    public IActionResult GetExport([FromRoute] string id)
+    {
+        var existing = service.GetExport(id);
+        if (existing == null) return NotFound();
+        return Ok(existing.ToPricesModel());
     }
 
     [HttpGet("session")]
@@ -56,6 +87,13 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     public IActionResult SetActiveKatuze([FromBody] SetActiveKatuzeModel activeKatuze)
     {
         var session = service.SetActiveKatuze(activeKatuze);
+        return Ok(session);
+    }
+
+    [HttpPost("session/export")]
+    public IActionResult SetActiveExport([FromBody] SetActiveExportModel activeExport)
+    {
+        var session = service.SetActiveExport(activeExport);
         return Ok(session);
     }
 }

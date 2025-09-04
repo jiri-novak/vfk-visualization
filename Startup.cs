@@ -30,7 +30,7 @@ public class Startup(IConfiguration configuration)
         services.AddDbContext<VfkDataReadWriteContext>();
         services.AddScoped<VfkDataRepository>();
         services.AddScoped<VfkDataService>();
-
+        
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo

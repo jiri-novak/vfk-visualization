@@ -9,6 +9,8 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
 {
     public DbSet<VfkDataExport> Exports => Set<VfkDataExport>();
     
+    public DbSet<VfkDataExportPrice> ExportPrices => Set<VfkDataExportPrice>();
+
     public DbSet<VfkDataSession> Sessions => Set<VfkDataSession>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,8 +32,10 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                     .WithOne(x => x.Export)
                     .HasForeignKey(x => x.ExportId)
                     .IsRequired();
+
+                e.HasIndex(x => x.Id).IsDescending(false);
             });
-        
+
         modelBuilder
             .Entity<VfkDataExportPrice>(e =>
             {
@@ -40,8 +44,7 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                 e.Property(x => x.ExportId).HasColumnName("export_id");
                 e.Property(x => x.CenaNabidkova).HasColumnName("cena_nabidkova");
                 e.Property(x => x.Poznamka).HasColumnName("poznamka");
-                e.Property(x => x.CreatedAtUtc).HasColumnName("created_at_utc");
-                e.HasKey(x => new { x.ExportId, x.TelId, x.CreatedAtUtc });
+                e.HasKey(x => new { x.ExportId, x.TelId });
             });
 
         modelBuilder.Entity<VfkDataSession>(e =>
@@ -56,6 +59,5 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                 .HasForeignKey<VfkDataSession>(x => x.ActiveExportId)
                 .IsRequired(false);
         });
-
     }
 }

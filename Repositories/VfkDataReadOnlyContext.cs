@@ -10,6 +10,8 @@ public class VfkDataReadOnlyContext(IOptions<DbOptions> options) : DbContext
 {
     public IQueryable<VfkData> Entries => Set<VfkData>().AsNoTracking();
 
+    public IQueryable<Ku> Kus => Set<Ku>().AsNoTracking();
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite(options.Value.VfkReadOnly);
@@ -18,9 +20,18 @@ public class VfkDataReadOnlyContext(IOptions<DbOptions> options) : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<VfkData>().ToTable("data_vfk", "main");
+        modelBuilder.Entity<Ku>(e =>
+        {
+            e.ToTable("ku", "main");
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.Id).HasColumnName("kod");
+            e.Property(x => x.Name).HasColumnName("nazev");
+        });
+        
         modelBuilder.Entity<VfkData>(e =>
         {
+            e.ToTable("data_vfk", "main");
             e.HasKey(x => x.Id);
 
             e.Property(x => x.Id).HasColumnName("ID");
@@ -88,7 +99,7 @@ public class VfkDataReadOnlyContext(IOptions<DbOptions> options) : DbContext
 
         base.OnModelCreating(modelBuilder);
     }
-    
+
     public override int SaveChanges()
     {
         throw new InvalidOperationException("This context is read-only.");

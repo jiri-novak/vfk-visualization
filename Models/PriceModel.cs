@@ -1,8 +1,8 @@
 using System;
 
-namespace VfkVisualization.Repositories;
+namespace VfkVisualization.Models;
 
-public class VfkDataExportPrice
+public class PriceModel
 {
     public required long TelId { get; set; }
     
@@ -11,8 +11,4 @@ public class VfkDataExportPrice
     public required int? CenaNabidkova { get; set; }
     
     public required string? Poznamka { get; set; }
-    
-    public required string ExportId { get; set; }
-
-    public VfkDataExport Export { get; set; } = null!;
 }
