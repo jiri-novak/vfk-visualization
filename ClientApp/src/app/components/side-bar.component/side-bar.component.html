@@ -51,9 +51,19 @@
       <form [formGroup]="parForm">
         <mat-form-field class="full-width">
           <mat-label>Parcela</mat-label>
-          <input type="text" placeholder="Napište" matInput formControlName="parCislo"/>
+          <input type="text" placeholder="Napište" matInput formControlName="parCislo" />
         </mat-form-field>
         <button matIconButton (click)="onLocalizePar()">
+          <mat-icon>location_on</mat-icon>
+        </button>
+      </form>
+
+      <form [formGroup]="lvForm">
+        <mat-form-field class="full-width">
+          <mat-label>LV</mat-label>
+          <input type="text" placeholder="Napište" matInput formControlName="lvId" />
+        </mat-form-field>
+        <button matIconButton (click)="onLocalizeLv()">
           <mat-icon>location_on</mat-icon>
         </button>
       </form>
@@ -62,51 +72,6 @@
         <mat-icon>cancel</mat-icon>
         Zruš zvýraznění
       </button>
-
-      <tabset [justified]="false" [vertical]="false" [collapse]="localizationCollapsed">
-
-        <tab heading="LV">
-          <form class="form-horizontal" [formGroup]="lvForm" (ngSubmit)="onLocalizeLv()">
-            <div class="form-group form-group-sm col-sm-12">
-              <div class="row">
-                <label class="col-sm-4 col-form-label">Kód kú:</label>
-                <div class="col-sm-8">
-                  <input type="text" formControlName="kodKu" class="form-control"
-                    [ngClass]="{ 'is-invalid': lvSubmitted && lvForm.controls.kodKu.errors }" />
-                  @if (lvSubmitted && lvForm.controls.kodKu.errors) {
-                  <div class="invalid-feedback">
-                    @if (lvForm.controls.kodKu.errors.required) {
-                    <div>Kód kú je povinný.</div>
-                    }
-                  </div>
-                  }
-                </div>
-              </div>
-            </div>
-            <div class="form-group form-group-sm col-sm-12">
-              <div class="row">
-                <label class="col-sm-4 col-form-label">Číslo:</label>
-                <div class="col-sm-8">
-                  <input type="text" formControlName="lvId" class="form-control"
-                    [ngClass]="{ 'is-invalid': lvSubmitted && lvForm.controls.lvId.errors }" />
-                  @if (lvSubmitted && lvForm.controls.lvId.errors) {
-                  <div class="invalid-feedback">
-                    @if (lvForm.controls.lvId.errors.required) {
-                    <div>Číslo LV je povinné.</div>
-                    }
-                  </div>
-                  }
-                </div>
-              </div>
-            </div>
-            <div class="form-group buttons">
-              <button class="btn btn-success float-left">Lokalizuj</button>
-              <button class="btn btn-link float-right" (click)="cancelSelection(); $event.preventDefault();">Zruš
-                zvýraznění</button>
-            </div>
-          </form>
-        </tab>
-      </tabset>
     </div>
   </div>
 
