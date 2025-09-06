@@ -83,7 +83,7 @@ public class VfkDataService(VfkDataRepository repository)
 
     public VfkDataSession SetActiveKatuze(SetActiveKatuzeModel activeKatuze)
     {
-        return repository.SetActiveKatuze(activeKatuze.Code, activeKatuze.Name);
+        return repository.SetActiveKatuze(activeKatuze.Id, activeKatuze.Name);
     }
 
     public VfkDataSession SetActiveExport(SetActiveExportModel activeExport)

@@ -32,6 +32,7 @@ public class VfkDataRepository(
         return vfkDbReadOnlyContext.Kus
             .Where(x => string.IsNullOrEmpty(startsWith) ||
                         x.Name.StartsWith(startsWith))
+            .OrderBy(x => x.Name)
             .Take(10);
     }
 

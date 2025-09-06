@@ -23,6 +23,7 @@ import { ServerAppService } from './services/serverapp.service';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-busy',
@@ -53,7 +54,8 @@ export function busyConfigFactory(): BusyConfig {
 @NgModule({
   exports: [
     MatFormFieldModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatInputModule,
   ],
 })
 export class MaterialModule {};

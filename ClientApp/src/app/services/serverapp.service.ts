@@ -17,6 +17,10 @@ export class ServerAppService {
     return this.http.get<ISession>(`api/vfkData/session`);
   }
 
+  public setActiveKu(katuze: IKatuze): Observable<Object> {
+    return this.http.post(`api/vfkData/session/katuze`, katuze);
+  }
+
   public getKus(startsWith?: string): Observable<IKatuze[]> {
     const params = new HttpParams().append('startsWith', startsWith);
     return this.http.get<IKatuze[]>(`api/vfkData/kus`, {params});

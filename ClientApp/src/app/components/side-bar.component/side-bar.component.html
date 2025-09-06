@@ -3,28 +3,14 @@
   <div class="card">
     <div class="card-title" (click)="legendCollapsed = !legendCollapsed"><b>Legenda:</b></div>
     <div class="card-body">
-
+      <img [collapse]="legendCollapsed" style="padding-bottom: 10px"
+        src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=VFK:LV&format_options=layout:legend&legend_options=fontAntiAliasing:true" />
     </div>
   </div>
 
   <div class="card">
     <div class="card-title" (click)="sessionCollapsed = !sessionCollapsed"><b>Session:</b></div>
     <div class="card-body">
-      <form>
-        <mat-form-field class="full-width-input">
-          <input type="text" placeholder="select" aria-label="whatever" matInput
-            [formControl]="memberIdAutoCompleteFormControl" [matAutocomplete]="auto">
-          <!-- <button mat-button matSuffix mat-icon-button aria-label="Clear"></button> -->
-          <mat-autocomplete #auto="matAutocomplete">
-            <mat-option *ngFor="let option of filteredOptions" [value]="option.id">
-              {{option.name}}
-            </mat-option>
-          </mat-autocomplete>
-          <!-- <mat-error *ngIf="memberIdAutoCompleteFormControl.hasError('required')">
-            povinne
-          </mat-error> -->
-        </mat-form-field>
-      </form>
     </div>
   </div>
 
@@ -46,6 +32,18 @@
   <div class="card">
     <b class="card-title" (click)="localizationCollapsed = !localizationCollapsed">Lokalizace:</b>
     <div class="card-body">
+      <form [formGroup]="katuzeForm">
+        <mat-form-field class="full-width">
+          <mat-label>Katastrální území</mat-label>
+          <input type="text" placeholder="Vyberte" matInput formControlName="katuze" [matAutocomplete]="auto" />
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectKu($event.option.value)">
+            <mat-option *ngFor="let option of katuzeOptions | async" [value]="option">
+              {{option.name}} ({{option.id}})
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </form>
+
       <tabset [justified]="false" [vertical]="false" [collapse]="localizationCollapsed">
 
         <tab heading="Katastrálního území">

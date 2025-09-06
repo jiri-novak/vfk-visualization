@@ -1,5 +1,5 @@
 import { ToastrService } from 'ngx-toastr';
-import { debounceTime, Subscription } from 'rxjs';
+import { debounceTime, firstValueFrom, Observable, Subscription, switchMap } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv, IKatuze } from '../models/models';
@@ -19,12 +19,12 @@ export class SideBarComponent implements OnInit {
   @Output() localizationByLv: EventEmitter<ILocalizationByLv> = new EventEmitter<ILocalizationByLv>();
   @Output() localizationCancel: EventEmitter<void> = new EventEmitter<void>();
 
-  public busy: Subscription;
+  busy: Subscription;
 
   modalRef: BsModalRef;
 
-  memberIdAutoCompleteFormControl: UntypedFormGroup;
-  filteredOptions: IKatuze[];
+  katuzeForm: UntypedFormGroup;
+  katuzeOptions: Observable<IKatuze[]>;
 
   kuForm: UntypedFormGroup;
   kuSubmitted = false;
@@ -52,21 +52,13 @@ export class SideBarComponent implements OnInit {
     private toastrService: ToastrService,
     private formBuilder: UntypedFormBuilder,
     private modalService: BsModalService,
-    private serverAppService: ServerAppService) { }
+    private serverAppService: ServerAppService) {
+    this.katuzeForm = this.formBuilder.group({
+      katuze: ['', Validators.required]
+    });
 
-  ngOnInit() {
-    this.busy = this.serverAppService.getSession().subscribe(session => {
-      console.log(session);
-    }, () => this.toastrService.error('Nepodařilo se načíst informace o aktivní relaci.', 'Informace'));
-
-    this.memberIdAutoCompleteFormControl.valueChanges
-      .pipe(debounceTime(10))
-      .subscribe(data => {
-        this.serverAppService.getKus(data).subscribe(response => {
-          this.filteredOptions = response;
-          console.log(response);
-        });
-      });
+    this.katuzeOptions = this.katuzeForm.controls.katuze.valueChanges
+      .pipe(debounceTime(10), switchMap(s => this.serverAppService.getKus(s)));
 
     this.kuForm = this.formBuilder.group({
       kodKu: ['703567', Validators.required]
@@ -88,14 +80,29 @@ export class SideBarComponent implements OnInit {
     });
   }
 
-  displayFn(memberid): string | undefined {
-    // if (memberid != undefined && memberid != null && memberid > 0) {
-    //   return this.filteredOptions.find(x => x.Id == memberid).CustomerId;
-    // }
-    // else {
-    //   return "";
-    // }
-    return "";
+  async ngOnInit() {
+    const session = await firstValueFrom(this.serverAppService.getSession());
+
+console.log(session);
+
+    if (!!session.activeKatuzeKod && !!session.activeKatuzeName) {
+      console.log('--------');
+      const katuze: IKatuze = { id: session.activeKatuzeKod, name: session.activeKatuzeName };
+      this.katuzeForm.controls.katuze.setValue(katuze);
+    }
+  }
+
+  displayFn(katuze: IKatuze): string {
+    if (!!katuze) {
+      return `${katuze.name} (${katuze.id})`;
+    }
+    else {
+      return '';
+    }
+  }
+
+  selectKu(katuze: IKatuze) {
+    this.serverAppService.setActiveKu(katuze).subscribe();
   }
 
   showFeatureInfoData(event: IFeatureInfoData) {

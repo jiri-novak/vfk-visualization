@@ -58,7 +58,7 @@ export interface IVybraneLv {
 
 export interface ISession {
   activeKatuzeKod?: number;
-  activeKatuzeNazev?: string;
+  activeKatuzeName?: string;
   activeExport?: IExport;
 }
 
