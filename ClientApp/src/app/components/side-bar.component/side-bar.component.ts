@@ -2,7 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { debounceTime, firstValueFrom, Observable, Subscription, switchMap } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv, IKatuze } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv, IKatuze, ISession } from '../models/models';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 
@@ -23,11 +23,10 @@ export class SideBarComponent implements OnInit {
 
   modalRef: BsModalRef;
 
+  session: ISession;
+
   katuzeForm: UntypedFormGroup;
   katuzeOptions: Observable<IKatuze[]>;
-
-  kuForm: UntypedFormGroup;
-  kuSubmitted = false;
 
   parForm: UntypedFormGroup;
   parSubmitted = false;
@@ -60,12 +59,7 @@ export class SideBarComponent implements OnInit {
     this.katuzeOptions = this.katuzeForm.controls.katuze.valueChanges
       .pipe(debounceTime(10), switchMap(s => this.serverAppService.getKus(s)));
 
-    this.kuForm = this.formBuilder.group({
-      kodKu: ['703567', Validators.required]
-    });
-
     this.parForm = this.formBuilder.group({
-      kodKu: ['703567', Validators.required],
       parCislo: ['782/8', Validators.required]
     });
 
@@ -81,13 +75,11 @@ export class SideBarComponent implements OnInit {
   }
 
   async ngOnInit() {
-    const session = await firstValueFrom(this.serverAppService.getSession());
+    this.session = await firstValueFrom(this.serverAppService.getSession());
+    console.log(this.session);
 
-console.log(session);
-
-    if (!!session.activeKatuzeKod && !!session.activeKatuzeName) {
-      console.log('--------');
-      const katuze: IKatuze = { id: session.activeKatuzeKod, name: session.activeKatuzeName };
+    if (!!this.session.activeKatuzeKod && !!this.session.activeKatuzeName) {
+      const katuze: IKatuze = { id: this.session.activeKatuzeKod, name: this.session.activeKatuzeName };
       this.katuzeForm.controls.katuze.setValue(katuze);
     }
   }
@@ -102,7 +94,7 @@ console.log(session);
   }
 
   selectKu(katuze: IKatuze) {
-    this.serverAppService.setActiveKu(katuze).subscribe();
+    this.busy = this.serverAppService.setActiveKu(katuze).subscribe(s => this.session = s);
   }
 
   showFeatureInfoData(event: IFeatureInfoData) {
@@ -168,28 +160,16 @@ console.log(session);
   }
 
   onLocalizeKu() {
-    this.kuSubmitted = true;
-
-    if (this.kuForm.invalid) {
-      return;
-    }
-
-    console.log(`Lokalizace na katastralni uzemi: ${this.kuForm.value.kodKu}.`);
+    console.log(`Lokalizace na katastralni uzemi: ${this.session.activeKatuzeKod}.`);
     this.localizationByKu.next({
-      katuzeKod: this.kuForm.value.kodKu
+      katuzeKod: this.session.activeKatuzeKod
     });
   }
 
   onLocalizePar() {
-    this.parSubmitted = true;
-
-    if (this.parForm.invalid) {
-      return;
-    }
-
-    console.log(`Lokalizace na parcelu: ${this.parForm.value.kodKu}, ${this.parForm.value.parCislo}.`);
+    console.log(`Lokalizace na parcelu: ${this.session.activeKatuzeKod}, ${this.parForm.value.parCislo}.`);
     this.localizationByPar.next({
-      katuzeKod: this.parForm.value.kodKu,
+      katuzeKod: this.session.activeKatuzeKod,
       parCislo: this.parForm.value.parCislo
     });
   }
