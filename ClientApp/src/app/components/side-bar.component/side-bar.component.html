@@ -11,6 +11,24 @@
   <div class="card">
     <div class="card-title" (click)="sessionCollapsed = !sessionCollapsed"><b>Session:</b></div>
     <div class="card-body">
+      <form [formGroup]="exportForm">
+        <mat-form-field class="full-width">
+          <mat-label>Export</mat-label>
+          <input type="text" placeholder="Vyberte" matInput formControlName="name" [matAutocomplete]="autoExport" (focus)="exportIdFocus()"/>
+          <mat-autocomplete #autoExport="matAutocomplete" [displayWith]="displayFnExportId"
+            (optionSelected)="selectExport($event.option.value)">
+            <mat-option *ngFor="let option of exportOptions | async" [value]="option">
+              {{option.name}} ({{option.createdAt | date:'d. MMMM yyyy HH:mm:ss'}})
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <button matIconButton (click)="createExport()">
+          <mat-icon>add</mat-icon>
+        </button>
+        <button matIconButton (click)="deleteExport()">
+          <mat-icon>remove</mat-icon>
+        </button>
+      </form>
     </div>
   </div>
 
@@ -35,25 +53,25 @@
       <form [formGroup]="katuzeForm">
         <mat-form-field class="full-width">
           <mat-label>Katastrální území</mat-label>
-          <input type="text" placeholder="Vyberte" matInput formControlName="katuze" [matAutocomplete]="auto" />
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+          <input type="text" placeholder="Vyberte" matInput formControlName="katuze" [matAutocomplete]="autoKatuze"  (focus)="katuzeFocus()"/>
+          <mat-autocomplete #autoKatuze="matAutocomplete" [displayWith]="displayFnKatuze" 
             (optionSelected)="selectKu($event.option.value)">
             <mat-option *ngFor="let option of katuzeOptions | async" [value]="option">
               {{option.name}} ({{option.id}})
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
-        <button matIconButton (click)="onLocalizeKu()">
+        <button matIconButton (click)="onLocalizeKu()" [disabled]="!katuzeForm.valid">
           <mat-icon>location_on</mat-icon>
         </button>
       </form>
-
+ 
       <form [formGroup]="parForm">
         <mat-form-field class="full-width">
           <mat-label>Parcela</mat-label>
           <input type="text" placeholder="Napište" matInput formControlName="parCislo" />
         </mat-form-field>
-        <button matIconButton (click)="onLocalizePar()">
+        <button matIconButton (click)="onLocalizePar()" [disabled]="!katuzeForm.valid || !parForm.valid">
           <mat-icon>location_on</mat-icon>
         </button>
       </form>
@@ -63,7 +81,7 @@
           <mat-label>LV</mat-label>
           <input type="text" placeholder="Napište" matInput formControlName="lvId" />
         </mat-form-field>
-        <button matIconButton (click)="onLocalizeLv()">
+        <button matIconButton (click)="onLocalizeLv()" [disabled]="!katuzeForm.valid || !lvForm.valid">
           <mat-icon>location_on</mat-icon>
         </button>
       </form>

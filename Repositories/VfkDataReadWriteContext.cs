@@ -27,13 +27,15 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                 e.ToTable("vfk_export");
                 e.HasKey(x => x.Id);
                 e.Property(x => x.Id).HasColumnName("id");
+                e.Property(x => x.Name).HasColumnName("name");
                 e.Property(x => x.CreatedAtUtc).HasColumnName("created_at_utc");
                 e.HasMany(x => x.Prices)
                     .WithOne(x => x.Export)
                     .HasForeignKey(x => x.ExportId)
-                    .IsRequired();
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                e.HasIndex(x => x.Id).IsDescending(false);
+                e.HasIndex(x => x.Name).IsDescending(false);
             });
 
         modelBuilder
@@ -44,6 +46,7 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                 e.Property(x => x.ExportId).HasColumnName("export_id");
                 e.Property(x => x.CenaNabidkova).HasColumnName("cena_nabidkova");
                 e.Property(x => x.Poznamka).HasColumnName("poznamka");
+                e.Property(x => x.Historie).HasColumnName("historie");
                 e.HasKey(x => new { x.ExportId, x.TelId });
             });
 

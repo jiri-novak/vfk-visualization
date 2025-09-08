@@ -1,10 +1,11 @@
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, firstValueFrom, Observable, Subscription, switchMap } from 'rxjs';
-import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, TemplateRef, InjectionToken } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv, IKatuze, ISession } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv, IKatuze, ISession, IExportId, ICreateExport } from '../models/models';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ServerAppService } from 'src/app/services/serverapp.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-side-bar',
@@ -25,17 +26,15 @@ export class SideBarComponent implements OnInit {
 
   session: ISession;
 
+  exportForm: UntypedFormGroup;
+  exportOptions: Observable<IExportId[]>;
+
   katuzeForm: UntypedFormGroup;
   katuzeOptions: Observable<IKatuze[]>;
 
   parForm: UntypedFormGroup;
-  parSubmitted = false;
-
   lvForm: UntypedFormGroup;
-  lvSubmitted = false;
-
   lvInfoForm: UntypedFormGroup;
-  lvInfoSubmitted = false;
 
   sessionCollapsed = false;
   legendCollapsed = true;
@@ -52,6 +51,13 @@ export class SideBarComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private modalService: BsModalService,
     private serverAppService: ServerAppService) {
+    this.exportForm = this.formBuilder.group({
+      name: ['', Validators.required]
+    });
+
+    this.exportOptions = this.exportForm.controls.name.valueChanges
+      .pipe(debounceTime(10), switchMap(s => this.serverAppService.getExports(s)));
+
     this.katuzeForm = this.formBuilder.group({
       katuze: ['', Validators.required]
     });
@@ -76,21 +82,60 @@ export class SideBarComponent implements OnInit {
 
   async ngOnInit() {
     this.session = await firstValueFrom(this.serverAppService.getSession());
-    console.log(this.session);
 
     if (!!this.session.activeKatuzeKod && !!this.session.activeKatuzeName) {
       const katuze: IKatuze = { id: this.session.activeKatuzeKod, name: this.session.activeKatuzeName };
-      this.katuzeForm.controls.katuze.setValue(katuze);
+      this.katuzeForm.controls.katuze.setValue(katuze, { emitEvent: false });
+    }
+
+    if (!!this.session.activeExport) {
+      this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
     }
   }
 
-  displayFn(katuze: IKatuze): string {
+  displayFnKatuze(katuze: IKatuze): string {
     if (!!katuze) {
       return `${katuze.name} (${katuze.id})`;
     }
     else {
       return '';
     }
+  }
+
+  displayFnExportId(exportId: IExportId): string {
+    if (!!exportId) {
+      const datePipe = new DatePipe('cs-CZ');
+      return `${exportId.name} (${datePipe.transform(exportId.createdAt, 'd. MMMM yyyy HH:mm:ss')})`;
+    }
+    else {
+      return '';
+    }
+  }
+
+  katuzeFocus() {
+    this.katuzeForm.controls.katuze.updateValueAndValidity({ onlySelf: false, emitEvent: true });
+  }
+
+  exportIdFocus() {
+    this.exportForm.controls.name.updateValueAndValidity({ onlySelf: false, emitEvent: true });
+  }
+
+  createExport() {
+    const createExport: ICreateExport = { name: this.exportForm.controls.name.value };
+    this.busy = this.serverAppService.createExport(createExport).subscribe(s => {
+      this.exportForm.controls.name.setValue(s, { emitEvent: false });
+      this.selectExport(s);
+    });
+  }
+
+  deleteExport() {
+    this.busy = this.serverAppService.deleteExport(this.session.activeExport.id).subscribe(s => {
+      this.exportForm.controls.name.setValue('', { emitEvent: false });
+    });
+  }
+
+  selectExport(exportId: IExportId) {
+    this.busy = this.serverAppService.sectActiveExport(exportId).subscribe(s => this.session = s);
   }
 
   selectKu(katuze: IKatuze) {
@@ -175,12 +220,6 @@ export class SideBarComponent implements OnInit {
   }
 
   onLocalizeLv() {
-    this.lvSubmitted = true;
-
-    if (this.lvForm.invalid) {
-      return;
-    }
-
     console.log(`Lokalizace na LV: ${this.lvForm.value.kodKu}, ${this.lvForm.value.lvId}.`);
     this.localizationByLv.next({
       katuzeKod: this.lvForm.value.kodKu,

@@ -27,6 +27,7 @@ internal static class ModelExtensions
         return new ExportIdModel
         {
             Id = e.Id,
+            Name = e.Name,
             CreatedAt = e.CreatedAtUtc.ToLocalTime(),
         };
     }
@@ -36,6 +37,7 @@ internal static class ModelExtensions
         return new ExportModel
         {
             Id = e.Id,
+            Name = e.Name,
             CreatedAt = e.CreatedAtUtc.ToLocalTime(),
             Prices = e.Prices.Select(x => x.ToModel()).ToList()
         };

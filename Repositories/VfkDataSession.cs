@@ -8,7 +8,7 @@ public class VfkDataSession
     
     public string? ActiveKatuzeName { get; set; }
 
-    public string? ActiveExportId { get; set; }
+    public int? ActiveExportId { get; set; }
     
     public VfkDataExport? ActiveExport { get; set; } 
 }

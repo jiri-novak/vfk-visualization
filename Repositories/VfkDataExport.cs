@@ -5,9 +5,11 @@ namespace VfkVisualization.Repositories;
 
 public class VfkDataExport
 {
-    public required string Id { get; set; }
+    public int Id { get; set; }
     
-    public DateTime CreatedAtUtc { get; set; }
+    public required string Name { get; set; }
+    
+    public required DateTime CreatedAtUtc { get; set; }
 
     public ICollection<VfkDataExportPrice> Prices { get; } = [];
 

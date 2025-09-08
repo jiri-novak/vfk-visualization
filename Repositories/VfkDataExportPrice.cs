@@ -12,7 +12,9 @@ public class VfkDataExportPrice
     
     public required string? Poznamka { get; set; }
     
-    public required string ExportId { get; set; }
+    public required int ExportId { get; set; }
+    
+    public string? Historie { get; set; }
 
     public VfkDataExport Export { get; set; } = null!;
 }

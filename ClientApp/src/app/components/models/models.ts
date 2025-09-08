@@ -17,6 +17,8 @@ export interface IFeatureInfoData {
   par: ISortableLabel[];
   lv: ISortableLabel[];
   vl: ISortableLabel[][];
+  cenaNabidkova?: number;
+  poznamka?: string;
 }
 
 export interface ISortableLabelDefinition {
@@ -63,9 +65,16 @@ export interface ISession {
 }
 
 export interface IExport {
-  id: string;
+  id: number;
+  name: string;
   createdAt: Date;
   prices: IPrice[];
+}
+
+export interface IExportId {
+  id: number;
+  name: string;
+  createdAt: Date;
 }
 
 export interface IPrice {
@@ -77,5 +86,19 @@ export interface IPrice {
 
 export interface IKatuze {
   id: number;
+  name: string;
+}
+
+export interface ISetPrice {
+  exportId: number;
+  price?: number;
+}
+
+export interface ISetComment {
+  exportId: number;
+  comment?: string;
+}
+
+export interface ICreateExport {
   name: string;
 }

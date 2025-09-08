@@ -2,5 +2,5 @@ namespace VfkVisualization.Models;
 
 public class SetActiveExportModel
 {
-    public required string ExportId { get; set; }
+    public required int ExportId { get; set; }
 }

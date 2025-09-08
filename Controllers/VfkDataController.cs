@@ -50,7 +50,14 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpPost("export")]
     public IActionResult CreateExport([FromBody] CreateExportModel export)
     {
-        service.CreateExport(export);
+        var created = service.CreateExport(export).ToModel();
+        return Ok(created);
+    }
+    
+    [HttpDelete("export/{id}")]
+    public IActionResult DeleteExport(int id)
+    {
+        service.DeleteExport(id);
         return Ok();
     }
 
@@ -69,7 +76,7 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     }
     
     [HttpGet("export/{id}")]
-    public IActionResult GetExport([FromRoute] string id)
+    public IActionResult GetExport([FromRoute] int id)
     {
         var existing = service.GetExport(id);
         if (existing == null) return NotFound();
@@ -86,14 +93,14 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpPost("session/katuze")]
     public IActionResult SetActiveKatuze([FromBody] SetActiveKatuzeModel activeKatuze)
     {
-        var session = service.SetActiveKatuze(activeKatuze);
+        var session = service.SetActiveKatuze(activeKatuze).ToModel();
         return Ok(session);
     }
 
     [HttpPost("session/export")]
     public IActionResult SetActiveExport([FromBody] SetActiveExportModel activeExport)
     {
-        var session = service.SetActiveExport(activeExport);
+        var session = service.SetActiveExport(activeExport).ToModel();
         return Ok(session);
     }
 }

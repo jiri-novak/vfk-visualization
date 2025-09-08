@@ -15,7 +15,9 @@ namespace VfkVisualization.Migrations
                 name: "vfk_export",
                 columns: table => new
                 {
-                    id = table.Column<string>(type: "TEXT", nullable: false),
+                    id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    name = table.Column<string>(type: "TEXT", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -28,10 +30,11 @@ namespace VfkVisualization.Migrations
                 columns: table => new
                 {
                     tel_id = table.Column<long>(type: "INTEGER", nullable: false),
-                    export_id = table.Column<string>(type: "TEXT", nullable: false),
+                    export_id = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "TEXT", nullable: false),
                     cena_nabidkova = table.Column<int>(type: "INTEGER", nullable: true),
-                    poznamka = table.Column<string>(type: "TEXT", nullable: true)
+                    poznamka = table.Column<string>(type: "TEXT", nullable: true),
+                    historie = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -52,7 +55,7 @@ namespace VfkVisualization.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     active_katuze_kod = table.Column<int>(type: "INTEGER", nullable: true),
                     active_katuze_name = table.Column<string>(type: "TEXT", nullable: true),
-                    active_export_id = table.Column<string>(type: "TEXT", nullable: true)
+                    active_export_id = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -65,9 +68,9 @@ namespace VfkVisualization.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_vfk_export_id",
+                name: "IX_vfk_export_name",
                 table: "vfk_export",
-                column: "id");
+                column: "name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_vfk_session_active_export_id",

@@ -56,9 +56,14 @@ public class VfkDataService(VfkDataRepository repository)
         return ms;
     }
 
-    public void CreateExport(CreateExportModel export)
+    public VfkDataExport CreateExport(CreateExportModel export)
     {
-        repository.CreateExport(export.Name);
+        return repository.CreateExport(export.Name);
+    }
+    
+    public void DeleteExport(int exportId)
+    {
+        repository.DeleteExport(exportId);
     }
 
     public IEnumerable<Ku> GetKus(string? startsWith)
@@ -71,7 +76,7 @@ public class VfkDataService(VfkDataRepository repository)
         return repository.GetExports(startsWith);
     }
 
-    public VfkDataExport? GetExport(string id)
+    public VfkDataExport? GetExport(int id)
     {
         return repository.GetExport(id);
     }
@@ -91,12 +96,12 @@ public class VfkDataService(VfkDataRepository repository)
         return repository.SetActiveExport(activeExport.ExportId);
     }
 
-    public void SetPrice(long telId, string exportId, int? price)
+    public void SetPrice(long telId, int exportId, int? price)
     {
         repository.SetPrice(telId, exportId, price);
     }
 
-    public void SetComment(long telId, string exportId, string? comment)
+    public void SetComment(long telId, int exportId, string? comment)
     {
         repository.SetComment(telId, exportId, comment);
     }

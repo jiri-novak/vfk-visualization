@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IKatuze, ISession, IVlastnik, IVybraneLv } from '../components/models/models';
+import { ICreateExport, IExport, IExportId, IKatuze, ISession, ISetComment, ISetPrice, IVlastnik, IVybraneLv } from '../components/models/models';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -19,6 +19,31 @@ export class ServerAppService {
 
   public setActiveKu(katuze: IKatuze): Observable<ISession> {
     return this.http.post<ISession>(`api/vfkData/session/katuze`, katuze);
+  }
+
+  public sectActiveExport(exportId: IExportId): Observable<ISession> {
+    return this.http.post<ISession>(`api/vfkData/session/export`, { exportId: exportId.id });
+  }
+
+  public setPrice(telId: number, setPrice: ISetPrice): Observable<Object> {
+    return this.http.post(`api/vfkData/${telId}/price`, setPrice);
+  }
+
+  public setComment(telId: number, setComment: ISetComment): Observable<Object> {
+    return this.http.post(`api/vfkData/${telId}/comment`, setComment);
+  }
+
+  public createExport(createExport: ICreateExport): Observable<IExport> {
+    return this.http.post<IExport>(`api/vfkData/export`, createExport);
+  }
+
+  public deleteExport(id: number): Observable<Object> {
+    return this.http.delete(`api/vfkData/export/${id}`);
+  }
+
+  public getExports(startsWith?: string): Observable<IExportId[]> {
+    const params = new HttpParams().append('startsWith', startsWith);
+    return this.http.get<IExportId[]>(`api/vfkData/export`, {params});
   }
 
   public getKus(startsWith?: string): Observable<IKatuze[]> {

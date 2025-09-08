@@ -19,25 +19,31 @@ namespace VfkVisualization.Migrations
 
             modelBuilder.Entity("VfkVisualization.Repositories.VfkDataExport", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT")
                         .HasColumnName("created_at_utc");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("name");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Id");
+                    b.HasIndex("Name");
 
                     b.ToTable("vfk_export", (string)null);
                 });
 
             modelBuilder.Entity("VfkVisualization.Repositories.VfkDataExportPrice", b =>
                 {
-                    b.Property<string>("ExportId")
-                        .HasColumnType("TEXT")
+                    b.Property<int>("ExportId")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("export_id");
 
                     b.Property<long>("TelId")
@@ -50,6 +56,10 @@ namespace VfkVisualization.Migrations
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("Historie")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("historie");
 
                     b.Property<string>("Poznamka")
                         .HasColumnType("TEXT")
@@ -67,8 +77,8 @@ namespace VfkVisualization.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    b.Property<string>("ActiveExportId")
-                        .HasColumnType("TEXT")
+                    b.Property<int?>("ActiveExportId")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("active_export_id");
 
                     b.Property<int?>("ActiveKatuzeKod")

@@ -1,7 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, Component } from '@angular/core';
+import { NgModule, Component, LOCALE_ID } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+
+import { registerLocaleData } from '@angular/common';
+import localeCs from '@angular/common/locales/cs';
+registerLocaleData(localeCs);
 
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { AlertModule } from 'ngx-bootstrap/alert';
@@ -93,10 +97,12 @@ export class MaterialModule { };
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
     }),
-    NgBusyModule.forRoot(busyConfigFactory())], providers: [
-      OlStyles,
-      ServerAppService,
-      provideHttpClient(withInterceptorsFromDi())
-    ]
+    NgBusyModule.forRoot(busyConfigFactory())],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'cs-CZ' },
+    OlStyles,
+    ServerAppService,
+    provideHttpClient(withInterceptorsFromDi())
+  ]
 })
 export class AppModule { }

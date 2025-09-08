@@ -36,35 +36,50 @@ public class VfkDataRepository(
             .Take(10);
     }
 
-    public void CreateExport(string name)
+    public VfkDataExport CreateExport(string name)
     {
         var export = new VfkDataExport
         {
-            Id = name,
+            Name = name,
             CreatedAtUtc = DateTime.UtcNow,
         };
 
         vfkDataReadWriteContext.Exports.Add(export);
         vfkDataReadWriteContext.SaveChanges();
+
+        return export;
     }
 
-    public VfkDataExport? GetExport(string id)
+    public void DeleteExport(int id)
+    {
+        var session = vfkDataReadWriteContext.Sessions.First();
+        session.ActiveExport = null;
+        session.ActiveExportId = null;
+        vfkDataReadWriteContext.SaveChanges();
+        
+        vfkDataReadWriteContext.Exports.Where(x => x.Id == id).ExecuteDelete();
+        vfkDataReadWriteContext.SaveChanges();
+    }
+    
+    public VfkDataExport? GetExport(int id)
     {
         return vfkDataReadWriteContext.Exports
             .Include(x => x.Prices)
             .FirstOrDefault(x => x.Id == id);
     }
-    
+
     public IEnumerable<VfkDataExport> GetExports(string? startsWith)
     {
         return vfkDataReadWriteContext.Exports.AsNoTracking()
             .Where(x => string.IsNullOrEmpty(startsWith) ||
-                        x.Id.StartsWith(startsWith));
+                        x.Name.StartsWith(startsWith));
     }
 
     public VfkDataSession GetOrCreateSession()
     {
-        var existing = vfkDataReadWriteContext.Sessions.AsNoTracking().FirstOrDefault();
+        var existing = vfkDataReadWriteContext.Sessions.AsNoTracking()
+            .Include(x => x.ActiveExport)
+            .FirstOrDefault();
 
         if (existing == null)
         {
@@ -85,7 +100,7 @@ public class VfkDataRepository(
         return session;
     }
 
-    public VfkDataSession SetActiveExport(string exportId)
+    public VfkDataSession SetActiveExport(int exportId)
     {
         var session = vfkDataReadWriteContext.Sessions.First();
         var export = vfkDataReadWriteContext.Exports.FirstOrDefault(x => x.Id == exportId);
@@ -99,7 +114,7 @@ public class VfkDataRepository(
         return session;
     }
 
-    public void SetPrice(long telId, string exportId, int? price)
+    public void SetPrice(long telId, int exportId, int? price)
     {
         if (price == null)
         {
@@ -134,7 +149,7 @@ public class VfkDataRepository(
         vfkDataReadWriteContext.SaveChanges();
     }
 
-    public void SetComment(long telId, string exportId, string? comment)
+    public void SetComment(long telId, int exportId, string? comment)
     {
         if (comment == null)
         {
