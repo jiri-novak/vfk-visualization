@@ -27,6 +27,12 @@ public class VfkDataRepository(
         // }
     }
 
+    public VfkDataExportPrice? GetExportPrice(long telId)
+    {
+        return vfkDataReadWriteContext.ExportPrices.AsNoTracking()
+            .FirstOrDefault(x => x.TelId == telId);
+    }
+
     public IEnumerable<Ku> GetKus(string? startsWith)
     {
         return vfkDbReadOnlyContext.Kus

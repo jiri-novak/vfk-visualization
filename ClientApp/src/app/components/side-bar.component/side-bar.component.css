@@ -70,6 +70,14 @@ p {
   color: red;
 }
 
-.full-width {
+.allmost-full-width {
   width: 75%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+td {
+    vertical-align: middle;
 }

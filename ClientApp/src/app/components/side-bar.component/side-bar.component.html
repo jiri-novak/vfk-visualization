@@ -12,9 +12,10 @@
     <div class="card-title" (click)="sessionCollapsed = !sessionCollapsed"><b>Session:</b></div>
     <div class="card-body">
       <form [formGroup]="exportForm">
-        <mat-form-field class="full-width">
+        <mat-form-field class="allmost-full-width">
           <mat-label>Export</mat-label>
-          <input type="text" placeholder="Vyberte" matInput formControlName="name" [matAutocomplete]="autoExport" (focus)="exportIdFocus()"/>
+          <input type="text" placeholder="Vyberte" matInput formControlName="name" [matAutocomplete]="autoExport"
+            (focus)="exportIdFocus()" />
           <mat-autocomplete #autoExport="matAutocomplete" [displayWith]="displayFnExportId"
             (optionSelected)="selectExport($event.option.value)">
             <mat-option *ngFor="let option of exportOptions | async" [value]="option">
@@ -51,10 +52,11 @@
     <b class="card-title" (click)="localizationCollapsed = !localizationCollapsed">Lokalizace:</b>
     <div class="card-body" style="width: 100%;">
       <form [formGroup]="katuzeForm">
-        <mat-form-field class="full-width">
+        <mat-form-field class="allmost-full-width">
           <mat-label>Katastrální území</mat-label>
-          <input type="text" placeholder="Vyberte" matInput formControlName="katuze" [matAutocomplete]="autoKatuze"  (focus)="katuzeFocus()"/>
-          <mat-autocomplete #autoKatuze="matAutocomplete" [displayWith]="displayFnKatuze" 
+          <input type="text" placeholder="Vyberte" matInput formControlName="katuze" [matAutocomplete]="autoKatuze"
+            (focus)="katuzeFocus()" />
+          <mat-autocomplete #autoKatuze="matAutocomplete" [displayWith]="displayFnKatuze"
             (optionSelected)="selectKu($event.option.value)">
             <mat-option *ngFor="let option of katuzeOptions | async" [value]="option">
               {{option.name}} ({{option.id}})
@@ -65,9 +67,9 @@
           <mat-icon>location_on</mat-icon>
         </button>
       </form>
- 
+
       <form [formGroup]="parForm">
-        <mat-form-field class="full-width">
+        <mat-form-field class="allmost-full-width">
           <mat-label>Parcela</mat-label>
           <input type="text" placeholder="Napište" matInput formControlName="parCislo" />
         </mat-form-field>
@@ -77,7 +79,7 @@
       </form>
 
       <form [formGroup]="lvForm">
-        <mat-form-field class="full-width">
+        <mat-form-field class="allmost-full-width">
           <mat-label>LV</mat-label>
           <input type="text" placeholder="Napište" matInput formControlName="lvId" />
         </mat-form-field>
@@ -97,29 +99,43 @@
   <div class="card">
     <div class="card-title">
       <b (click)="infoCollapsed = !infoCollapsed">Informace:</b>
-      <div class="btn-group pull-right" role="group">
-        <button type="button" class="btn btn-primary" (click)="openModal(price, 'modal-sm');">
-          <i class="fa fa-edit" aria-hidden="true"> </i>
-        </button>
-      </div>
     </div>
     <div class="card-body">
       <tabset [collapse]="infoCollapsed" [justified]="false" [vertical]="false">
         <tab heading="LV + Vlastnictví">
-          <table class="table">
-            <tbody>
-              @for (item of featureInfoData?.lv; track item) {
-              <tr>
-                <td>
-                  <div [innerHTML]="item.label"></div>
-                </td>
-                <td>
-                  <div [innerHTML]="item.valueWithUnit"></div>
-                </td>
-              </tr>
-              }
-            </tbody>
-          </table>
+          <form [formGroup]="lvInfoForm">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>nabídková cena m<sup>2</sup>:</td>
+                  <td>
+                    <mat-form-field class="full-width">
+                      <input type="number" formControlName="cena" matInput>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td>poznámka:</td>
+                  <td>
+                    <mat-form-field class="full-width">
+                      <textarea matInput formControlName="poznamka"></textarea>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                @for (item of featureInfoData?.lv; track item) {
+                <tr>
+                  <td>
+                    <div [innerHTML]="item.label"></div>
+                  </td>
+                  <td>
+                    <div [innerHTML]="item.valueWithUnit"></div>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+
+          </form>
           @for (vlastnik of featureInfoData?.vl; track vlastnik; let i = $index) {
           <table class="table">
             <tbody>
@@ -161,32 +177,6 @@
   </div>
   }
 </div>
-
-<ng-template #price>
-  <div class="modal-body text-center">
-    <p><b>Dodatečné informace k LV:</b></p>
-
-    <form class="form-horizontal" [formGroup]="lvInfoForm" (ngSubmit)="markIt()">
-      <div class="form-group form-group-sm">
-        <div class="row">
-          <label class="col col-form-label align-middle">Nabídková cena m<sup>2</sup>:</label>
-          <input class="col align-middle form-control" type="number" formControlName="cena"
-            [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }" />
-        </div>
-        <div class="row">
-          <label class="col col-form-label align-middle">Poznámka:</label>
-          <textarea class="col align-middle form-control" formControlName="poznamka" rows="10"
-            [ngClass]="{ 'is-invalid': lvInfoSubmitted && lvInfoForm.controls.cena.errors }"></textarea>
-        </div>
-        <div class="row pull-right">
-          <button class="btn btn-success">
-            <i class="fa fa-check"></i>
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
-</ng-template>
 
 <ng-template #selectedLvs>
   <div class="modal-body text-center">

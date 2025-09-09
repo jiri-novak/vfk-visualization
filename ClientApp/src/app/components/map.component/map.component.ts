@@ -329,10 +329,10 @@ export class MapComponent implements OnInit {
           dataLv = self.getData(propertiesLv, self.lvAttrTranslate);
           dataPar = self.getData(propertiesPar, self.parAttrTranslate);
 
-          this.busy = self.serverAppService.getLvInfo(telId).subscribe(vlastnici => {
-            dataVl = vlastnici.map(v => self.getData(v, self.vlAttrTranslate));
+          this.busy = self.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
+            dataVl = lvInfo.vlastnici.map(v => self.getData(v, self.vlAttrTranslate));
 
-            self.featureInfoData.next({ par: dataPar, lv: dataLv, vl: dataVl, telId });
+            self.featureInfoData.next({ par: dataPar, lv: dataLv, vl: dataVl, telId, cena: lvInfo.cena?.cenaNabidkova, poznamka: lvInfo.cena?.poznamka });
           }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
         }
       }, () => {

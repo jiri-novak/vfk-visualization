@@ -13,12 +13,12 @@ export interface ILocalizationByLv {
 }
 
 export interface IFeatureInfoData {
-  telId: string;
+  telId: number;
   par: ISortableLabel[];
   lv: ISortableLabel[];
   vl: ISortableLabel[][];
-  cenaNabidkova?: number;
-  poznamka?: string;
+  cena?: number;
+  poznamka: string;
 }
 
 export interface ISortableLabelDefinition {
@@ -39,6 +39,11 @@ export interface ISortableLabel {
   order: number;
 }
 
+export interface ILvInfo {
+  vlastnici: IVlastnik[];
+  cena: IPrice
+}
+
 export interface IVlastnik {
   jmeno: string;
   adresa: string;
@@ -49,7 +54,7 @@ export interface IVlastnik {
 }
 
 export interface IVybraneLv {
-  telId: string;
+  telId: number;
   cena: number;
   ku: string;
   cislo: string;

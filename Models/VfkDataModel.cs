@@ -1,3 +1,5 @@
+using VfkVisualization.Repositories;
+
 namespace VfkVisualization.Models;
 
 public class VfkDataModel

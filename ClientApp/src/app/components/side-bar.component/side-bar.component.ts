@@ -1,5 +1,5 @@
 import { ToastrService } from 'ngx-toastr';
-import { debounceTime, firstValueFrom, Observable, Subscription, switchMap } from 'rxjs';
+import { debounceTime, filter, firstValueFrom, Observable, Subscription, switchMap } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter, TemplateRef, InjectionToken } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv, IKatuze, ISession, IExportId, ICreateExport } from '../models/models';
@@ -56,14 +56,14 @@ export class SideBarComponent implements OnInit {
     });
 
     this.exportOptions = this.exportForm.controls.name.valueChanges
-      .pipe(debounceTime(10), switchMap(s => this.serverAppService.getExports(s)));
+      .pipe(debounceTime(1000), switchMap(s => this.serverAppService.getExports(s)));
 
     this.katuzeForm = this.formBuilder.group({
       katuze: ['', Validators.required]
     });
 
     this.katuzeOptions = this.katuzeForm.controls.katuze.valueChanges
-      .pipe(debounceTime(10), switchMap(s => this.serverAppService.getKus(s)));
+      .pipe(debounceTime(1000), switchMap(s => this.serverAppService.getKus(s)));
 
     this.parForm = this.formBuilder.group({
       parCislo: ['782/8', Validators.required]
@@ -78,19 +78,31 @@ export class SideBarComponent implements OnInit {
       cena: [''],
       poznamka: ['']
     });
+
+    this.lvInfoForm.controls.cena.valueChanges
+      .pipe(debounceTime(1000),
+        switchMap(s => this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, price: s })))
+      .subscribe();
+
+    this.lvInfoForm.controls.poznamka.valueChanges
+      .pipe(debounceTime(1000),
+        switchMap(s => this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, comment: s })))
+      .subscribe();
   }
 
-  async ngOnInit() {
-    this.session = await firstValueFrom(this.serverAppService.getSession());
+  ngOnInit() {
+    this.busy = this.serverAppService.getSession().subscribe(s => {
+      this.session = s;
 
-    if (!!this.session.activeKatuzeKod && !!this.session.activeKatuzeName) {
-      const katuze: IKatuze = { id: this.session.activeKatuzeKod, name: this.session.activeKatuzeName };
-      this.katuzeForm.controls.katuze.setValue(katuze, { emitEvent: false });
-    }
+      if (!!this.session.activeKatuzeKod && !!this.session.activeKatuzeName) {
+        const katuze: IKatuze = { id: this.session.activeKatuzeKod, name: this.session.activeKatuzeName };
+        this.katuzeForm.controls.katuze.setValue(katuze, { emitEvent: false });
+      }
 
-    if (!!this.session.activeExport) {
-      this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
-    }
+      if (!!this.session.activeExport) {
+        this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
+      }
+    });
   }
 
   displayFnKatuze(katuze: IKatuze): string {
@@ -144,6 +156,8 @@ export class SideBarComponent implements OnInit {
 
   showFeatureInfoData(event: IFeatureInfoData) {
     this.featureInfoData = event;
+    this.lvInfoForm.controls.cena.setValue(event.cena, { emitEvent: false });
+    this.lvInfoForm.controls.poznamka.setValue(event.poznamka, { emitEvent: false });
   }
 
   cancelSelection() {
@@ -162,23 +176,6 @@ export class SideBarComponent implements OnInit {
 
   closeModal() {
     this.modalRef.hide();
-  }
-
-  markIt() {
-    const existing = this.selected.find(x => x.telId === this.featureInfoData.telId);
-    if (!!existing) {
-      existing.cena = this.lvInfoForm.value.cena;
-    } else {
-      this.selected.push({
-        ku: this.featureInfoData.lv.find(x => x.label === 'k.ú.:').valueWithUnit,
-        cislo: this.featureInfoData.lv.find(x => x.label === 'číslo:').valueWithUnit,
-        telId: this.featureInfoData.telId,
-        cena: this.lvInfoForm.value.cena,
-        poznamka: this.lvInfoForm.value.poznamka,
-        inEdit: false
-      });
-    }
-    this.closeModal();
   }
 
   unMarkAll() {

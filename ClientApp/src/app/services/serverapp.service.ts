@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ICreateExport, IExport, IExportId, IKatuze, ISession, ISetComment, ISetPrice, IVlastnik, IVybraneLv } from '../components/models/models';
+import { ICreateExport, IExport, IExportId, IKatuze, ILvInfo, ISession, ISetComment, ISetPrice, IVlastnik, IVybraneLv } from '../components/models/models';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -9,8 +9,8 @@ export class ServerAppService {
   constructor(private http: HttpClient) {
   }
 
-  public getLvInfo(telId: string): Observable<IVlastnik[]> {
-    return this.http.get<IVlastnik[]>(`api/VfkData/${telId}`);
+  public getLvInfo(telId: string): Observable<ILvInfo> {
+    return this.http.get<ILvInfo>(`api/VfkData/${telId}`);
   }
 
   public getSession(): Observable<ISession> {

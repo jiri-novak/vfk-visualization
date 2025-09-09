@@ -19,7 +19,16 @@ public class VfkDataController(VfkDataService service) : ControllerBase
         if (!telId.HasValue)
             return BadRequest();
 
-        return Ok(service.Get(telId.Value).Select(x => x.ToModel()).ToArray());
+        var vfkData = service.Get(telId.Value);
+        var exportPrice = service.GetExportPrice(telId.Value);
+
+        var model = new VfkDataModels
+        {
+            Vlastnici = vfkData.Select(x => x.ToModel()).ToList(),
+            Cena = exportPrice?.ToModel()
+        };
+        
+        return Ok(model);
     }
 
     [HttpPost("{telId}/price")]

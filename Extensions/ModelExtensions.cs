@@ -43,7 +43,7 @@ internal static class ModelExtensions
         };
     }
 
-    private static PriceModel ToModel(this VfkDataExportPrice p)
+    public static PriceModel ToModel(this VfkDataExportPrice p)
     {
         return new PriceModel
         {

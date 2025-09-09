@@ -16,6 +16,11 @@ public class VfkDataService(VfkDataRepository repository)
         return repository.Get(telId);
     }
 
+    public VfkDataExportPrice? GetExportPrice(long telId)
+    {
+        return repository.GetExportPrice(telId);
+    }
+
     public Stream Export(VfkDataExport export)
     {
         var refs = export.Prices.ToDictionary(x => x.TelId, x => x);
