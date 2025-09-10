@@ -37,7 +37,6 @@ export class SideBarComponent implements OnInit {
   lvInfoForm: UntypedFormGroup;
 
   sessionCollapsed = false;
-  legendCollapsed = true;
   localizationCollapsed = false;
   infoCollapsed = false;
   selectedCollapsed = true;
@@ -144,6 +143,9 @@ export class SideBarComponent implements OnInit {
     this.busy = this.serverAppService.deleteExport(this.session.activeExport.id).subscribe(s => {
       this.exportForm.controls.name.setValue('', { emitEvent: false });
     });
+  }
+
+  viewExport() {
   }
 
   selectExport(exportId: IExportId) {

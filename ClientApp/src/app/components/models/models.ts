@@ -19,6 +19,7 @@ export interface IFeatureInfoData {
   vl: ISortableLabel[][];
   cena?: number;
   poznamka: string;
+  datum: Date;
 }
 
 export interface ISortableLabelDefinition {

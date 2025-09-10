@@ -107,6 +107,7 @@ export class MapComponent implements OnInit {
   view: View;
   mousePosition: MousePosition;
   layerSwitcher: LayerSwitcher;
+  legendCollapsed: boolean = true;
 
   ngOnInit() {
     this.epsg5514Ne = new Projection({
@@ -332,7 +333,15 @@ export class MapComponent implements OnInit {
           this.busy = self.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
             dataVl = lvInfo.vlastnici.map(v => self.getData(v, self.vlAttrTranslate));
 
-            self.featureInfoData.next({ par: dataPar, lv: dataLv, vl: dataVl, telId, cena: lvInfo.cena?.cenaNabidkova, poznamka: lvInfo.cena?.poznamka });
+            self.featureInfoData.next({
+              par: dataPar,
+              lv: dataLv,
+              vl: dataVl,
+              telId: telId,
+              cena: lvInfo.cena?.cenaNabidkova,
+              poznamka: lvInfo.cena?.poznamka,
+              datum: lvInfo.cena?.createdAt
+            });
           }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
         }
       }, () => {
@@ -342,7 +351,7 @@ export class MapComponent implements OnInit {
   }
 
   private getData(properties: any, translate: Map<string, ISortableLabelDefinition>): ISortableLabel[] {
-    const data: ISortableLabel[] = [];
+    let data: ISortableLabel[] = [];
 
     for (const key of Object.keys(properties)) {
       if (!translate.has(key)) {
@@ -351,9 +360,12 @@ export class MapComponent implements OnInit {
 
       const metadata = translate.get(key);
       const unit = !!properties[key] ? metadata.unit : null;
-      const value = metadata.transformFunc == null
+      let value = metadata.transformFunc == null
         ? properties[key]
         : metadata.transformFunc(properties[key]);
+      if (unit == ' m<sup>2</sup>') {
+        value = parseFloat(value).toLocaleString('cs-CZ');
+      }
       const valueWithUnit = value != null
         ? unit != null
           ? `${value} ${unit}`
@@ -372,6 +384,15 @@ export class MapComponent implements OnInit {
         class: cssClass,
         valueWithUnit
       });
+    }
+
+    const ku = data.find(x => x.id == 'KU');
+    const kuKod = data.find(x => x.id == 'KATUZE_KOD');
+
+    if (!!ku && !!kuKod) {
+      ku.value = `${ku.value} (${kuKod.value})`;
+      ku.valueWithUnit = ku.value;
+      data = data.filter(x => x != kuKod);
     }
 
     data.sort((a: ISortableLabel, b: ISortableLabel) => {

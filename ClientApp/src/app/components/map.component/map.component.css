@@ -14,3 +14,17 @@
     z-index: 2;
     font-weight: bold;
 }
+
+.legend {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    z-index: 1000;
+
+    img {
+        padding: 10px;
+        background-color: white;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+}

@@ -22,7 +22,7 @@ public class VfkDataController(VfkDataService service) : ControllerBase
         var vfkData = service.Get(telId.Value);
         var exportPrice = service.GetExportPrice(telId.Value);
 
-        var model = new VfkDataModels
+        var model = new LvInfoModel
         {
             Vlastnici = vfkData.Select(x => x.ToModel()).ToList(),
             Cena = exportPrice?.ToModel()

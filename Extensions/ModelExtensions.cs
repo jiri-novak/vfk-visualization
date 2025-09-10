@@ -48,7 +48,7 @@ internal static class ModelExtensions
         return new PriceModel
         {
             TelId = p.TelId,
-            CreatedAtUtc = p.CreatedAtUtc.ToLocalTime(),
+            CreatedAt = p.CreatedAtUtc.ToLocalTime(),
             CenaNabidkova = p.CenaNabidkova,
             Poznamka = p.Poznamka
         };
