@@ -7,7 +7,10 @@ namespace VfkVisualization.Repositories;
 public class VfkData
 {
     [EpplusIgnore] public int Id { get; set; }
-    [Description("kraj")] [EpplusOrder(1)] public string? Kraj { get; set; }
+    
+    [Description("kraj")] 
+    [EpplusOrder(2)] 
+    public string? Kraj { get; set; }
 
     [Description("okres")]
     [EpplusOrder(3)]
