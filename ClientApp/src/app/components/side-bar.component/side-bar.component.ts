@@ -1,8 +1,8 @@
 import { ToastrService } from 'ngx-toastr';
-import { debounceTime, filter, firstValueFrom, Observable, Subscription, switchMap } from 'rxjs';
-import { Component, OnInit, Output, EventEmitter, TemplateRef, InjectionToken } from '@angular/core';
+import { debounceTime, Observable, Subscription, switchMap } from 'rxjs';
+import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IVybraneLv, IKatuze, ISession, IExportId, ICreateExport } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ICreateExport } from '../models/models';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { DatePipe } from '@angular/common';
@@ -40,8 +40,6 @@ export class SideBarComponent implements OnInit {
   localizationCollapsed = false;
   infoCollapsed = false;
   selectedCollapsed = true;
-
-  selected: IVybraneLv[] = [];
 
   featureInfoData: IFeatureInfoData;
 
@@ -167,12 +165,6 @@ export class SideBarComponent implements OnInit {
   }
 
   openModal(template: TemplateRef<any>, c: string) {
-    this.lvInfoForm.reset();
-    const existing = this.selected.find(x => x.telId === this.featureInfoData.telId);
-    if (!!existing) {
-      this.lvInfoForm.controls.cena.setValue(existing.cena);
-      this.lvInfoForm.controls.poznamka.setValue(existing.poznamka);
-    }
     this.modalRef = this.modalService.show(template, { class: `${c} modal-dialog modal-xl modal-dialog-centered` });
   }
 
@@ -181,27 +173,26 @@ export class SideBarComponent implements OnInit {
   }
 
   unMarkAll() {
-    this.selected = [];
   }
 
   export() {
-    this.busy = this.serverAppService.export(this.selected)
+    this.busy = this.serverAppService.export({ exportId: this.session.activeExport.id})
       .subscribe(
         () => this.toastrService.success('Sestava vybraných LV úspěšně vygenerována.', 'Generování XLSX'),
         () => this.toastrService.error('Sestavu vybraných LV se nepodařilo vygenerovat.', 'Generování XLSX'));
   }
 
-  delete(item: IVybraneLv) {
-    this.selected = this.selected.filter(x => x.telId !== item.telId);
-  }
+  // delete(item: IVybraneLv) {
+  //   // this.selected = this.selected.filter(x => x.telId !== item.telId);
+  // }
 
-  edit(item: IVybraneLv) {
-    item.inEdit = true;
-  }
+  // edit(item: IVybraneLv) {
+  //   item.inEdit = true;
+  // }
 
-  confirm(item: IVybraneLv) {
-    item.inEdit = false;
-  }
+  // confirm(item: IVybraneLv) {
+  //   item.inEdit = false;
+  // }
 
   onLocalizeKu() {
     console.log(`Lokalizace na katastralni uzemi: ${this.session.activeKatuzeKod}.`);

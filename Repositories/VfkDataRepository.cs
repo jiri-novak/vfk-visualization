@@ -17,14 +17,14 @@ public class VfkDataRepository(
 
     public IEnumerable<VfkData> Get(IReadOnlyCollection<long> telIds)
     {
-        return vfkDbReadOnlyContext.Entries.Where(x => telIds.Contains(x.TelId));
-        // foreach (var telId in telIds)
-        // {
-        //     foreach (var data in Get(telId))
-        //     {
-        //         yield return data;
-        //     }
-        // }
+        // return vfkDbReadOnlyContext.Entries.Where(x => telIds.Contains(x.TelId));
+        foreach (var telId in telIds)
+        {
+            foreach (var data in Get(telId))
+            {
+                yield return data;
+            }
+        }
     }
 
     public VfkDataExportPrice? GetExportPrice(long telId)

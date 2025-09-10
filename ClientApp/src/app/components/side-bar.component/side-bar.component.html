@@ -35,9 +35,11 @@
       <b (click)="selectedCollapsed = !selectedCollapsed">Vybrané LV:</b>
       <div class="btn-group pull-right" role="group">
         <button type="button" class="btn btn-secondary" (click)="openModal(selectedLvs, 'modal-lg');">
-          <span class="badge badge-default"><b>{{selected.length}}</b></span>
+          <!-- <span class="badge badge-default"><b>{{selected.length}}</b></span> 
+           
+           [disabled]="selected.length < 1"-->
         </button>
-        <button type="button" class="btn btn-primary" (click)="export();" [disabled]="selected.length < 1">
+        <button type="button" class="btn btn-primary" (click)="export();">
           <i class="fa fa-download" aria-hidden="true">
           </i>
         </button>

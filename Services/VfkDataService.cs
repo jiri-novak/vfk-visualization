@@ -50,6 +50,7 @@ public class VfkDataService(VfkDataRepository repository)
             var membersToInclude = typeof(VfkData)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(a => !Attribute.IsDefined(a, typeof(VfkData.EpplusIgnore)))
+                .OrderBy(a => a.GetCustomAttribute<VfkData.EpplusOrder>()!.Order)
                 .ToArray();
 
             ws.Cells.LoadFromCollection(excelData, true, OfficeOpenXml.Table.TableStyles.Light1, BindingFlags.Instance | BindingFlags.Public, membersToInclude);

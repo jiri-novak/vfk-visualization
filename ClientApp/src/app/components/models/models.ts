@@ -54,14 +54,8 @@ export interface IVlastnik {
   zemedelec: boolean;
 }
 
-export interface IVybraneLv {
-  telId: number;
-  cena: number;
-  ku: string;
-  cislo: string;
-  poznamka: string;
-
-  inEdit: boolean;
+export interface IGenerateExcel {
+  exportId: number;
 }
 
 export interface ISession {
