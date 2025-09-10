@@ -20,7 +20,7 @@ import { METERS_PER_UNIT } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 
 import { OlStyles } from 'src/app/services/ol.styling.service';
-import { IFeatureInfoData, ISortableLabel, ISortableLabelDefinition } from '../models/models';
+import { IFeatureInfoData, ISortableLabel, ISortableLabelDefinition, IVlastnik } from '../models/models';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -73,12 +73,12 @@ export class MapComponent implements OnInit {
     ]);
 
     this.vlAttrTranslate = new Map([
-      ['jmeno', { label: 'jméno:', order: 1, unit: '' }],
-      ['adresa', { label: 'adresa:', order: 2, unit: '' }],
-      ['podil', { label: 'podíl:', order: 3, unit: ' %' }],
-      ['podilM2', { label: 'podíl:', order: 4, unit: ' m<sup>2</sup>' }],
-      ['typ', { label: 'typ:', order: 5, unit: '', transformFunc: this.transformTypVlastnictvi }],
-      ['zemedelec', { label: 'zemědělec:', order: 6, unit: '', transformFunc: this.transformTrueFalse, ccsClassFunc: this.zvyrazniZemedelce }],
+      ['zemedelec', { label: 'zemědělec:', order: 1, unit: '', transformFunc: this.transformTrueFalse, ccsClassFunc: this.zvyrazniZemedelce }],
+      ['jmeno', { label: 'jméno:', order: 2, unit: '' }],
+      ['adresa', { label: 'adresa:', order: 3, unit: '' }],
+      ['podil', { label: 'podíl:', order: 4, unit: ' %' }],
+      ['podilM2', { label: 'podíl:', order: 5, unit: ' m<sup>2</sup>' }],
+      ['typ', { label: 'typ:', order: 6, unit: '', transformFunc: this.transformTypVlastnictvi }],
     ]);
   }
 
@@ -331,7 +331,12 @@ export class MapComponent implements OnInit {
           dataPar = self.getData(propertiesPar, self.parAttrTranslate);
 
           this.busy = self.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
-            dataVl = lvInfo.vlastnici.map(v => self.getData(v, self.vlAttrTranslate));
+            dataVl = lvInfo.vlastnici
+              .sort((a: IVlastnik, b: IVlastnik) => {
+                return (a.zemedelec ? 'ano' : 'ne').localeCompare(b.zemedelec ? 'ano': 'ne') // zemedelec ASC
+                  || b.podil - a.podil; // podil DESC
+              })
+              .map(v => self.getData(v, self.vlAttrTranslate));
 
             self.featureInfoData.next({
               par: dataPar,
