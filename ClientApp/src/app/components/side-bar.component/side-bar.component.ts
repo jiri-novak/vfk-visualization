@@ -1,8 +1,8 @@
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, Observable, Subscription, switchMap } from 'rxjs';
-import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, TemplateRef, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ICreateExport } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ICreateExport, IExportDetails, IPriceDetails } from '../models/models';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { DatePipe } from '@angular/common';
@@ -19,6 +19,8 @@ export class SideBarComponent implements OnInit {
   @Output() localizationByPar: EventEmitter<ILocalizationByPar> = new EventEmitter<ILocalizationByPar>();
   @Output() localizationByLv: EventEmitter<ILocalizationByLv> = new EventEmitter<ILocalizationByLv>();
   @Output() localizationCancel: EventEmitter<void> = new EventEmitter<void>();
+
+  @ViewChild('selectedLvs', { static: true }) selectedLvsRef: TemplateRef<any>;
 
   busy: Subscription;
 
@@ -41,6 +43,8 @@ export class SideBarComponent implements OnInit {
   infoCollapsed = false;
 
   featureInfoData: IFeatureInfoData;
+
+  exportDetails: IExportDetails;
 
   constructor(
     private toastrService: ToastrService,
@@ -171,6 +175,15 @@ export class SideBarComponent implements OnInit {
   unMarkAll() {
   }
 
+  viewExport() {
+    this.busy = this.serverAppService.getExportDetails(this.session.activeExport.id)
+      .subscribe(d => {
+        this.exportDetails = d;
+        console.log(d);
+        this.openModal(this.selectedLvsRef, 'modal-lg');
+      });
+  }
+
   export() {
     this.busy = this.serverAppService.export({ exportId: this.session.activeExport.id })
       .subscribe(
@@ -178,17 +191,17 @@ export class SideBarComponent implements OnInit {
         () => this.toastrService.error('Sestavu vybraných LV se nepodařilo vygenerovat.', 'Generování XLSX'));
   }
 
-  // delete(item: IVybraneLv) {
-  //   // this.selected = this.selected.filter(x => x.telId !== item.telId);
-  // }
+  delete(item: IPriceDetails) {
+    // this.selected = this.selected.filter(x => x.telId !== item.telId);
+  }
 
-  // edit(item: IVybraneLv) {
-  //   item.inEdit = true;
-  // }
+  edit(item: IPriceDetails) {
+    item.inEdit = true;
+  }
 
-  // confirm(item: IVybraneLv) {
-  //   item.inEdit = false;
-  // }
+  confirm(item: IPriceDetails) {
+    item.inEdit = false;
+  }
 
   onLocalizeKu() {
     console.log(`Lokalizace na katastralni uzemi: ${this.session.activeKatuzeKod}.`);

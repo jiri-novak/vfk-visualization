@@ -72,6 +72,21 @@ export interface IExport {
   prices: IPrice[];
 }
 
+export interface IExportDetails {
+  prices: IPriceDetails[];
+}
+
+export interface IPriceDetails {
+  pracoviste: string;
+  ku: string;
+  cisloLv: number;
+  telId: number;
+  cenaNabidkova?: number;
+  poznamka?: string;
+  createdAt: Date;
+  inEdit: boolean;
+}
+
 export interface IExportId {
   id: number;
   name: string;

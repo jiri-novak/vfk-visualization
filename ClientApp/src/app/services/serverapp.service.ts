@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ICreateExport, IExport, IExportId, IGenerateExcel, IKatuze, ILvInfo, ISession, ISetComment, ISetPrice } from '../components/models/models';
+import { ICreateExport, IExport, IExportDetails, IExportId, IGenerateExcel, IKatuze, ILvInfo, ISession, ISetComment, ISetPrice } from '../components/models/models';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -49,6 +49,10 @@ export class ServerAppService {
   public getKus(startsWith?: string): Observable<IKatuze[]> {
     const params = new HttpParams().append('startsWith', startsWith);
     return this.http.get<IKatuze[]>(`api/vfkData/kus`, {params});
+  }
+
+  public getExportDetails(exportId: number): Observable<IExportDetails> {
+    return this.http.get<IExportDetails>(`api/vfkData/export/${exportId}`);
   }
 
   public export(generateExcel: IGenerateExcel): Observable<any> {

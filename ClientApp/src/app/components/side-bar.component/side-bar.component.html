@@ -15,7 +15,7 @@
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
-        <button matIconButton (click)="openModal(selectedLvs, 'modal-lg');">
+        <button matIconButton (click)="viewExport()">
           <mat-icon>view_list</mat-icon>
         </button>
         <button matIconButton (click)="export()">
@@ -200,31 +200,41 @@
 
 <ng-template #selectedLvs>
   <div class="modal-body text-center">
-    <p><b>Seznam vybraných LV:</b></p>
     <div class="col-sm-12 selected-lvs">
       <table class="table">
         <thead>
           <tr>
             <th>Pracoviště:</th>
-            <th>K.ú.:</th>\
+            <th>K.ú.:</th>
             <th>Id LV:</th>
+            <th>Datum:</th>
             <th>Cena:</th>
             <th>Poznámka:</th>
             <th></th>
+            <!-- pracoviste: string;
+  ku: string;
+  cisloLv: number;
+  telId: number;
+  cenaNabidkova?: number;
+  poznamka?: string;
+  createdAt: Date; -->
           </tr>
         </thead>
         <tbody>
-          @for (item of selected; track item) {
+          @for (item of exportDetails.prices; track item) {
           <tr>
+            <td>{{item.pracoviste}}</td>
             <td>{{item.ku}}</td>
-            <td>{{item.cislo}}</td>
-            <td>{{item.telId}}</td>
-            @if (!item.inEdit) {
-            <td style="width: 100px; text-align: center">{{item.cena}}</td>
+            <td>{{item.cisloLv}}</td>
+            <td>{{item.createdAt | date:'d. MMMM yyyy HH:mm:ss'}}</td>
+            <td style="width: 100px; text-align: center">{{item.cenaNabidkova}}</td>
+            <td style="width: 300px; text-align: center">{{item.poznamka}}</td>
+            <!-- @if (!item.inEdit) {
+            <td style="width: 100px; text-align: center">{{item.cenaNabidkova}}</td>
             }
             @if (item.inEdit) {
             <td style="width: 100px; text-align: center">
-              <input type="number" [(ngModel)]="item.cena" style="width: 60px; text-align: right" />
+              <input type="number" [(ngModel)]="item.cenaNabidkova" style="width: 60px; text-align: right" />
             </td>
             }
             @if (!item.inEdit) {
@@ -234,9 +244,9 @@
             <td style="width: 300px; text-align: center">
               <textarea rows="10" style="width: 100%;" [(ngModel)]="item.poznamka"></textarea>
             </td>
-            }
+            } -->
             <td>
-              <div class="btn-group pull-right" role="group">
+              <!-- <div class="btn-group pull-right" role="group">
                 <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="delete(item);"
                   title="Smazat">
                   <i class="fa fa-trash"></i>
@@ -249,14 +259,14 @@
                   [disabled]="!item.inEdit" title="Potvrdit editaci">
                   <i class="fa fa-check"></i>
                 </button>
-              </div>
+              </div> -->
             </td>
           </tr>
           }
         </tbody>
       </table>
     </div>
-    <div class="buttons col-sm-12">
+    <!-- <div class="buttons col-sm-12">
       <div class="btn-group pull-right" role="group">
         <button type="button" class="btn btn-danger" (click)="unMarkAll();" style="width: 40px;">
           <i class="fa fa-trash"></i>
@@ -265,6 +275,6 @@
           <i class="fa fa-check"></i>
         </button>
       </div>
-    </div>
+    </div> -->
   </div>
 </ng-template>
