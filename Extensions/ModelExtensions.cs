@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using VfkVisualization.Models;
 using VfkVisualization.Repositories;
@@ -31,7 +32,7 @@ internal static class ModelExtensions
             CreatedAt = e.CreatedAtUtc.ToLocalTime(),
         };
     }
-    
+
     public static ExportModel ToModel(this VfkDataExport e)
     {
         return new ExportModel
@@ -40,6 +41,29 @@ internal static class ModelExtensions
             Name = e.Name,
             CreatedAt = e.CreatedAtUtc.ToLocalTime(),
             Prices = e.Prices.Select(x => x.ToModel()).ToList()
+        };
+    }
+
+    public static ExportDetailsModel ToDetailsModel(this VfkDataExport e, IReadOnlyDictionary<long, VfkDataLabels> labels)
+    {
+        return new ExportDetailsModel
+        {
+            Prices = e.Prices
+                .Select(x =>
+                {
+                    var l = labels[x.TelId];
+                    return new PriceDetailsModel
+                    {
+                        CisloLv = l.CisloLv!.Value,
+                        Pracoviste = l.Pracoviste!,
+                        Ku = $"{l.Katuze!} ({l.KatuzeKod})",
+                        TelId = x.TelId,
+                        CreatedAt = x.CreatedAtUtc.ToLocalTime(),
+                        CenaNabidkova = x.CenaNabidkova,
+                        Poznamka = x.Poznamka
+                    };
+                })
+                .ToList()
         };
     }
 

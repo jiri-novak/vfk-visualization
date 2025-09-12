@@ -48,7 +48,7 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpPost("generate/excel")]
     public IActionResult Export([FromBody] GenerateExcelModel model)
     {
-        var export = service.GetExport(model.ExportId);
+        var (export, _) = service.GetExport(model.ExportId);
         
         if (export == null)
             return NotFound();
@@ -87,9 +87,9 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpGet("export/{id}")]
     public IActionResult GetExport([FromRoute] int id)
     {
-        var existing = service.GetExport(id);
-        if (existing == null) return NotFound();
-        return Ok(existing.ToModel());
+        var (export, labels) = service.GetExport(id);
+        if (export == null) return NotFound();
+        return Ok(export.ToDetailsModel(labels));
     }
 
     [HttpGet("session")]

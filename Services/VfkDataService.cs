@@ -82,9 +82,13 @@ public class VfkDataService(VfkDataRepository repository)
         return repository.GetExports(startsWith);
     }
 
-    public VfkDataExport? GetExport(int id)
+    public (VfkDataExport? Export, IReadOnlyDictionary<long, VfkDataLabels> Labels) GetExport(int id)
     {
-        return repository.GetExport(id);
+        var export = repository.GetExport(id);
+        if (export == null) return (null, new Dictionary<long, VfkDataLabels>());
+        var telIds = export.Prices.Select(x => x.TelId).Distinct().ToList();
+        var labels = repository.GetLabels(telIds).ToDictionary(x => x.TelId);
+        return (export, labels);
     }
 
     public VfkDataSession GetOrCreateSession()

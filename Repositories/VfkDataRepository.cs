@@ -27,6 +27,28 @@ public class VfkDataRepository(
         }
     }
 
+    public IEnumerable<VfkDataLabels> GetLabels(IReadOnlyCollection<long> telIds)
+    {
+        foreach (var telId in telIds)
+        {
+            var data = vfkDbReadOnlyContext.Entries
+                .Select(x => new { x.TelId, x.LvId, x.Pracoviste, x.KatastralniUzemi, x.KatuzeKod })
+                .FirstOrDefault(x => x.TelId == telId);
+
+            if (data != null)
+            {
+                yield return new VfkDataLabels
+                {
+                    TelId = data.TelId,
+                    CisloLv = data.LvId,
+                    Katuze = data.KatastralniUzemi,
+                    KatuzeKod = data.KatuzeKod,
+                    Pracoviste = data.Pracoviste,
+                };
+            }
+        }
+    }
+
     public VfkDataExportPrice? GetExportPrice(long telId)
     {
         return vfkDataReadWriteContext.ExportPrices.AsNoTracking()
@@ -63,11 +85,11 @@ public class VfkDataRepository(
         session.ActiveExport = null;
         session.ActiveExportId = null;
         vfkDataReadWriteContext.SaveChanges();
-        
+
         vfkDataReadWriteContext.Exports.Where(x => x.Id == id).ExecuteDelete();
         vfkDataReadWriteContext.SaveChanges();
     }
-    
+
     public VfkDataExport? GetExport(int id)
     {
         return vfkDataReadWriteContext.Exports

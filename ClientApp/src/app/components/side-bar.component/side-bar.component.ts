@@ -39,11 +39,8 @@ export class SideBarComponent implements OnInit {
   sessionCollapsed = false;
   localizationCollapsed = false;
   infoCollapsed = false;
-  selectedCollapsed = true;
 
   featureInfoData: IFeatureInfoData;
-
-  displayedColumns: string[] = ['label', 'valueWithUnit'];
 
   constructor(
     private toastrService: ToastrService,
@@ -143,9 +140,6 @@ export class SideBarComponent implements OnInit {
     this.busy = this.serverAppService.deleteExport(this.session.activeExport.id).subscribe(s => {
       this.exportForm.controls.name.setValue('', { emitEvent: false });
     });
-  }
-
-  viewExport() {
   }
 
   selectExport(exportId: IExportId) {
