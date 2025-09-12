@@ -132,18 +132,20 @@
                   <td>
                     <div [innerHTML]="item.label"></div>
                   </td>
-                  <td style="display: flex; align-items: center;">
-                    <div [innerHTML]="item.valueWithUnit"></div>
-                    @if (item.id == 'KU') {
-                    <button matIconButton (click)="onLocalizeKu2()">
-                      <mat-icon>location_on</mat-icon>
-                    </button>
-                    }
-                    @if (item.id == 'LVID') {
-                    <button matIconButton (click)="onLocalizeLv2()">
-                      <mat-icon>location_on</mat-icon>
-                    </button>
-                    }
+                  <td>
+                    <div style="display: flex; align-items: center;">
+                      <div [innerHTML]="item.valueWithUnit"></div>
+                      @if (item.id == 'KU') {
+                      <button matIconButton (click)="onLocalizeKu2()">
+                        <mat-icon>location_on</mat-icon>
+                      </button>
+                      }
+                      @if (item.id == 'LVID') {
+                      <button matIconButton (click)="onLocalizeLv2()">
+                        <mat-icon>location_on</mat-icon>
+                      </button>
+                      }
+                    </div>
                   </td>
                 </tr>
                 }
@@ -177,25 +179,27 @@
               @for (item of featureInfoData?.par; track item) {
               <tr>
                 <td>
-                  <div [innerHTML]="item.label"></div>
+                  <div [ngClass]="item.class" [innerHTML]="item.label"></div>
                 </td>
-                <td style="display: flex; align-items: center;">
-                  <div [innerHTML]="item.valueWithUnit"></div>
-                  @if (item.id == 'KU') {
-                  <button matIconButton (click)="onLocalizeKu2()">
-                    <mat-icon>location_on</mat-icon>
-                  </button>
-                  }
-                  @if (item.id == 'LVID') {
-                  <button matIconButton (click)="onLocalizeLv2()">
-                    <mat-icon>location_on</mat-icon>
-                  </button>
-                  }
-                  @if (item.id == 'PAR_CISLO') {
-                  <button matIconButton (click)="onLocalizePar2()">
-                    <mat-icon>location_on</mat-icon>
-                  </button>
-                  }
+                <td>
+                  <div style="display: flex; align-items: center;">
+                    <div [innerHTML]="item.valueWithUnit"></div>
+                    @if (item.id == 'KU') {
+                    <button matIconButton (click)="onLocalizeKu2()">
+                      <mat-icon>location_on</mat-icon>
+                    </button>
+                    }
+                    @if (item.id == 'LVID') {
+                    <button matIconButton (click)="onLocalizeLv2()">
+                      <mat-icon>location_on</mat-icon>
+                    </button>
+                    }
+                    @if (item.id == 'PAR_CISLO') {
+                    <button matIconButton (click)="onLocalizePar2()">
+                      <mat-icon>location_on</mat-icon>
+                    </button>
+                    }
+                  </div>
                 </td>
               </tr>
               }

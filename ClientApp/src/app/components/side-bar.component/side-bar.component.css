@@ -39,6 +39,10 @@ button {
     margin-top: 10px;
 }
 
+tr {
+    height: 52px;
+}
+
 td {
     padding: 2px;
 }

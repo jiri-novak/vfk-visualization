@@ -43,6 +43,8 @@ export class SideBarComponent implements OnInit {
 
   featureInfoData: IFeatureInfoData;
 
+  displayedColumns: string[] = ['label', 'valueWithUnit'];
+
   constructor(
     private toastrService: ToastrService,
     private formBuilder: UntypedFormBuilder,
