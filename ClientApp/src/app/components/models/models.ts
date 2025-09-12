@@ -38,6 +38,7 @@ export interface ISortableLabel {
   unit: string;
   valueWithUnit: string;
   order: number;
+  code?: number;
 }
 
 export interface ILvInfo {

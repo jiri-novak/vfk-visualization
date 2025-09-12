@@ -176,7 +176,7 @@ export class SideBarComponent implements OnInit {
   }
 
   export() {
-    this.busy = this.serverAppService.export({ exportId: this.session.activeExport.id})
+    this.busy = this.serverAppService.export({ exportId: this.session.activeExport.id })
       .subscribe(
         () => this.toastrService.success('Sestava vybraných LV úspěšně vygenerována.', 'Generování XLSX'),
         () => this.toastrService.error('Sestavu vybraných LV se nepodařilo vygenerovat.', 'Generování XLSX'));
@@ -201,6 +201,14 @@ export class SideBarComponent implements OnInit {
     });
   }
 
+  onLocalizeKu2() {
+    const katuzeKod = this.featureInfoData.lv.find(x => x.id == 'KU').code;
+    console.log(`Lokalizace na katastralni uzemi: ${katuzeKod}.`);
+    this.localizationByKu.next({
+      katuzeKod: katuzeKod
+    });
+  }
+
   onLocalizePar() {
     console.log(`Lokalizace na parcelu: ${this.session.activeKatuzeKod}, ${this.parForm.value.parCislo}.`);
     this.localizationByPar.next({
@@ -209,11 +217,31 @@ export class SideBarComponent implements OnInit {
     });
   }
 
+  onLocalizePar2() {
+    const katuzeKod = this.featureInfoData.lv.find(x => x.id == 'KU').code;
+    const parCislo = this.featureInfoData.par.find(x => x.id == 'PAR_CISLO').value;
+    console.log(`Lokalizace na parcelu: ${katuzeKod}, ${parCislo}.`);
+    this.localizationByPar.next({
+      katuzeKod: katuzeKod,
+      parCislo: parCislo
+    });
+  }
+
   onLocalizeLv() {
     console.log(`Lokalizace na LV: ${this.lvForm.value.kodKu}, ${this.lvForm.value.lvId}.`);
     this.localizationByLv.next({
       katuzeKod: this.lvForm.value.kodKu,
       lvId: this.lvForm.value.lvId
+    });
+  }
+
+  onLocalizeLv2() {
+    const katuzeKod = this.featureInfoData.lv.find(x => x.id == 'KU').code;
+    const lvId = parseInt(this.featureInfoData.lv.find(x => x.id == 'LVID').value);
+    console.log(`Lokalizace na LV: ${katuzeKod}, ${lvId}.`);
+    this.localizationByLv.next({
+      katuzeKod: katuzeKod,
+      lvId: lvId
     });
   }
 }

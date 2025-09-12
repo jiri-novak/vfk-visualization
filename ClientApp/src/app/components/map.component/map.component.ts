@@ -387,7 +387,7 @@ export class MapComponent implements OnInit {
         unit,
         order: metadata.order,
         class: cssClass,
-        valueWithUnit
+        valueWithUnit,
       });
     }
 
@@ -397,6 +397,7 @@ export class MapComponent implements OnInit {
     if (!!ku && !!kuKod) {
       ku.value = `${ku.value} (${kuKod.value})`;
       ku.valueWithUnit = ku.value;
+      ku.code = parseInt(kuKod.value);
       data = data.filter(x => x != kuKod);
     }
 

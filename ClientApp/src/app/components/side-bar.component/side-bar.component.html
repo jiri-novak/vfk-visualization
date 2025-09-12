@@ -100,8 +100,8 @@
       <b (click)="infoCollapsed = !infoCollapsed">Informace:</b>
     </div>
     <div class="card-body">
-      <tabset [collapse]="infoCollapsed" [justified]="false" [vertical]="false">
-        <tab heading="LV + Vlastnictví">
+      <mat-tab-group [collapse]="infoCollapsed">
+        <mat-tab label="LV + Vlastnictví">
           <form [formGroup]="lvInfoForm">
             <table class="table">
               <tbody>
@@ -132,14 +132,23 @@
                   <td>
                     <div [innerHTML]="item.label"></div>
                   </td>
-                  <td>
+                  <td style="display: flex; align-items: center;">
                     <div [innerHTML]="item.valueWithUnit"></div>
+                    @if (item.id == 'KU') {
+                    <button matIconButton (click)="onLocalizeKu2()">
+                      <mat-icon>location_on</mat-icon>
+                    </button>
+                    }
+                    @if (item.id == 'LVID') {
+                    <button matIconButton (click)="onLocalizeLv2()">
+                      <mat-icon>location_on</mat-icon>
+                    </button>
+                    }
                   </td>
                 </tr>
                 }
               </tbody>
             </table>
-
           </form>
           @for (vlastnik of featureInfoData?.vl; track vlastnik; let i = $index) {
           <table class="table">
@@ -160,8 +169,9 @@
             </tbody>
           </table>
           }
-        </tab>
-        <tab heading="Parcela">
+        </mat-tab>
+
+        <mat-tab label="Parcela">
           <table class="table">
             <tbody>
               @for (item of featureInfoData?.par; track item) {
@@ -169,15 +179,30 @@
                 <td>
                   <div [innerHTML]="item.label"></div>
                 </td>
-                <td>
+                <td style="display: flex; align-items: center;">
                   <div [innerHTML]="item.valueWithUnit"></div>
+                  @if (item.id == 'KU') {
+                  <button matIconButton (click)="onLocalizeKu2()">
+                    <mat-icon>location_on</mat-icon>
+                  </button>
+                  }
+                  @if (item.id == 'LVID') {
+                  <button matIconButton (click)="onLocalizeLv2()">
+                    <mat-icon>location_on</mat-icon>
+                  </button>
+                  }
+                  @if (item.id == 'PAR_CISLO') {
+                  <button matIconButton (click)="onLocalizePar2()">
+                    <mat-icon>location_on</mat-icon>
+                  </button>
+                  }
                 </td>
               </tr>
               }
             </tbody>
           </table>
-        </tab>
-      </tabset>
+        </mat-tab>
+      </mat-tab-group>
     </div>
   </div>
   }
