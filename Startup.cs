@@ -49,7 +49,7 @@ public class Startup(IConfiguration configuration)
         {
             app.UseDeveloperExceptionPage();
         }
-
+        
         app.UseStaticFiles();
         app.UseSpaStaticFiles();
 

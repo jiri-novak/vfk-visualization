@@ -18,7 +18,8 @@
               "rbush"
             ],
             "outputPath": {
-              "base": "../wwwroot"
+              "base": "../wwwroot",
+              "browser": ""
             },
             "index": "src/index.html",
             "polyfills": [

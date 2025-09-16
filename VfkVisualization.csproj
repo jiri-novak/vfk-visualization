@@ -24,11 +24,7 @@
         <PackageReference Include="epplus" Version="[4.5.3.1]"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
     </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Migrations\katuzes.sql" />
-    </ItemGroup>
-
+    
     <Target Name="RestoreNpmPackages" BeforeTargets="Build">
         <Message Text="Restoring NPM packages" Importance="High"/>
         <Exec Command="yarn" WorkingDirectory="ClientApp"/>
