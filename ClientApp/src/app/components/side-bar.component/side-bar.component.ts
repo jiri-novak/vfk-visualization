@@ -38,7 +38,7 @@ export class SideBarComponent implements OnInit {
   lvForm: UntypedFormGroup;
   lvInfoForm: UntypedFormGroup;
 
-  sessionCollapsed = false;
+  listCollapsed = false;
   localizationCollapsed = false;
   infoCollapsed = false;
 
@@ -117,7 +117,7 @@ export class SideBarComponent implements OnInit {
   displayFnExportId(exportId: IExportId): string {
     if (!!exportId) {
       const datePipe = new DatePipe('cs-CZ');
-      return `${exportId.name} (${datePipe.transform(exportId.createdAt, 'd. MMMM yyyy HH:mm:ss')})`;
+      return `${exportId.name} (${datePipe.transform(exportId.createdAt, 'dd.MM.yyyy HH:mm:ss')})`;
     }
     else {
       return '';

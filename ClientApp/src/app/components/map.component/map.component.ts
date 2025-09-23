@@ -262,7 +262,7 @@ export class MapComponent implements OnInit {
         this.layerVector,
         new LayerGroup({
           properties: {
-            title: 'LPIS',
+            title: 'Další vrstvy',
           },
           layers: [
             this.layerLpis

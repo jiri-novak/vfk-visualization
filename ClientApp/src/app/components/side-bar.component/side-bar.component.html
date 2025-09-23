@@ -1,7 +1,7 @@
 <div class="container-fluid" [ngBusy]="busy">
 
   <div class="card">
-    <div class="card-title" (click)="sessionCollapsed = !sessionCollapsed"><b>Session:</b></div>
+    <div class="card-title" (click)="listCollapsed = !listCollapsed"><b>Seznam:</b></div>
     <div class="card-body">
       <form [formGroup]="exportForm">
         <mat-form-field style="width: 78%;">
@@ -11,7 +11,7 @@
           <mat-autocomplete #autoExport="matAutocomplete" [displayWith]="displayFnExportId"
             (optionSelected)="selectExport($event.option.value)">
             <mat-option *ngFor="let option of exportOptions | async" [value]="option">
-              {{option.name}} ({{option.createdAt | date:'d. MMMM yyyy HH:mm:ss'}})
+              {{option.name}} ({{option.createdAt | date:'dd.MM.yyyy HH:mm:ss'}})
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -19,7 +19,7 @@
           <mat-icon>view_list</mat-icon>
         </button>
         <button matIconButton (click)="export()">
-          <mat-icon>import_export</mat-icon>
+          <mat-icon>cloud_download</mat-icon>
         </button>
         <button matButton (click)="createExport()">
           <mat-icon>add</mat-icon>
@@ -110,7 +110,7 @@
                 <tr>
                   <td>datum:</td>
                   <td>
-                    {{featureInfoData.datum | date:'d. MMMM yyyy HH:mm:ss'}}
+                    {{featureInfoData.datum | date:'dd.MM.yyyy HH:mm:ss'}}
                   </td>
                 </tr>
                 @for (item of featureInfoData?.lv; track item) {
@@ -226,7 +226,7 @@
             <td>{{item.pracoviste}}</td>
             <td>{{item.ku}}</td>
             <td>{{item.cisloLv}}</td>
-            <td>{{item.createdAt | date:'d. MMMM yyyy HH:mm:ss'}}</td>
+            <td>{{item.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</td>
             <td style="width: 100px; text-align: center">{{item.cenaNabidkova}}</td>
             <td style="width: 300px; text-align: center">{{item.poznamka}}</td>
             <!-- @if (!item.inEdit) {
