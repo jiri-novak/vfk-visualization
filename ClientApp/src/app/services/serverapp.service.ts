@@ -21,8 +21,16 @@ export class ServerAppService {
     return this.http.post<ISession>(`api/vfkData/session/katuze`, katuze);
   }
 
-  public sectActiveExport(exportId: IExportId): Observable<ISession> {
+  public setNoActiveKu(): Observable<ISession> {
+    return this.http.delete<ISession>(`api/vfkData/session/katuze`);
+  }
+
+  public setActiveExport(exportId: IExportId): Observable<ISession> {
     return this.http.post<ISession>(`api/vfkData/session/export`, { exportId: exportId.id });
+  }
+
+  public setNoActiveExport(): Observable<ISession> {
+    return this.http.delete<ISession>(`api/vfkData/session/export`);
   }
 
   public setPrice(telId: number, setPrice: ISetPrice): Observable<Object> {
@@ -37,18 +45,18 @@ export class ServerAppService {
     return this.http.post<IExport>(`api/vfkData/export`, createExport);
   }
 
-  public deleteExport(id: number): Observable<Object> {
-    return this.http.delete(`api/vfkData/export/${id}`);
+  public deleteExport(id: number): Observable<ISession> {
+    return this.http.delete<ISession>(`api/vfkData/export/${id}`);
   }
 
   public getExports(startsWith?: string): Observable<IExportId[]> {
     const params = new HttpParams().append('startsWith', startsWith);
-    return this.http.get<IExportId[]>(`api/vfkData/export`, {params});
+    return this.http.get<IExportId[]>(`api/vfkData/export`, { params });
   }
 
   public getKus(startsWith?: string): Observable<IKatuze[]> {
     const params = new HttpParams().append('startsWith', startsWith);
-    return this.http.get<IKatuze[]>(`api/vfkData/kus`, {params});
+    return this.http.get<IKatuze[]>(`api/vfkData/kus`, { params });
   }
 
   public getExportDetails(exportId: number): Observable<IExportDetails> {
@@ -80,6 +88,6 @@ export class ServerAppService {
           window.URL.revokeObjectURL(url);
           a.remove();
         })
-    );
+      );
   }
 }

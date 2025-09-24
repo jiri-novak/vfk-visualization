@@ -79,7 +79,7 @@ public class VfkDataRepository(
         return export;
     }
 
-    public void DeleteExport(int id)
+    public VfkDataSession DeleteExport(int id)
     {
         var session = vfkDataReadWriteContext.Sessions.First();
         session.ActiveExport = null;
@@ -88,6 +88,8 @@ public class VfkDataRepository(
 
         vfkDataReadWriteContext.Exports.Where(x => x.Id == id).ExecuteDelete();
         vfkDataReadWriteContext.SaveChanges();
+
+        return session;
     }
 
     public VfkDataExport? GetExport(int id)
@@ -128,6 +130,15 @@ public class VfkDataRepository(
         vfkDataReadWriteContext.SaveChanges();
         return session;
     }
+    
+    public VfkDataSession SetNoActiveKatuze()
+    {
+        var session = vfkDataReadWriteContext.Sessions.First();
+        session.ActiveKatuzeKod = null;
+        session.ActiveKatuzeName = null;
+        vfkDataReadWriteContext.SaveChanges();
+        return session;
+    }
 
     public VfkDataSession SetActiveExport(int exportId)
     {
@@ -138,6 +149,16 @@ public class VfkDataRepository(
             session.ActiveExportId = export.Id;
             session.ActiveExport = export;
         }
+
+        vfkDataReadWriteContext.SaveChanges();
+        return session;
+    }
+    
+    public VfkDataSession SetNoActiveExport()
+    {
+        var session = vfkDataReadWriteContext.Sessions.First();
+        session.ActiveExportId = null;
+        session.ActiveExport = null;
 
         vfkDataReadWriteContext.SaveChanges();
         return session;

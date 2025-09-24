@@ -39,9 +39,6 @@ button {
     margin-top: 10px;
 }
 
-tr {
-    height: 52px;
-}
 
 td {
     padding: 2px;
@@ -60,28 +57,39 @@ p {
 }
 
 .button-action {
-  margin-top: 5px;
-  vertical-align: middle;
-  cursor: pointer;
+    margin-top: 5px;
+    vertical-align: middle;
+    cursor: pointer;
 }
 
 .selected-lvs {
-  height: 400px;
-  overflow: auto;
+    height: 400px;
+    overflow: auto;
 }
 
 .red {
-  color: red;
+    color: red;
 }
 
 .allmost-full-width {
-  width: 88%;
+    width: 88%;
 }
 
 .full-width {
-  width: 100%;
+    width: 100%;
 }
 
 td {
+    vertical-align: middle;
+}
+
+.compact {
+    --mdc-icon-button-state-layer-size: 24px;
+    --mat-icon-button-state-layer-size: 24px;
+    padding: 0px;
+    vertical-align: middle;
+}
+
+.mdc-icon-button {
     vertical-align: middle;
 }

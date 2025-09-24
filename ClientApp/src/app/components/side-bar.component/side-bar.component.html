@@ -5,9 +5,8 @@
     <div class="card-body">
       <form [formGroup]="exportForm">
         <mat-form-field style="width: 75%;">
-          <mat-label>Export</mat-label>
           <input type="text" placeholder="Vyberte" matInput formControlName="name" [matAutocomplete]="autoExport"
-            (focus)="exportIdFocus()" />
+            (focus)="exportFocus()" (focusout)="exportFocusOut()" (input)="handleNoExport($event.target.value)"/>
           <mat-autocomplete #autoExport="matAutocomplete" [displayWith]="displayFnExportId"
             (optionSelected)="selectExport($event.option.value)">
             <mat-option *ngFor="let option of exportOptions | async" [value]="option">
@@ -25,10 +24,16 @@
           <mat-icon>add</mat-icon>
           Vytvoř nový
         </button>
-        <button matButton (click)="deleteExport()" title="Smaž stávající seznam">
+        <button matButton (click)="deleteExport()" title="Smaž stávající seznam" [disabled]="!session || !session.activeExport">
           <mat-icon>remove</mat-icon>
           Smaž stávající
         </button>
+        @if (!!session && !session.activeExport) {
+        <div class="alert alert-danger" role="alert">
+          Bez vybraného seznamu nelze zadávat nabídkové ceny
+        </div>
+        }
+        {{ session | json }}
       </form>
     </div>
   </div>
@@ -40,7 +45,7 @@
         <mat-form-field class="allmost-full-width">
           <mat-label>Katastrální území</mat-label>
           <input type="text" placeholder="Vyberte" matInput formControlName="katuze" [matAutocomplete]="autoKatuze"
-            (focus)="katuzeFocus()" />
+            (focus)="katuzeFocus()" (focusout)="katuzeFocusOut()" (input)="handleNoKu($event.target.value)"/>
           <mat-autocomplete #autoKatuze="matAutocomplete" [displayWith]="displayFnKatuze"
             (optionSelected)="selectKu($event.option.value)">
             <mat-option *ngFor="let option of katuzeOptions | async" [value]="option">
@@ -56,9 +61,10 @@
       <form [formGroup]="parForm">
         <mat-form-field class="allmost-full-width">
           <mat-label>Parcela</mat-label>
-          <input type="text" placeholder="Napište" matInput formControlName="parCislo" />
+          <input type="text" placeholder="Napište" matInput formControlName="parCislo"/>
         </mat-form-field>
-        <button matIconButton (click)="onLocalizePar()" [disabled]="!katuzeForm.valid || !parForm.valid" title="Lokalizace">
+        <button matIconButton (click)="onLocalizePar()" [disabled]="!katuzeForm.valid || !parForm.valid"
+          title="Lokalizace">
           <mat-icon>location_on</mat-icon>
         </button>
       </form>
@@ -68,7 +74,8 @@
           <mat-label>LV</mat-label>
           <input type="text" placeholder="Napište" matInput formControlName="lvId" />
         </mat-form-field>
-        <button matIconButton (click)="onLocalizeLv()" [disabled]="!katuzeForm.valid || !lvForm.valid" title="Lokalizace">
+        <button matIconButton (click)="onLocalizeLv()" [disabled]="!katuzeForm.valid || !lvForm.valid"
+          title="Lokalizace">
           <mat-icon>location_on</mat-icon>
         </button>
       </form>
@@ -94,17 +101,27 @@
                 <tr>
                   <td>nabídková cena m<sup>2</sup>:</td>
                   <td>
-                    <mat-form-field class="full-width">
-                      <input type="number" formControlName="cena" matInput>
-                    </mat-form-field>
+                    <!-- <mat-form-field class="full-width"> -->
+                    <div class="full-width">
+                      <input type="number" min="1" formControlName="cena" matInput oninput="validity.valid||(value='');"
+                        [readonly]="!session || !session.activeExport">
+                      <button matIconButton title="Zrušit" class="compact">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                      <button matIconButton title="Potvrdit" class="compact">
+                        <mat-icon>check</mat-icon>
+                      </button>
+                    </div>
+                    <!-- </mat-form-field> -->
                   </td>
                 </tr>
                 <tr>
                   <td>poznámka:</td>
                   <td>
-                    <mat-form-field class="full-width">
-                      <textarea matInput formControlName="poznamka"></textarea>
-                    </mat-form-field>
+                    <!-- <mat-form-field class="full-width"> -->
+                    <input type="text" maxlength="20" formControlName="poznamka" matInput
+                      oninput="validity.valid||(value='');" class="full-width" [readonly]="!session || !session.activeExport">
+                    <!-- </mat-form-field> -->
                   </td>
                 </tr>
                 <tr>
@@ -122,12 +139,12 @@
                     <div style="display: flex; align-items: center;">
                       <div [innerHTML]="item.valueWithUnit"></div>
                       @if (item.id == 'KU') {
-                      <button matIconButton (click)="onLocalizeKu2()" title="Lokalizace">
+                      <button matIconButton (click)="onLocalizeKu2()" title="Lokalizace" class="compact">
                         <mat-icon>location_on</mat-icon>
                       </button>
                       }
                       @if (item.id == 'LVID') {
-                      <button matIconButton (click)="onLocalizeLv2()" title="Lokalizace">
+                      <button matIconButton (click)="onLocalizeLv2()" title="Lokalizace" class="compact">
                         <mat-icon>location_on</mat-icon>
                       </button>
                       }
@@ -171,17 +188,17 @@
                   <div style="display: flex; align-items: center;">
                     <div [innerHTML]="item.valueWithUnit"></div>
                     @if (item.id == 'KU') {
-                    <button matIconButton (click)="onLocalizeKu2()" title="Lokalizace">
+                    <button matIconButton (click)="onLocalizeKu2()" title="Lokalizace" class="compact">
                       <mat-icon>location_on</mat-icon>
                     </button>
                     }
                     @if (item.id == 'LVID') {
-                    <button matIconButton (click)="onLocalizeLv2()" title="Lokalizace">
+                    <button matIconButton (click)="onLocalizeLv2()" title="Lokalizace" class="compact">
                       <mat-icon>location_on</mat-icon>
                     </button>
                     }
                     @if (item.id == 'PAR_CISLO') {
-                    <button matIconButton (click)="onLocalizePar2()" title="Lokalizace">
+                    <button matIconButton (click)="onLocalizePar2()" title="Lokalizace" class="compact">
                       <mat-icon>location_on</mat-icon>
                     </button>
                     }

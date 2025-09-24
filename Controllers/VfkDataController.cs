@@ -66,8 +66,8 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpDelete("export/{id}")]
     public IActionResult DeleteExport(int id)
     {
-        service.DeleteExport(id);
-        return Ok();
+        var session = service.DeleteExport(id).ToModel();
+        return Ok(session);
     }
 
     [HttpGet("kus")]
@@ -105,11 +105,25 @@ public class VfkDataController(VfkDataService service) : ControllerBase
         var session = service.SetActiveKatuze(activeKatuze).ToModel();
         return Ok(session);
     }
+    
+    [HttpDelete("session/katuze")]
+    public IActionResult SetNoActiveKatuze()
+    {
+        var session = service.SetNoActiveKatuze().ToModel();
+        return Ok(session);
+    }
 
     [HttpPost("session/export")]
     public IActionResult SetActiveExport([FromBody] SetActiveExportModel activeExport)
     {
         var session = service.SetActiveExport(activeExport).ToModel();
+        return Ok(session);
+    }
+    
+    [HttpDelete("session/export")]
+    public IActionResult SetNoActiveExport()
+    {
+        var session = service.SetNoActiveExport().ToModel();
         return Ok(session);
     }
 }

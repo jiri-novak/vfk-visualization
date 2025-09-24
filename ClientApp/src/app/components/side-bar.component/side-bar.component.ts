@@ -66,12 +66,11 @@ export class SideBarComponent implements OnInit {
       .pipe(debounceTime(1000), switchMap(s => this.serverAppService.getKus(s)));
 
     this.parForm = this.formBuilder.group({
-      parCislo: ['782/8', Validators.required]
+      parCislo: ['', Validators.required]
     });
 
     this.lvForm = this.formBuilder.group({
-      kodKu: ['703567', Validators.required],
-      lvId: ['536', Validators.required]
+      lvId: ['', Validators.required]
     });
 
     this.lvInfoForm = this.formBuilder.group({
@@ -82,12 +81,18 @@ export class SideBarComponent implements OnInit {
     this.lvInfoForm.controls.cena.valueChanges
       .pipe(debounceTime(1000),
         switchMap(s => this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, price: s })))
-      .subscribe();
+      .subscribe(
+        () => { },
+        (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu: ${e}`)
+      );
 
     this.lvInfoForm.controls.poznamka.valueChanges
       .pipe(debounceTime(1000),
         switchMap(s => this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, comment: s })))
-      .subscribe();
+      .subscribe(
+        () => { },
+        (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e}`)
+      );
   }
 
   ngOnInit() {
@@ -102,7 +107,9 @@ export class SideBarComponent implements OnInit {
       if (!!this.session.activeExport) {
         this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
       }
-    });
+    },
+      (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e}`)
+    );
   }
 
   displayFnKatuze(katuze: IKatuze): string {
@@ -128,8 +135,27 @@ export class SideBarComponent implements OnInit {
     this.katuzeForm.controls.katuze.updateValueAndValidity({ onlySelf: false, emitEvent: true });
   }
 
-  exportIdFocus() {
+  katuzeFocusOut() {
+    if (!!this.session.activeKatuzeKod && !!this.session.activeKatuzeName) {
+      const katuze: IKatuze = { id: this.session.activeKatuzeKod, name: this.session.activeKatuzeName }
+      this.katuzeForm.controls.katuze.setValue(katuze, { emit: false });
+    }
+    else {
+      this.katuzeForm.controls.katuze.setValue('', { emit: false });
+    }
+  }
+
+  exportFocus() {
     this.exportForm.controls.name.updateValueAndValidity({ onlySelf: false, emitEvent: true });
+  }
+
+  exportFocusOut() {
+    if (!!this.session.activeExport) {
+      this.exportForm.controls.name.setValue(this.session.activeExport, { emit: false });
+    }
+    else {
+      this.exportForm.controls.name.setValue('', { emit: false });
+    }
   }
 
   createExport() {
@@ -137,21 +163,46 @@ export class SideBarComponent implements OnInit {
     this.busy = this.serverAppService.createExport(createExport).subscribe(s => {
       this.exportForm.controls.name.setValue(s, { emitEvent: false });
       this.selectExport(s);
-    });
+    },
+      (e) => this.toastrService.error(`Nepodařilo se vytvořt seznam ${createExport.name}: ${e}`)
+    );
   }
 
   deleteExport() {
     this.busy = this.serverAppService.deleteExport(this.session.activeExport.id).subscribe(s => {
+      this.session = s;
       this.exportForm.controls.name.setValue('', { emitEvent: false });
-    });
+      this.katuzeForm.controls.katuze.setValue('', { emitEvent: false });
+    },
+      (e) => this.toastrService.error(`Nepodařilo se smazat seznam ${this.session.activeExport.name}: ${JSON.stringify(e)}`));
   }
 
   selectExport(exportId: IExportId) {
-    this.busy = this.serverAppService.sectActiveExport(exportId).subscribe(s => this.session = s);
+    this.busy = this.serverAppService.setActiveExport(exportId).subscribe(s => this.session = s,
+      (e) => this.toastrService.error(`Nepodařilo se vybrat seznam s id ${exportId}: ${e}`)
+    );
+  }
+
+  handleNoExport(value: string) {
+        if (!value) {
+      this.busy = this.serverAppService.setNoActiveExport().subscribe(s => this.session = s,
+        (e) => this.toastrService.error(`Nepodařilo se odvybrat katastrální území: ${e}`)
+      )
+    }
   }
 
   selectKu(katuze: IKatuze) {
-    this.busy = this.serverAppService.setActiveKu(katuze).subscribe(s => this.session = s);
+    this.busy = this.serverAppService.setActiveKu(katuze).subscribe(s => this.session = s,
+      (e) => this.toastrService.error(`Nepodařilo se vybrat katastrální území ${katuze.name} (${katuze.id}): ${e}`)
+    );
+  }
+
+  handleNoKu(value: string) {
+    if (!value) {
+      this.busy = this.serverAppService.setNoActiveKu().subscribe(s => this.session = s,
+        (e) => this.toastrService.error(`Nepodařilo se odvybrat katastrální území: ${e}`)
+      )
+    }
   }
 
   showFeatureInfoData(event: IFeatureInfoData) {
@@ -181,7 +232,9 @@ export class SideBarComponent implements OnInit {
         this.exportDetails = d;
         console.log(d);
         this.openModal(this.selectedLvsRef, 'modal-lg');
-      });
+      },
+        (e) => `Nepodařilo se získat detail seznamu: ${e}`
+      );
   }
 
   export() {
@@ -237,9 +290,9 @@ export class SideBarComponent implements OnInit {
   }
 
   onLocalizeLv() {
-    console.log(`Lokalizace na LV: ${this.lvForm.value.kodKu}, ${this.lvForm.value.lvId}.`);
+    console.log(`Lokalizace na LV: ${this.session.activeKatuzeKod}, ${this.lvForm.value.lvId}.`);
     this.localizationByLv.next({
-      katuzeKod: this.lvForm.value.kodKu,
+      katuzeKod: this.session.activeKatuzeKod,
       lvId: this.lvForm.value.lvId
     });
   }

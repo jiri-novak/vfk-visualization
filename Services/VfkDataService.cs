@@ -67,9 +67,9 @@ public class VfkDataService(VfkDataRepository repository)
         return repository.CreateExport(export.Name);
     }
     
-    public void DeleteExport(int exportId)
+    public VfkDataSession DeleteExport(int exportId)
     {
-        repository.DeleteExport(exportId);
+        return repository.DeleteExport(exportId);
     }
 
     public IEnumerable<Ku> GetKus(string? startsWith)
@@ -99,6 +99,16 @@ public class VfkDataService(VfkDataRepository repository)
     public VfkDataSession SetActiveKatuze(SetActiveKatuzeModel activeKatuze)
     {
         return repository.SetActiveKatuze(activeKatuze.Id, activeKatuze.Name);
+    }
+    
+    public VfkDataSession SetNoActiveKatuze()
+    {
+        return repository.SetNoActiveKatuze();
+    }
+    
+    public VfkDataSession SetNoActiveExport()
+    {
+        return repository.SetNoActiveExport();
     }
 
     public VfkDataSession SetActiveExport(SetActiveExportModel activeExport)
