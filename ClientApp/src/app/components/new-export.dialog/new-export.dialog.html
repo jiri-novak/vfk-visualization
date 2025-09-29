@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Vytvoření nového seznamu</h2>
+
+<form [formGroup]="form">
+    <mat-dialog-content>
+        <mat-form-field>
+            <mat-label>Seznam</mat-label>
+            <input required matInput formControlName="export" />
+            <mat-error *ngIf="form.controls.export.hasError('notUnique')">
+                Jméno není unikátní
+            </mat-error>
+        </mat-form-field>
+    </mat-dialog-content>
+
+    <mat-dialog-actions [ngBusy]="busy">
+        <button matButton (click)="close()">Zrušit</button>
+        <button matButton [disabled]="!form.controls.export.value" (click)="ok()">Ok</button>
+    </mat-dialog-actions>
+</form>

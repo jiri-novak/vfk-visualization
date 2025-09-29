@@ -93,3 +93,8 @@ td {
 .mdc-icon-button {
     vertical-align: middle;
 }
+
+input:read-only {
+    background-color: var(--mat-form-field-filled-container-color, var(--mat-sys-surface-variant));
+    cursor: not-allowed;
+}

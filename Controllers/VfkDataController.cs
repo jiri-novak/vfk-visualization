@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 using VfkVisualization.Extensions;
 using VfkVisualization.Models;
 using VfkVisualization.Repositories;
@@ -59,8 +60,15 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpPost("export")]
     public IActionResult CreateExport([FromBody] CreateExportModel export)
     {
-        var created = service.CreateExport(export).ToModel();
-        return Ok(created);
+        try
+        {
+            var created = service.CreateExport(export).ToModel();
+            return Ok(created);
+        }
+        catch (Exception ex) when (ex.InnerException is SqliteException { ErrorCode: 19 })
+        {
+            throw new Exception($"Seznam se jménem {export.Name} již existuje...");
+        }
     }
     
     [HttpDelete("export/{id}")]

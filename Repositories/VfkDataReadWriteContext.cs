@@ -35,7 +35,7 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
 
-                e.HasIndex(x => x.Name).IsDescending(false);
+                e.HasIndex(x => x.Name).IsDescending(false).IsUnique();
             });
 
         modelBuilder

@@ -6,6 +6,8 @@ import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoD
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { DatePipe } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { NewExportDialog } from '../new-export.dialog/new-export.dialog';
 
 @Component({
   selector: 'app-side-bar',
@@ -50,6 +52,7 @@ export class SideBarComponent implements OnInit {
     private toastrService: ToastrService,
     private formBuilder: UntypedFormBuilder,
     private modalService: BsModalService,
+    private dialog: MatDialog,
     private serverAppService: ServerAppService) {
     this.exportForm = this.formBuilder.group({
       name: ['', Validators.required]
@@ -83,7 +86,7 @@ export class SideBarComponent implements OnInit {
         switchMap(s => this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, price: s })))
       .subscribe(
         () => { },
-        (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu: ${e}`)
+        (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu: ${e.message}`)
       );
 
     this.lvInfoForm.controls.poznamka.valueChanges
@@ -91,7 +94,7 @@ export class SideBarComponent implements OnInit {
         switchMap(s => this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, comment: s })))
       .subscribe(
         () => { },
-        (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e}`)
+        (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e.message}`)
       );
   }
 
@@ -108,7 +111,7 @@ export class SideBarComponent implements OnInit {
         this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
       }
     },
-      (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e}`)
+      (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e.message}`)
     );
   }
 
@@ -159,13 +162,16 @@ export class SideBarComponent implements OnInit {
   }
 
   createExport() {
-    const createExport: ICreateExport = { name: this.exportForm.controls.name.value };
-    this.busy = this.serverAppService.createExport(createExport).subscribe(s => {
-      this.exportForm.controls.name.setValue(s, { emitEvent: false });
-      this.selectExport(s);
-    },
-      (e) => this.toastrService.error(`Nepodařilo se vytvořt seznam ${createExport.name}: ${e}`)
-    );
+    const dialogRef = this.dialog.open(NewExportDialog, {
+      data: { name: '', animal: '' },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this.exportForm.controls.name.setValue(result);
+        this.selectExport(result);
+      }
+    });
   }
 
   deleteExport() {
@@ -174,33 +180,33 @@ export class SideBarComponent implements OnInit {
       this.exportForm.controls.name.setValue('', { emitEvent: false });
       this.katuzeForm.controls.katuze.setValue('', { emitEvent: false });
     },
-      (e) => this.toastrService.error(`Nepodařilo se smazat seznam ${this.session.activeExport.name}: ${JSON.stringify(e)}`));
+      (e) => this.toastrService.error(`Nepodařilo se smazat seznam ${this.session.activeExport.name}: ${e.message}`));
   }
 
   selectExport(exportId: IExportId) {
     this.busy = this.serverAppService.setActiveExport(exportId).subscribe(s => this.session = s,
-      (e) => this.toastrService.error(`Nepodařilo se vybrat seznam s id ${exportId}: ${e}`)
+      (e) => this.toastrService.error(`Nepodařilo se vybrat seznam s id ${exportId}: ${e.message}`)
     );
   }
 
   handleNoExport(value: string) {
-        if (!value) {
+    if (!value) {
       this.busy = this.serverAppService.setNoActiveExport().subscribe(s => this.session = s,
-        (e) => this.toastrService.error(`Nepodařilo se odvybrat katastrální území: ${e}`)
+        (e) => this.toastrService.error(`Nepodařilo se odvybrat katastrální území: ${e.message}`)
       )
     }
   }
 
   selectKu(katuze: IKatuze) {
     this.busy = this.serverAppService.setActiveKu(katuze).subscribe(s => this.session = s,
-      (e) => this.toastrService.error(`Nepodařilo se vybrat katastrální území ${katuze.name} (${katuze.id}): ${e}`)
+      (e) => this.toastrService.error(`Nepodařilo se vybrat katastrální území ${katuze.name} (${katuze.id}): ${e.message}`)
     );
   }
 
   handleNoKu(value: string) {
     if (!value) {
       this.busy = this.serverAppService.setNoActiveKu().subscribe(s => this.session = s,
-        (e) => this.toastrService.error(`Nepodařilo se odvybrat katastrální území: ${e}`)
+        (e) => this.toastrService.error(`Nepodařilo se odvybrat katastrální území: ${e.message}`)
       )
     }
   }

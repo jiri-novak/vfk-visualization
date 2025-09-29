@@ -32,6 +32,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatDialogModule } from '@angular/material/dialog';
+import { NewExportDialog } from './components/new-export.dialog/new-export.dialog';
 
 @Component({
   selector: 'app-busy',
@@ -68,6 +70,7 @@ export function busyConfigFactory(): BusyConfig {
     MatButtonModule,
     MatTableModule,
     MatTabsModule,
+    MatDialogModule,
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } }
@@ -80,7 +83,8 @@ export class MaterialModule { };
     AppComponent,
     MapComponent,
     SideBarComponent,
-    CustomBusyComponent
+    CustomBusyComponent,
+    NewExportDialog,
   ],
   bootstrap: [AppComponent],
   imports: [
