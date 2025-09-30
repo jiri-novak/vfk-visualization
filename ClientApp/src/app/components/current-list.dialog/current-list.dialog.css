@@ -1,0 +1,14 @@
+td {
+    vertical-align: middle;
+}
+
+.mat-mdc-dialog-actions {
+    justify-content: flex-end;
+}
+
+.compact {
+    --mdc-icon-button-state-layer-size: 24px;
+    --mat-icon-button-state-layer-size: 24px;
+    padding: 0px;
+    vertical-align: middle;
+}

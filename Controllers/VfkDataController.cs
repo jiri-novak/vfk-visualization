@@ -35,14 +35,14 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpPost("{telId}/price")]
     public IActionResult SetPrice([FromRoute] long telId, [FromBody] SetPriceModel model)
     {
-        service.SetPrice(telId, model.ExportId, model.Price);
+        service.SetPrice(telId, model.ExportId, model.X, model.Y, model.Price);
         return Ok();
     }
     
     [HttpPost("{telId}/comment")]
     public IActionResult SetComment([FromRoute] long telId, [FromBody] SetCommentModel model)
     {
-        service.SetComment(telId, model.ExportId, model.Comment);
+        service.SetComment(telId, model.ExportId, model.X, model.Y, model.Comment);
         return Ok();
     }
 

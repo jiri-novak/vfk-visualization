@@ -175,7 +175,7 @@ public class VfkDataRepository(
         return session;
     }
 
-    public void SetPrice(long telId, int exportId, int? price)
+    public void SetPrice(long telId, int exportId, float x, float y, int? price)
     {
         var existing = vfkDataReadWriteContext.ExportPrices
             .FirstOrDefault(x => x.ExportId == exportId && x.TelId == telId);
@@ -198,6 +198,8 @@ public class VfkDataRepository(
                     .Add(new VfkDataExportPrice
                     {
                         TelId = telId,
+                        X = x,
+                        Y = y,
                         CreatedAtUtc = DateTime.UtcNow,
                         CenaNabidkova = price.Value,
                         Poznamka = null,
@@ -209,7 +211,7 @@ public class VfkDataRepository(
         vfkDataReadWriteContext.SaveChanges();
     }
 
-    public void SetComment(long telId, int exportId, string? comment)
+    public void SetComment(long telId, int exportId, float x, float y, string? comment)
     {
         var existing = vfkDataReadWriteContext.ExportPrices
             .FirstOrDefault(x => x.ExportId == exportId && x.TelId == telId);
@@ -231,6 +233,8 @@ public class VfkDataRepository(
                     .Add(new VfkDataExportPrice
                     {
                         TelId = telId,
+                        X = x,
+                        Y = y,
                         CreatedAtUtc = DateTime.UtcNow,
                         CenaNabidkova = null,
                         Poznamka = comment,

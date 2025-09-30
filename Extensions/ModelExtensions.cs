@@ -58,6 +58,8 @@ internal static class ModelExtensions
                         Pracoviste = l.Pracoviste!,
                         Ku = $"{l.Katuze!} ({l.KatuzeKod})",
                         TelId = x.TelId,
+                        X = x.X,
+                        Y = x.Y,
                         CreatedAt = x.CreatedAtUtc.ToLocalTime(),
                         CenaNabidkova = x.CenaNabidkova,
                         Poznamka = x.Poznamka
@@ -72,6 +74,8 @@ internal static class ModelExtensions
         return new PriceModel
         {
             TelId = p.TelId,
+            X = p.X,
+            Y = p.Y,
             CreatedAt = p.CreatedAtUtc.ToLocalTime(),
             CenaNabidkova = p.CenaNabidkova,
             Poznamka = p.Poznamka

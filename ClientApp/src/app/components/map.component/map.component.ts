@@ -302,57 +302,63 @@ export class MapComponent implements OnInit {
     });
 
     this.map.on('singleclick', evt => {
-      const step = 0.5;
       const x: number = evt.coordinate[0];
       const y: number = evt.coordinate[1];
-      const bbox = `${x - step},${y - step},${x + step},${y + step}`;
+      this.getByCoordinates(x, y);
+    });
+  }
 
-      this.busy = forkJoin([
-        self.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1),
-        self.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1),
-      ]).subscribe(([respLv, respPar]) => {
-        const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
-        const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
+  private getByCoordinates(x: number, y: number) {
+    const step = 0.5;
+    const bbox = `${x - step},${y - step},${x + step},${y + step}`;
 
-        let dataLv: ISortableLabel[] = [];
-        let dataPar: ISortableLabel[] = [];
-        let dataVl: ISortableLabel[][] = [];
+    this.busy = forkJoin([
+      this.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1),
+      this.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1),
+    ]).subscribe(([respLv, respPar]) => {
+      const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
+      const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
 
-        self.sourceVector.clear();
+      let dataLv: ISortableLabel[] = [];
+      let dataPar: ISortableLabel[] = [];
+      let dataVl: ISortableLabel[][] = [];
 
-        if (featuresLv.length > 0 && featuresPar.length > 0) {
-          self.sourceVector.addFeature(featuresLv[0]);
+      this.sourceVector.clear();
 
-          const propertiesLv = featuresLv[0].getProperties();
-          const propertiesPar = featuresPar[0].getProperties();
-          const telId = propertiesLv.TEL_ID;
+      if (featuresLv.length > 0 && featuresPar.length > 0) {
+        this.sourceVector.addFeature(featuresLv[0]);
 
-          dataLv = self.getData(propertiesLv, self.lvAttrTranslate);
-          dataPar = self.getData(propertiesPar, self.parAttrTranslate);
+        const propertiesLv = featuresLv[0].getProperties();
+        const propertiesPar = featuresPar[0].getProperties();
+        const telId = propertiesLv.TEL_ID;
 
-          this.busy = self.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
-            dataVl = lvInfo.vlastnici
-              .sort((a: IVlastnik, b: IVlastnik) => {
-                return (a.zemedelec ? 'ano' : 'ne').localeCompare(b.zemedelec ? 'ano': 'ne') // zemedelec ASC
-                  || b.podil - a.podil; // podil DESC
-              })
-              .map(v => self.getData(v, self.vlAttrTranslate));
+        dataLv = this.getData(propertiesLv, this.lvAttrTranslate);
+        dataPar = this.getData(propertiesPar, this.parAttrTranslate);
 
-            self.featureInfoData.next({
-              par: dataPar,
-              lv: dataLv,
-              vl: dataVl,
-              telId: telId,
-              cena: lvInfo.cena?.cenaNabidkova,
-              poznamka: lvInfo.cena?.poznamka,
-              datum: lvInfo.cena?.createdAt,
-              pracoviste: lvInfo.vlastnici.length >= 1 ? lvInfo.vlastnici[0].pracoviste : null,
-            });
-          }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
-        }
-      }, () => {
-        this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace');
-      });
+        this.busy = this.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
+          dataVl = lvInfo.vlastnici
+            .sort((a: IVlastnik, b: IVlastnik) => {
+              return (a.zemedelec ? 'ano' : 'ne').localeCompare(b.zemedelec ? 'ano' : 'ne') // zemedelec ASC
+                || b.podil - a.podil; // podil DESC
+            })
+            .map(v => this.getData(v, this.vlAttrTranslate));
+
+          this.featureInfoData.next({
+            par: dataPar,
+            lv: dataLv,
+            vl: dataVl,
+            telId: telId,
+            x: x,
+            y: y,
+            cena: lvInfo.cena?.cenaNabidkova,
+            poznamka: lvInfo.cena?.poznamka,
+            datum: lvInfo.cena?.createdAt,
+            pracoviste: lvInfo.vlastnici.length >= 1 ? lvInfo.vlastnici[0].pracoviste : null,
+          });
+        }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
+      }
+    }, () => {
+      this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace');
     });
   }
 
@@ -459,6 +465,10 @@ export class MapComponent implements OnInit {
   public localizeByPar(event: any) {
     this.busy = this.localizeByPar$(event.katuzeKod, event.parCislo).subscribe(
       () => { }, () => this.toastrService.error('Nepodařilo lokalizovat se zadanou parcelu', 'Lokalizace dle parcely'));
+  }
+
+  public localizeByCoordinates(event: any) {
+    this.getByCoordinates(event.x, event.y);
   }
 
   public cancelLocalization() {

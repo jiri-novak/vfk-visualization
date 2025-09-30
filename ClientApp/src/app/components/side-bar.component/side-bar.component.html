@@ -215,34 +215,3 @@
   </div>
   }
 </div>
-
-<ng-template #selectedLvs>
-  <div class="modal-body text-center">
-    <div class="col-sm-12 selected-lvs">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Pracoviště:</th>
-            <th>K.ú.:</th>
-            <th>Id LV:</th>
-            <th>Datum:</th>
-            <th>Cena:</th>
-            <th>Poznámka:</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of exportDetails.prices; track item) {
-          <tr>
-            <td>{{item.pracoviste}}</td>
-            <td>{{item.ku}}</td>
-            <td>{{item.cisloLv}}</td>
-            <td>{{item.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</td>
-            <td style="width: 100px; text-align: center">{{item.cenaNabidkova}}</td>
-            <td style="width: 300px; text-align: center">{{item.poznamka}}</td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </div>
-</ng-template>

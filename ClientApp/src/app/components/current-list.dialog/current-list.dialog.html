@@ -1,1 +1,41 @@
-aaa
+<h2 mat-dialog-title>Aktuální seznam</h2>
+
+<mat-dialog-content>
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Pracoviště:</th>
+                <th>K.ú.:</th>
+                <th>Id LV:</th>
+                <th>Datum:</th>
+                <th>Cena:</th>
+                <th>Poznámka:</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (item of data.prices; track item) {
+            <tr>
+                <td>
+                    <button matIconButton (click)="onLocalize(item)" title="Lokalizace" class="compact">
+                        <mat-icon>location_on</mat-icon>
+                    </button>
+                </td>
+                <td>{{item.pracoviste}}</td>
+                <td>{{item.ku}}</td>
+                <td>{{item.cisloLv}}</td>
+                <td>{{item.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td style="width: 100px; text-align: center;">{{item.cenaNabidkova}}</td>
+                <td style="width: 300px; text-align: left;">{{item.poznamka}}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button matButton (click)="close()" title="Zrušit">
+        <mat-icon>cancel</mat-icon>
+        Zrušit
+    </button>
+</mat-dialog-actions>

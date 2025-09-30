@@ -1,13 +1,13 @@
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, Observable, Subscription, switchMap } from 'rxjs';
-import { Component, OnInit, Output, EventEmitter, TemplateRef, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ICreateExport, IExportDetails, IPriceDetails } from '../models/models';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ILocalizationByCoordinates } from '../models/models';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ExistingListsDialog } from '../existing-lists.dialog/existing-lists.dialog';
+import { CurrentListDialog } from '../current-list.dialog/current-list.dialog';
 
 @Component({
   selector: 'app-side-bar',
@@ -20,13 +20,10 @@ export class SideBarComponent implements OnInit {
   @Output() localizationByKu: EventEmitter<ILocalizationByKu> = new EventEmitter<ILocalizationByKu>();
   @Output() localizationByPar: EventEmitter<ILocalizationByPar> = new EventEmitter<ILocalizationByPar>();
   @Output() localizationByLv: EventEmitter<ILocalizationByLv> = new EventEmitter<ILocalizationByLv>();
+  @Output() localizationByCoordinates: EventEmitter<ILocalizationByCoordinates> = new EventEmitter<ILocalizationByCoordinates>();
   @Output() localizationCancel: EventEmitter<void> = new EventEmitter<void>();
 
-  @ViewChild('selectedLvs', { static: true }) selectedLvsRef: TemplateRef<any>;
-
   busy: Subscription;
-
-  modalRef: BsModalRef;
 
   session: ISession;
 
@@ -46,12 +43,9 @@ export class SideBarComponent implements OnInit {
 
   featureInfoData: IFeatureInfoData;
 
-  exportDetails: IExportDetails;
-
   constructor(
     private toastrService: ToastrService,
     private formBuilder: UntypedFormBuilder,
-    private modalService: BsModalService,
     private dialog: MatDialog,
     private serverAppService: ServerAppService) {
     this.exportForm = this.formBuilder.group({
@@ -83,12 +77,12 @@ export class SideBarComponent implements OnInit {
   }
 
   confirmPrice() {
-    this.busy = this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, price: this.lvInfoForm.controls.cena.value })
+    this.busy = this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, x: this.featureInfoData.x, y: this.featureInfoData.y, price: this.lvInfoForm.controls.cena.value })
       .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu: ${e.message}`));
   }
 
   confirmComment() {
-    this.busy = this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, comment: this.lvInfoForm.controls.poznamka.value })
+    this.busy = this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, x: this.featureInfoData.x, y: this.featureInfoData.y, comment: this.lvInfoForm.controls.poznamka.value })
       .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e.message}`));
   }
 
@@ -193,22 +187,23 @@ export class SideBarComponent implements OnInit {
     this.localizationCancel.next();
   }
 
-  openModal(template: TemplateRef<any>, c: string) {
-    this.modalRef = this.modalService.show(template, { class: `${c} modal-dialog modal-xl modal-dialog-centered` });
-  }
-
-  closeModal() {
-    this.modalRef.hide();
-  }
-
-  unMarkAll() {
-  }
-
   viewExport() {
     this.busy = this.serverAppService.getExportDetails(this.session.activeExport.id)
       .subscribe(d => {
-        this.exportDetails = d;
-        this.openModal(this.selectedLvsRef, 'modal-lg');
+        const dialogRef = this.dialog.open(CurrentListDialog, {
+          data: d,
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result !== undefined) {
+            console.log(result);
+            console.log(`Lokalizace na souřadnice: ${result.x}, ${result.y}.`);
+            this.localizationByCoordinates.next({
+              x: result.x,
+              y: result.y,
+            });
+          }
+        });
       },
         (e) => `Nepodařilo se získat detail seznamu: ${e}`
       );
@@ -230,7 +225,6 @@ export class SideBarComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result !== undefined) {
-            console.log(result);
             this.session = result;
             this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
           }

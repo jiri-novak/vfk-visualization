@@ -12,8 +12,15 @@ export interface ILocalizationByLv {
   lvId: number;
 }
 
+export interface ILocalizationByCoordinates {
+  x: number;
+  y: number;
+}
+
 export interface IFeatureInfoData {
   telId: number;
+  x: number;
+  y: number;
   par: ISortableLabel[];
   lv: ISortableLabel[];
   vl: ISortableLabel[][];
@@ -78,28 +85,25 @@ export interface IExportDetails {
   prices: IPriceDetails[];
 }
 
-export interface IPriceDetails {
+export interface IPriceDetails extends IPrice {
   pracoviste: string;
   ku: string;
   cisloLv: number;
+}
+
+export interface IPrice {
   telId: number;
+  x: number;
+  y: number;
+  createdAt: Date;
   cenaNabidkova?: number;
   poznamka?: string;
-  createdAt: Date;
-  inEdit: boolean;
 }
 
 export interface IExportId {
   id: number;
   name: string;
   createdAt: Date;
-}
-
-export interface IPrice {
-  telId: number;
-  createdAt: Date;
-  cenaNabidkova?: number;
-  poznamka?: string;
 }
 
 export interface IKatuze {
@@ -109,11 +113,15 @@ export interface IKatuze {
 
 export interface ISetPrice {
   exportId: number;
+  x: number;
+  y: number;
   price?: number;
 }
 
 export interface ISetComment {
   exportId: number;
+  x: number;
+  y: number;
   comment?: string;
 }
 
