@@ -85,6 +85,13 @@ public class VfkDataController(VfkDataService service) : ControllerBase
         return Ok(kus);
     }
     
+    [HttpGet("exports")]
+    public IActionResult GetAllExistingExports()
+    {
+        var existing = service.GetAllExistingExports().Select(x => x.ToModel());
+        return Ok(existing);
+    }
+    
     [HttpGet("export")]
     public IActionResult GetExistingExports([FromQuery] string? startsWith = null)
     {

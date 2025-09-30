@@ -4,9 +4,9 @@
     <div class="card-title" (click)="listCollapsed = !listCollapsed"><b>Seznam:</b></div>
     <div class="card-body">
       <form [formGroup]="exportForm">
-        <mat-form-field style="width: 75%;">
+        <mat-form-field style="width: 65%;">
           <input type="text" placeholder="Vyberte" matInput formControlName="name" [matAutocomplete]="autoExport"
-            (focus)="exportFocus()" (focusout)="exportFocusOut()" (input)="handleNoExport($event.target.value)"/>
+            (focus)="exportFocus()" (focusout)="exportFocusOut()" (input)="handleNoExport($event.target.value)" />
           <mat-autocomplete #autoExport="matAutocomplete" [displayWith]="displayFnExportId"
             (optionSelected)="selectExport($event.option.value)">
             <mat-option *ngFor="let option of exportOptions | async" [value]="option">
@@ -14,17 +14,23 @@
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
-        <button matIconButton (click)="viewExport()" title="Seznam nabídek">
+        <button matIconButton (click)="existingExports()" title="Existující seznamy">
+          <mat-icon>library_books</mat-icon>
+        </button>
+        <button matIconButton (click)="viewExport()" title="Seznam nabídek"
+          [disabled]="!exportForm.controls.name.value">
           <mat-icon>view_list</mat-icon>
         </button>
-        <button matIconButton (click)="export()" title="Stažení nabídek">
+        <button matIconButton (click)="export()" title="Stažení nabídek" [disabled]="!exportForm.controls.name.value">
           <mat-icon>cloud_download</mat-icon>
         </button>
+        <!-- 
         <button matButton (click)="createExport()" title="Vytvoř nový seznam">
           <mat-icon>add</mat-icon>
           Vytvoř nový
         </button>
-        <button matButton (click)="deleteExport()" title="Smaž stávající seznam" [disabled]="!session || !session.activeExport">
+        <button matButton (click)="deleteExport()" title="Smaž stávající seznam"
+          [disabled]="!session || !session.activeExport">
           <mat-icon>remove</mat-icon>
           Smaž stávající
         </button>
@@ -32,7 +38,7 @@
         <div class="alert alert-danger" role="alert">
           Bez vybraného seznamu nelze zadávat nabídkové ceny
         </div>
-        }
+        } -->
       </form>
     </div>
   </div>
@@ -44,7 +50,7 @@
         <mat-form-field class="allmost-full-width">
           <mat-label>Katastrální území</mat-label>
           <input type="text" placeholder="Vyberte" matInput formControlName="katuze" [matAutocomplete]="autoKatuze"
-            (focus)="katuzeFocus()" (focusout)="katuzeFocusOut()" (input)="handleNoKu($event.target.value)"/>
+            (focus)="katuzeFocus()" (focusout)="katuzeFocusOut()" (input)="handleNoKu($event.target.value)" />
           <mat-autocomplete #autoKatuze="matAutocomplete" [displayWith]="displayFnKatuze"
             (optionSelected)="selectKu($event.option.value)">
             <mat-option *ngFor="let option of katuzeOptions | async" [value]="option">
@@ -60,7 +66,7 @@
       <form [formGroup]="parForm">
         <mat-form-field class="allmost-full-width">
           <mat-label>Parcela</mat-label>
-          <input type="text" placeholder="Napište" matInput formControlName="parCislo"/>
+          <input type="text" placeholder="Napište" matInput formControlName="parCislo" />
         </mat-form-field>
         <button matIconButton (click)="onLocalizePar()" [disabled]="!katuzeForm.valid || !parForm.valid"
           title="Lokalizace">
@@ -100,7 +106,6 @@
                 <tr>
                   <td>nabídková cena m<sup>2</sup>:</td>
                   <td>
-                    <!-- <mat-form-field class="full-width"> -->
                     <div class="full-width">
                       <input type="number" min="1" formControlName="cena" matInput oninput="validity.valid||(value='');"
                         [readonly]="!session || !session.activeExport">
@@ -111,16 +116,14 @@
                         <mat-icon>check</mat-icon>
                       </button>
                     </div>
-                    <!-- </mat-form-field> -->
                   </td>
                 </tr>
                 <tr>
                   <td>poznámka:</td>
                   <td>
-                    <!-- <mat-form-field class="full-width"> -->
                     <input type="text" maxlength="20" formControlName="poznamka" matInput
-                      oninput="validity.valid||(value='');" class="full-width" [readonly]="!session || !session.activeExport">
-                    <!-- </mat-form-field> -->
+                      oninput="validity.valid||(value='');" class="full-width"
+                      [readonly]="!session || !session.activeExport">
                   </td>
                 </tr>
                 <tr>
@@ -226,14 +229,6 @@
             <th>Datum:</th>
             <th>Cena:</th>
             <th>Poznámka:</th>
-            <th></th>
-            <!-- pracoviste: string;
-  ku: string;
-  cisloLv: number;
-  telId: number;
-  cenaNabidkova?: number;
-  poznamka?: string;
-  createdAt: Date; -->
           </tr>
         </thead>
         <tbody>
@@ -245,52 +240,10 @@
             <td>{{item.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</td>
             <td style="width: 100px; text-align: center">{{item.cenaNabidkova}}</td>
             <td style="width: 300px; text-align: center">{{item.poznamka}}</td>
-            <!-- @if (!item.inEdit) {
-            <td style="width: 100px; text-align: center">{{item.cenaNabidkova}}</td>
-            }
-            @if (item.inEdit) {
-            <td style="width: 100px; text-align: center">
-              <input type="number" [(ngModel)]="item.cenaNabidkova" style="width: 60px; text-align: right" />
-            </td>
-            }
-            @if (!item.inEdit) {
-            <td style="width: 300px; text-align: center">{{item.poznamka}}</td>
-            }
-            @if (item.inEdit) {
-            <td style="width: 300px; text-align: center">
-              <textarea rows="10" style="width: 100%;" [(ngModel)]="item.poznamka"></textarea>
-            </td>
-            } -->
-            <td>
-              <!-- <div class="btn-group pull-right" role="group">
-                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="delete(item);"
-                  title="Smazat">
-                  <i class="fa fa-trash"></i>
-                </button>
-                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="edit(item);"
-                  [disabled]="item.inEdit" title="Editovat">
-                  <i class="fa fa-edit"></i>
-                </button>
-                <button type="button" class="btn" style="width: 20px; margin: 0; padding: 0;" (click)="confirm(item);"
-                  [disabled]="!item.inEdit" title="Potvrdit editaci">
-                  <i class="fa fa-check"></i>
-                </button>
-              </div> -->
-            </td>
           </tr>
           }
         </tbody>
       </table>
     </div>
-    <!-- <div class="buttons col-sm-12">
-      <div class="btn-group pull-right" role="group">
-        <button type="button" class="btn btn-danger" (click)="unMarkAll();" style="width: 40px;">
-          <i class="fa fa-trash"></i>
-        </button>
-        <button type="button" class="btn btn-success" (click)="closeModal()" style="width: 40px;">
-          <i class="fa fa-check"></i>
-        </button>
-      </div>
-    </div> -->
   </div>
 </ng-template>

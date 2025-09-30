@@ -7,7 +7,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { NewExportDialog } from '../new-export.dialog/new-export.dialog';
+import { ExistingListsDialog } from '../existing-lists.dialog/existing-lists.dialog';
 
 @Component({
   selector: 'app-side-bar',
@@ -161,28 +161,6 @@ export class SideBarComponent implements OnInit {
     }
   }
 
-  createExport() {
-    const dialogRef = this.dialog.open(NewExportDialog, {
-      data: { name: '', animal: '' },
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
-        this.exportForm.controls.name.setValue(result);
-        this.selectExport(result);
-      }
-    });
-  }
-
-  deleteExport() {
-    this.busy = this.serverAppService.deleteExport(this.session.activeExport.id).subscribe(s => {
-      this.session = s;
-      this.exportForm.controls.name.setValue('', { emitEvent: false });
-      this.katuzeForm.controls.katuze.setValue('', { emitEvent: false });
-    },
-      (e) => this.toastrService.error(`Nepodařilo se smazat seznam ${this.session.activeExport.name}: ${e.message}`));
-  }
-
   selectExport(exportId: IExportId) {
     this.busy = this.serverAppService.setActiveExport(exportId).subscribe(s => this.session = s,
       (e) => this.toastrService.error(`Nepodařilo se vybrat seznam s id ${exportId}: ${e.message}`)
@@ -250,16 +228,21 @@ export class SideBarComponent implements OnInit {
         () => this.toastrService.error('Sestavu vybraných LV se nepodařilo vygenerovat.', 'Generování XLSX'));
   }
 
-  delete(item: IPriceDetails) {
-    // this.selected = this.selected.filter(x => x.telId !== item.telId);
-  }
+  existingExports() {
+    this.busy = this.serverAppService.getAllExports()
+      .subscribe((exports) => {
+        const dialogRef = this.dialog.open(ExistingListsDialog, {
+          data: exports,
+        });
 
-  edit(item: IPriceDetails) {
-    item.inEdit = true;
-  }
-
-  confirm(item: IPriceDetails) {
-    item.inEdit = false;
+        dialogRef.afterClosed().subscribe(result => {
+          if (result !== undefined) {
+            console.log(result);
+            this.session = result;
+            this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
+          }
+        });
+      });
   }
 
   onLocalizeKu() {

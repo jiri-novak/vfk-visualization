@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>Existující seznamy</h2>
+
+<mat-dialog-content>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Název:</th>
+                <th>Datum:</th>
+                <th>Počet vložených cen:</th>
+                <th>Akce:</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (item of data; track item) {
+            <tr>
+                <td>{{item.name}}</td>
+                <td>{{item.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td style="text-align: right;">{{item.prices.length}}</td>
+                <td>
+                    <button matIconButton (click)="delete(item)" title="Smazat">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                    <button matIconButton (click)="select(item)" title="Vybrat">
+                        <mat-icon>select_all</mat-icon>
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</mat-dialog-content>
+
+<mat-dialog-actions [ngBusy]="busy">
+    <button matButton (click)="create()" title="Vytvořit nový">
+        <mat-icon>add</mat-icon>
+        Vytvořit nový
+    </button>
+    <button matButton (click)="close()">Zrušit</button>
+    <button matButton (click)="ok()">Potvrdit</button>
+</mat-dialog-actions>

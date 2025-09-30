@@ -49,6 +49,10 @@ export class ServerAppService {
     return this.http.delete<ISession>(`api/vfkData/export/${id}`);
   }
 
+  public getAllExports(): Observable<IExport[]> {
+    return this.http.get<IExport[]>(`api/vfkData/exports`);
+  }
+
   public getExports(startsWith?: string): Observable<IExportId[]> {
     const params = new HttpParams().append('startsWith', startsWith);
     return this.http.get<IExportId[]>(`api/vfkData/export`, { params });

@@ -34,6 +34,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialogModule } from '@angular/material/dialog';
 import { NewExportDialog } from './components/new-export.dialog/new-export.dialog';
+import { CurrentListDialog } from './components/current-list.dialog/current-list.dialog';
+import { ExistingListsDialog } from './components/existing-lists.dialog/existing-lists.dialog';
 
 @Component({
   selector: 'app-busy',
@@ -85,6 +87,8 @@ export class MaterialModule { };
     SideBarComponent,
     CustomBusyComponent,
     NewExportDialog,
+    CurrentListDialog,
+    ExistingListsDialog,
   ],
   bootstrap: [AppComponent],
   imports: [

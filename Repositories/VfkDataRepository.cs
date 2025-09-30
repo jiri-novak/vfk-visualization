@@ -82,9 +82,12 @@ public class VfkDataRepository(
     public VfkDataSession DeleteExport(int id)
     {
         var session = vfkDataReadWriteContext.Sessions.First();
-        session.ActiveExport = null;
-        session.ActiveExportId = null;
-        vfkDataReadWriteContext.SaveChanges();
+        if (session.ActiveExportId == id)
+        {
+            session.ActiveExport = null;
+            session.ActiveExportId = null;
+            vfkDataReadWriteContext.SaveChanges();
+        }
 
         vfkDataReadWriteContext.Exports.Where(x => x.Id == id).ExecuteDelete();
         vfkDataReadWriteContext.SaveChanges();
@@ -98,12 +101,19 @@ public class VfkDataRepository(
             .Include(x => x.Prices)
             .FirstOrDefault(x => x.Id == id);
     }
+    
+    public IEnumerable<VfkDataExport> GetAllExports()
+    {
+        return vfkDataReadWriteContext.Exports.AsNoTracking()
+            .OrderBy(x => x.Name);
+    }
 
     public IEnumerable<VfkDataExport> GetExports(string? startsWith)
     {
         return vfkDataReadWriteContext.Exports.AsNoTracking()
-            .Where(x => string.IsNullOrEmpty(startsWith) ||
-                        x.Name.StartsWith(startsWith));
+            .Where(x => string.IsNullOrEmpty(startsWith) || x.Name.StartsWith(startsWith))
+            .OrderBy(x => x.Name)
+            .Take(10);
     }
 
     public VfkDataSession GetOrCreateSession()

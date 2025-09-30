@@ -77,6 +77,11 @@ public class VfkDataService(VfkDataRepository repository)
         return repository.GetKus(startsWith);
     }
     
+    public IEnumerable<VfkDataExport> GetAllExistingExports()
+    {
+        return repository.GetAllExports();
+    }
+    
     public IEnumerable<VfkDataExport> GetExistingExports(string? startsWith)
     {
         return repository.GetExports(startsWith);
