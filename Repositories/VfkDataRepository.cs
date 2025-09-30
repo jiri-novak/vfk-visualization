@@ -105,6 +105,7 @@ public class VfkDataRepository(
     public IEnumerable<VfkDataExport> GetAllExports()
     {
         return vfkDataReadWriteContext.Exports.AsNoTracking()
+            .Include(x => x.Prices)
             .OrderBy(x => x.Name);
     }
 
@@ -176,17 +177,16 @@ public class VfkDataRepository(
 
     public void SetPrice(long telId, int exportId, int? price)
     {
-        if (price == null)
-        {
-            vfkDataReadWriteContext.ExportPrices
-                .Where(x => x.ExportId == exportId && x.TelId == telId)
-                .ExecuteDelete();
-        }
-        else
-        {
-            var existing = vfkDataReadWriteContext.ExportPrices
-                .FirstOrDefault(x => x.ExportId == exportId && x.TelId == telId);
+        var existing = vfkDataReadWriteContext.ExportPrices
+            .FirstOrDefault(x => x.ExportId == exportId && x.TelId == telId);
 
+        if (existing != null && price == null && string.IsNullOrEmpty(existing.Poznamka))
+        {
+            vfkDataReadWriteContext.Remove(existing);
+        }
+        else if (price.HasValue)
+        {
+            
             if (existing != null)
             {
                 existing.CenaNabidkova = price.Value;
@@ -211,17 +211,15 @@ public class VfkDataRepository(
 
     public void SetComment(long telId, int exportId, string? comment)
     {
-        if (comment == null)
-        {
-            vfkDataReadWriteContext.ExportPrices
-                .Where(x => x.ExportId == exportId && x.TelId == telId)
-                .ExecuteDelete();
-        }
-        else
-        {
-            var existing = vfkDataReadWriteContext.ExportPrices
-                .FirstOrDefault(x => x.ExportId == exportId && x.TelId == telId);
+        var existing = vfkDataReadWriteContext.ExportPrices
+            .FirstOrDefault(x => x.ExportId == exportId && x.TelId == telId);
 
+        if (existing != null && string.IsNullOrEmpty(comment) && existing.CenaNabidkova == null)
+        {
+            vfkDataReadWriteContext.Remove(existing);
+        }
+        else if (!string.IsNullOrEmpty(comment))
+        {
             if (existing != null)
             {
                 existing.Poznamka = comment;

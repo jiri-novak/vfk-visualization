@@ -80,22 +80,16 @@ export class SideBarComponent implements OnInit {
       cena: [''],
       poznamka: ['']
     });
+  }
 
-    this.lvInfoForm.controls.cena.valueChanges
-      .pipe(debounceTime(1000),
-        switchMap(s => this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, price: s })))
-      .subscribe(
-        () => { },
-        (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu: ${e.message}`)
-      );
+  confirmPrice() {
+    this.busy = this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, price: this.lvInfoForm.controls.cena.value })
+      .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu: ${e.message}`));
+  }
 
-    this.lvInfoForm.controls.poznamka.valueChanges
-      .pipe(debounceTime(1000),
-        switchMap(s => this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, comment: s })))
-      .subscribe(
-        () => { },
-        (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e.message}`)
-      );
+  confirmComment() {
+    this.busy = this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, comment: this.lvInfoForm.controls.poznamka.value })
+      .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e.message}`));
   }
 
   ngOnInit() {
@@ -214,7 +208,6 @@ export class SideBarComponent implements OnInit {
     this.busy = this.serverAppService.getExportDetails(this.session.activeExport.id)
       .subscribe(d => {
         this.exportDetails = d;
-        console.log(d);
         this.openModal(this.selectedLvsRef, 'modal-lg');
       },
         (e) => `Nepodařilo se získat detail seznamu: ${e}`

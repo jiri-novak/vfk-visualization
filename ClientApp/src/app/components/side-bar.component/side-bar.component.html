@@ -4,41 +4,28 @@
     <div class="card-title" (click)="listCollapsed = !listCollapsed"><b>Seznam:</b></div>
     <div class="card-body">
       <form [formGroup]="exportForm">
-        <mat-form-field style="width: 65%;">
-          <input type="text" placeholder="Vyberte" matInput formControlName="name" [matAutocomplete]="autoExport"
-            (focus)="exportFocus()" (focusout)="exportFocusOut()" (input)="handleNoExport($event.target.value)" />
-          <mat-autocomplete #autoExport="matAutocomplete" [displayWith]="displayFnExportId"
-            (optionSelected)="selectExport($event.option.value)">
-            <mat-option *ngFor="let option of exportOptions | async" [value]="option">
-              {{option.name}} ({{option.createdAt | date:'dd.MM.yyyy HH:mm:ss'}})
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-        <button matIconButton (click)="existingExports()" title="Existující seznamy">
-          <mat-icon>library_books</mat-icon>
-        </button>
-        <button matIconButton (click)="viewExport()" title="Seznam nabídek"
-          [disabled]="!exportForm.controls.name.value">
-          <mat-icon>view_list</mat-icon>
-        </button>
-        <button matIconButton (click)="export()" title="Stažení nabídek" [disabled]="!exportForm.controls.name.value">
-          <mat-icon>cloud_download</mat-icon>
-        </button>
-        <!-- 
-        <button matButton (click)="createExport()" title="Vytvoř nový seznam">
-          <mat-icon>add</mat-icon>
-          Vytvoř nový
-        </button>
-        <button matButton (click)="deleteExport()" title="Smaž stávající seznam"
-          [disabled]="!session || !session.activeExport">
-          <mat-icon>remove</mat-icon>
-          Smaž stávající
-        </button>
-        @if (!!session && !session.activeExport) {
-        <div class="alert alert-danger" role="alert">
-          Bez vybraného seznamu nelze zadávat nabídkové ceny
+        <div style="display: flex; align-items: center;">
+          <mat-form-field style="width: 65%;">
+            <input type="text" placeholder="Vyberte" matInput formControlName="name" [matAutocomplete]="autoExport"
+              (focus)="exportFocus()" (focusout)="exportFocusOut()" (input)="handleNoExport($event.target.value)" />
+            <mat-autocomplete #autoExport="matAutocomplete" [displayWith]="displayFnExportId"
+              (optionSelected)="selectExport($event.option.value)">
+              <mat-option *ngFor="let option of exportOptions | async" [value]="option">
+                {{option.name}} ({{option.createdAt | date:'dd.MM.yyyy HH:mm:ss'}})
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <button matIconButton (click)="existingExports()" title="Existující seznamy">
+            <mat-icon>library_books</mat-icon>
+          </button>
+          <button matIconButton (click)="viewExport()" title="Seznam nabídek"
+            [disabled]="!exportForm.controls.name.value">
+            <mat-icon>view_list</mat-icon>
+          </button>
+          <button matIconButton (click)="export()" title="Stažení nabídek" [disabled]="!exportForm.controls.name.value">
+            <mat-icon>cloud_download</mat-icon>
+          </button>
         </div>
-        } -->
       </form>
     </div>
   </div>
@@ -106,13 +93,11 @@
                 <tr>
                   <td>nabídková cena m<sup>2</sup>:</td>
                   <td>
-                    <div class="full-width">
+                    <div style="display: flex; align-items: center;">
                       <input type="number" min="1" formControlName="cena" matInput oninput="validity.valid||(value='');"
-                        [readonly]="!session || !session.activeExport">
-                      <button matIconButton title="Zrušit" class="compact">
-                        <mat-icon>close</mat-icon>
-                      </button>
-                      <button matIconButton title="Potvrdit" class="compact">
+                        [readonly]="!session || !session.activeExport" style="flex-grow: 1;">
+                      <button matIconButton title="Potvrdit" class="compact" (click)="confirmPrice()"
+                        [disabled]="!session || !session.activeExport">
                         <mat-icon>check</mat-icon>
                       </button>
                     </div>
@@ -121,9 +106,15 @@
                 <tr>
                   <td>poznámka:</td>
                   <td>
-                    <input type="text" maxlength="20" formControlName="poznamka" matInput
-                      oninput="validity.valid||(value='');" class="full-width"
-                      [readonly]="!session || !session.activeExport">
+                    <div style="display: flex; align-items: center;">
+                      <input type="text" maxlength="20" formControlName="poznamka" matInput
+                        oninput="validity.valid||(value='');" class="full-width"
+                        [readonly]="!session || !session.activeExport" style="flex-grow: 1;">
+                      <button matIconButton title="Potvrdit" class="compact" (click)="confirmComment()"
+                        [disabled]="!session || !session.activeExport">
+                        <mat-icon>check</mat-icon>
+                      </button>
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -136,7 +127,7 @@
                 <tr>
                   <td>pracoviště:</td>
                   <td>
-                    {{featureInfoData.pracoviste}
+                    {{featureInfoData.pracoviste}}
                   </td>
                 </tr>
                 }
