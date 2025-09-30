@@ -132,6 +132,14 @@
                     {{featureInfoData.datum | date:'dd.MM.yyyy HH:mm:ss'}}
                   </td>
                 </tr>
+                @if (!!featureInfoData.pracoviste) {
+                <tr>
+                  <td>pracoviště:</td>
+                  <td>
+                    {{featureInfoData.pracoviste}
+                  </td>
+                </tr>
+                }
                 @for (item of featureInfoData?.lv; track item) {
                 <tr>
                   <td>

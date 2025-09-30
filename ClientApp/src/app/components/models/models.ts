@@ -20,6 +20,7 @@ export interface IFeatureInfoData {
   cena?: number;
   poznamka: string;
   datum: Date;
+  pracoviste?: string;
 }
 
 export interface ISortableLabelDefinition {
@@ -43,10 +44,11 @@ export interface ISortableLabel {
 
 export interface ILvInfo {
   vlastnici: IVlastnik[];
-  cena: IPrice
+  cena: IPrice;
 }
 
 export interface IVlastnik {
+  pracoviste: string;
   jmeno: string;
   adresa: string;
   podil?: number;

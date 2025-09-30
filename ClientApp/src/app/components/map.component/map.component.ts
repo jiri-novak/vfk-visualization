@@ -345,7 +345,8 @@ export class MapComponent implements OnInit {
               telId: telId,
               cena: lvInfo.cena?.cenaNabidkova,
               poznamka: lvInfo.cena?.poznamka,
-              datum: lvInfo.cena?.createdAt
+              datum: lvInfo.cena?.createdAt,
+              pracoviste: lvInfo.vlastnici.length >= 1 ? lvInfo.vlastnici[0].pracoviste : null,
             });
           }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
         }
