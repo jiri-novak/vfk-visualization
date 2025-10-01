@@ -77,12 +77,12 @@ export class SideBarComponent implements OnInit {
   }
 
   confirmPrice() {
-    this.busy = this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, x: this.featureInfoData.x, y: this.featureInfoData.y, price: this.lvInfoForm.controls.cena.value })
+    this.busy = this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, price: this.lvInfoForm.controls.cena.value })
       .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu: ${e.message}`));
   }
 
   confirmComment() {
-    this.busy = this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, x: this.featureInfoData.x, y: this.featureInfoData.y, comment: this.lvInfoForm.controls.poznamka.value })
+    this.busy = this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, comment: this.lvInfoForm.controls.poznamka.value })
       .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e.message}`));
   }
 
@@ -198,9 +198,11 @@ export class SideBarComponent implements OnInit {
           if (result !== undefined) {
             console.log(result);
             console.log(`Lokalizace na souřadnice: ${result.x}, ${result.y}.`);
-            this.localizationByCoordinates.next({
-              x: result.x,
-              y: result.y,
+            const katuzeKod = 668150;
+            console.log(result.ku)
+            this.localizationByLv.next({
+              katuzeKod: katuzeKod,
+              lvId: result.cisloLv,
             });
           }
         });
@@ -269,7 +271,7 @@ export class SideBarComponent implements OnInit {
     console.log(`Lokalizace na LV: ${this.session.activeKatuzeKod}, ${this.lvForm.value.lvId}.`);
     this.localizationByLv.next({
       katuzeKod: this.session.activeKatuzeKod,
-      lvId: this.lvForm.value.lvId
+      lvId: this.lvForm.value.lvId,
     });
   }
 
@@ -279,7 +281,7 @@ export class SideBarComponent implements OnInit {
     console.log(`Lokalizace na LV: ${katuzeKod}, ${lvId}.`);
     this.localizationByLv.next({
       katuzeKod: katuzeKod,
-      lvId: lvId
+      lvId: lvId,
     });
   }
 }

@@ -19,8 +19,6 @@ export interface ILocalizationByCoordinates {
 
 export interface IFeatureInfoData {
   telId: number;
-  x: number;
-  y: number;
   par: ISortableLabel[];
   lv: ISortableLabel[];
   vl: ISortableLabel[][];
@@ -93,8 +91,6 @@ export interface IPriceDetails extends IPrice {
 
 export interface IPrice {
   telId: number;
-  x: number;
-  y: number;
   createdAt: Date;
   cenaNabidkova?: number;
   poznamka?: string;
@@ -113,15 +109,11 @@ export interface IKatuze {
 
 export interface ISetPrice {
   exportId: number;
-  x: number;
-  y: number;
   price?: number;
 }
 
 export interface ISetComment {
   exportId: number;
-  x: number;
-  y: number;
   comment?: string;
 }
 

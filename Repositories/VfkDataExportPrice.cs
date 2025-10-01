@@ -13,10 +13,6 @@ public class VfkDataExportPrice
     public required string? Poznamka { get; set; }
     
     public required int ExportId { get; set; }
-    
-    public required float X { get; set; }
-    
-    public required float Y { get; set; }
 
     public VfkDataExport Export { get; set; } = null!;
 }

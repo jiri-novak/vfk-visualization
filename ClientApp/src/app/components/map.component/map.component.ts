@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, forkJoin, Subscription, iif, of } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 import Feature from 'ol/Feature';
 import View from 'ol/View';
@@ -23,6 +23,7 @@ import { OlStyles } from 'src/app/services/ol.styling.service';
 import { IFeatureInfoData, ISortableLabel, ISortableLabelDefinition, IVlastnik } from '../models/models';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { ToastrService } from 'ngx-toastr';
+import { Geometry, MultiPolygon } from 'ol/geom';
 
 @Component({
   selector: 'app-map',
@@ -319,47 +320,47 @@ export class MapComponent implements OnInit {
       const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
       const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
 
-      let dataLv: ISortableLabel[] = [];
-      let dataPar: ISortableLabel[] = [];
-      let dataVl: ISortableLabel[][] = [];
-
-      this.sourceVector.clear();
-
-      if (featuresLv.length > 0 && featuresPar.length > 0) {
-        this.sourceVector.addFeature(featuresLv[0]);
-
-        const propertiesLv = featuresLv[0].getProperties();
-        const propertiesPar = featuresPar[0].getProperties();
-        const telId = propertiesLv.TEL_ID;
-
-        dataLv = this.getData(propertiesLv, this.lvAttrTranslate);
-        dataPar = this.getData(propertiesPar, this.parAttrTranslate);
-
-        this.busy = this.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
-          dataVl = lvInfo.vlastnici
-            .sort((a: IVlastnik, b: IVlastnik) => {
-              return (a.zemedelec ? 'ano' : 'ne').localeCompare(b.zemedelec ? 'ano' : 'ne') // zemedelec ASC
-                || b.podil - a.podil; // podil DESC
-            })
-            .map(v => this.getData(v, this.vlAttrTranslate));
-
-          this.featureInfoData.next({
-            par: dataPar,
-            lv: dataLv,
-            vl: dataVl,
-            telId: telId,
-            x: x,
-            y: y,
-            cena: lvInfo.cena?.cenaNabidkova,
-            poznamka: lvInfo.cena?.poznamka,
-            datum: lvInfo.cena?.createdAt,
-            pracoviste: lvInfo.vlastnici.length >= 1 ? lvInfo.vlastnici[0].pracoviste : null,
-          });
-        }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
-      }
-    }, () => {
-      this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace');
+      this.getByFeatures(featuresLv, featuresPar);
     });
+  }
+
+  private getByFeatures(featuresLv: Feature<Geometry>[], featuresPar: Feature<Geometry>[]) {
+    let dataLv: ISortableLabel[] = [];
+    let dataPar: ISortableLabel[] = [];
+    let dataVl: ISortableLabel[][] = [];
+
+    this.sourceVector.clear();
+
+    if (featuresLv.length > 0 && featuresPar.length > 0) {
+      this.sourceVector.addFeature(featuresLv[0]);
+
+      const propertiesLv = featuresLv[0].getProperties();
+      const propertiesPar = featuresPar[0].getProperties();
+      const telId = propertiesLv.TEL_ID;
+
+      dataLv = this.getData(propertiesLv, this.lvAttrTranslate);
+      dataPar = this.getData(propertiesPar, this.parAttrTranslate);
+
+      this.busy = this.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
+        dataVl = lvInfo.vlastnici
+          .sort((a: IVlastnik, b: IVlastnik) => {
+            return (a.zemedelec ? 'ano' : 'ne').localeCompare(b.zemedelec ? 'ano' : 'ne') // zemedelec ASC
+              || b.podil - a.podil; // podil DESC
+          })
+          .map(v => this.getData(v, this.vlAttrTranslate));
+
+        this.featureInfoData.next({
+          par: dataPar,
+          lv: dataLv,
+          vl: dataVl,
+          telId: telId,
+          cena: lvInfo.cena?.cenaNabidkova,
+          poznamka: lvInfo.cena?.poznamka,
+          datum: lvInfo.cena?.createdAt,
+          pracoviste: lvInfo.vlastnici.length >= 1 ? lvInfo.vlastnici[0].pracoviste : null,
+        });
+      }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
+    };
   }
 
   private getData(properties: any, translate: Map<string, ISortableLabelDefinition>): ISortableLabel[] {
@@ -453,8 +454,8 @@ export class MapComponent implements OnInit {
   }
 
   public localizeByLv(event: any) {
-    this.busy = this.localizeByLv$(event.katuzeKod, event.lvId).subscribe(
-      () => { }, () => this.toastrService.error('Nepodařilo lokalizovat se zadané LV', 'Lokalizace dle LV'));
+    this.busy = this.localizeByLv$(event.katuzeKod, event.lvId, event.loadData).subscribe(
+      (g) => { console.log(g); }, () => this.toastrService.error('Nepodařilo lokalizovat se zadané LV', 'Lokalizace dle LV'));
   }
 
   public localizeByKu(event: any) {
@@ -476,32 +477,63 @@ export class MapComponent implements OnInit {
     this.sourceVector.refresh();
   }
 
-  private localizeByLv$(kuKod: number, lvId: number): Observable<any> {
+  private localizeByLv$(kuKod: number, lvId: number, loadData: boolean): Observable<any> {
     return this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`)
       .pipe(
-        map(resp => this.localizeToFeature$(resp))
+        map(resp => this.localizeToFeature$(resp)),
+        switchMap((fLv: Feature<Geometry>[]) => {
+          var extend = fLv[0].getGeometry().getExtent();
+          var bbox = `${extend[0]}, ${extend[1]}, ${extend[2]}, ${extend[3]}`;
+          var fPar = this.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 100);
+          return fPar;
+        }, (outerValue, innerValue) => {
+          const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(innerValue);
+          const interiorPoint = (<MultiPolygon>(outerValue[0].getGeometry())).getInteriorPoints().getFirstCoordinate();
+          const matchingPar = featuresPar.filter(x => x.getGeometry().intersectsCoordinate(interiorPoint));
+          return [outerValue, matchingPar]
+        }),
+        tap(d => {
+          this.getByFeatures(d[0], d[1]);
+          return of();
+        })
       );
   }
 
   private localizeByKu$(kuKod: number): Observable<any> {
     return this.getFeatureGeoJson$('VFK:KU', `KOD=${kuKod}`)
       .pipe(
-        map(resp => this.localizeToFeature$(resp))
+        map(resp => this.localizeToFeature$(resp)),
       );
   }
 
   public localizeByPar$(kuKod: number, parcelKod: string): Observable<any> {
     return this.getFeatureGeoJson$('VFK:PAR', `PAR_CISLO='${parcelKod}' AND KATUZE_KOD=${kuKod}`)
       .pipe(
-        map(resp => this.localizeToFeature$(resp))
+        map(resp => this.localizeToFeature$(resp)),
+        switchMap((fPar: Feature<Geometry>[]) => {
+          var extend = fPar[0].getGeometry().getExtent();
+          var bbox = `${extend[0]}, ${extend[1]}, ${extend[2]}, ${extend[3]}`;
+          var fLv = this.getFeatureByBboxGeoJson$('VFK:LV', bbox, 100);
+          return fLv;
+        }, (outerValue, innerValue) => {
+          const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(innerValue);
+          const interiorPoint = (<MultiPolygon>(outerValue[0].getGeometry())).getInteriorPoints().getFirstCoordinate();
+          const matchingLv = featuresLv.filter(x => x.getGeometry().intersectsCoordinate(interiorPoint));
+          return [outerValue, matchingLv]
+        }),
+        tap(d => {
+          this.getByFeatures(d[1], d[0]);
+          return of();
+        })
       );
   }
 
-  private localizeToFeature$(resp: any) {
+  private localizeToFeature$(resp: any): Feature<Geometry>[] {
     this.sourceVector.clear();
     const features = (new GeoJSON()).readFeatures(resp);
     this.sourceVector.addFeatures(features);
     this.view.fit(this.sourceVector.getExtent());
+    return features;
   }
 
   private getFeatureGeoJson$(typeName: string, cqlFilter: string): Observable<any> {
