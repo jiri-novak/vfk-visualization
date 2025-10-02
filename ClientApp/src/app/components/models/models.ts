@@ -12,20 +12,15 @@ export interface ILocalizationByLv {
   lvId: number;
 }
 
-export interface ILocalizationByCoordinates {
-  x: number;
-  y: number;
-}
-
 export interface IFeatureInfoData {
   telId: number;
-  par: ISortableLabel[];
   lv: ISortableLabel[];
   vl: ISortableLabel[][];
   cena?: number;
   poznamka: string;
   datum: Date;
   pracoviste?: string;
+  pars: ISortableLabel[][];
 }
 
 export interface ISortableLabelDefinition {

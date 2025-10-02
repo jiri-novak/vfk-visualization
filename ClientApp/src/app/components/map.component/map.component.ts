@@ -313,33 +313,39 @@ export class MapComponent implements OnInit {
     const step = 0.5;
     const bbox = `${x - step},${y - step},${x + step},${y + step}`;
 
-    this.busy = forkJoin([
-      this.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1),
-      this.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1),
-    ]).subscribe(([respLv, respPar]) => {
-      const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
-      const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
-
-      this.getByFeatures(featuresLv, featuresPar);
-    });
+    this.busy = this.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1)
+      .pipe(
+        switchMap(respLv => {
+          const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
+          const lvProperties = featuresLv[0].getProperties();
+          const lvId = lvProperties.LVID;
+          const kuKod = lvProperties.KATUZE_KOD;
+          return this.getFeatureGeoJson$('VFK:PAR', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`).pipe(map(resp => [featuresLv, new GeoJSON().readFeatures(resp)]))
+        })).subscribe(([featuresLv, featuresPar]) => {
+          this.getByFeatures(featuresLv, featuresPar, true);
+        });
   }
 
-  private getByFeatures(featuresLv: Feature<Geometry>[], featuresPar: Feature<Geometry>[]) {
+  private getByFeatures(featuresLv: Feature<Geometry>[], featuresPar: Feature<Geometry>[], wasManualClick: boolean) {
     let dataLv: ISortableLabel[] = [];
-    let dataPar: ISortableLabel[] = [];
+    let dataPars: ISortableLabel[][] = [];
     let dataVl: ISortableLabel[][] = [];
 
-    this.sourceVector.clear();
+    if (wasManualClick) {
+      this.sourceVector.clear();
+    }
 
     if (featuresLv.length > 0 && featuresPar.length > 0) {
-      this.sourceVector.addFeature(featuresLv[0]);
+      if (wasManualClick) {
+        this.sourceVector.addFeature(featuresLv[0]);
+      }
 
       const propertiesLv = featuresLv[0].getProperties();
-      const propertiesPar = featuresPar[0].getProperties();
+      const propertiesPars = featuresPar.map(x => x.getProperties());
       const telId = propertiesLv.TEL_ID;
 
       dataLv = this.getData(propertiesLv, this.lvAttrTranslate);
-      dataPar = this.getData(propertiesPar, this.parAttrTranslate);
+      dataPars = propertiesPars.map(x => this.getData(x, this.parAttrTranslate));
 
       this.busy = this.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
         dataVl = lvInfo.vlastnici
@@ -350,7 +356,7 @@ export class MapComponent implements OnInit {
           .map(v => this.getData(v, this.vlAttrTranslate));
 
         this.featureInfoData.next({
-          par: dataPar,
+          pars: dataPars,
           lv: dataLv,
           vl: dataVl,
           telId: telId,
@@ -454,7 +460,7 @@ export class MapComponent implements OnInit {
   }
 
   public localizeByLv(event: any) {
-    this.busy = this.localizeByLv$(event.katuzeKod, event.lvId, event.loadData).subscribe(
+    this.busy = this.localizeByLv$(event.katuzeKod, event.lvId).subscribe(
       (g) => { console.log(g); }, () => this.toastrService.error('Nepodařilo lokalizovat se zadané LV', 'Lokalizace dle LV'));
   }
 
@@ -468,34 +474,39 @@ export class MapComponent implements OnInit {
       () => { }, () => this.toastrService.error('Nepodařilo lokalizovat se zadanou parcelu', 'Lokalizace dle parcely'));
   }
 
-  public localizeByCoordinates(event: any) {
-    this.getByCoordinates(event.x, event.y);
-  }
-
   public cancelLocalization() {
     this.sourceVector.clear();
     this.sourceVector.refresh();
   }
 
-  private localizeByLv$(kuKod: number, lvId: number, loadData: boolean): Observable<any> {
-    return this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`)
+  private localizeByLv$(kuKod: number, lvId: number): Observable<any> {
+    return forkJoin([
+      this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`),
+      this.getFeatureGeoJson$('VFK:PAR', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`)
+    ])
       .pipe(
-        map(resp => this.localizeToFeature$(resp)),
-        switchMap((fLv: Feature<Geometry>[]) => {
-          var extend = fLv[0].getGeometry().getExtent();
-          var bbox = `${extend[0]}, ${extend[1]}, ${extend[2]}, ${extend[3]}`;
-          var fPar = this.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 100);
-          return fPar;
-        }, (outerValue, innerValue) => {
-          const featuresPar: Array<Feature> = (new GeoJSON()).readFeatures(innerValue);
-          const interiorPoint = (<MultiPolygon>(outerValue[0].getGeometry())).getInteriorPoints().getFirstCoordinate();
-          const matchingPar = featuresPar.filter(x => x.getGeometry().intersectsCoordinate(interiorPoint));
-          return [outerValue, matchingPar]
+        tap(resp => {
+          const lvFeatures = this.localizeToFeature$(resp[0]);
+          const parFeatures = (new GeoJSON()).readFeatures(resp[1]);
+          this.getByFeatures(lvFeatures, parFeatures, false);
         }),
-        tap(d => {
-          this.getByFeatures(d[0], d[1]);
-          return of();
-        })
+        // switchMap((fLv: Feature<Geometry>[]) => {
+        //   const step = 0.5;
+        //   const bboxes = (<MultiPolygon>(fLv[0].getGeometry()))
+        //     .getPolygons()
+        //     .map(p => p.getInteriorPoint().getFirstCoordinate())
+        //     .map(x => `${x[0] - step},${x[1] - step},${x[0] + step},${x[1] + step}`);
+        //   const features = bboxes.map(b => this.getFeatureByBboxGeoJson$('VFK:PAR', b, 1));
+        //   return forkJoin(features);
+        // }, (lvs, pars) => {
+        //   const featuresPars = pars.map(p => (new GeoJSON()).readFeatures(p))
+        //     .reduce((a, b) => a.concat(b), []);
+        //   return [lvs, featuresPars]
+        // }),
+        // tap(d => {
+        //   this.getByFeatures(d[0], d[1], false);
+        //   return of();
+        // })
       );
   }
 
@@ -511,20 +522,13 @@ export class MapComponent implements OnInit {
       .pipe(
         map(resp => this.localizeToFeature$(resp)),
         switchMap((fPar: Feature<Geometry>[]) => {
-          var extend = fPar[0].getGeometry().getExtent();
-          var bbox = `${extend[0]}, ${extend[1]}, ${extend[2]}, ${extend[3]}`;
-          var fLv = this.getFeatureByBboxGeoJson$('VFK:LV', bbox, 100);
-          return fLv;
-        }, (outerValue, innerValue) => {
-          const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(innerValue);
-          const interiorPoint = (<MultiPolygon>(outerValue[0].getGeometry())).getInteriorPoints().getFirstCoordinate();
-          const matchingLv = featuresLv.filter(x => x.getGeometry().intersectsCoordinate(interiorPoint));
-          return [outerValue, matchingLv]
+          const parProperties = fPar[0].getProperties();
+          const lvId = parProperties.LVID;
+          return this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`).pipe(map(resp => [new GeoJSON().readFeatures(resp), fPar]))
         }),
-        tap(d => {
-          this.getByFeatures(d[1], d[0]);
-          return of();
-        })
+        tap(([fLv, fPar]) => {
+          this.getByFeatures(fLv, fPar, false);
+        }),
       );
   }
 

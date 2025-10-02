@@ -2,7 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { debounceTime, Observable, Subscription, switchMap } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ILocalizationByCoordinates } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ISortableLabel } from '../models/models';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -20,7 +20,6 @@ export class SideBarComponent implements OnInit {
   @Output() localizationByKu: EventEmitter<ILocalizationByKu> = new EventEmitter<ILocalizationByKu>();
   @Output() localizationByPar: EventEmitter<ILocalizationByPar> = new EventEmitter<ILocalizationByPar>();
   @Output() localizationByLv: EventEmitter<ILocalizationByLv> = new EventEmitter<ILocalizationByLv>();
-  @Output() localizationByCoordinates: EventEmitter<ILocalizationByCoordinates> = new EventEmitter<ILocalizationByCoordinates>();
   @Output() localizationCancel: EventEmitter<void> = new EventEmitter<void>();
 
   busy: Subscription;
@@ -254,9 +253,9 @@ export class SideBarComponent implements OnInit {
     });
   }
 
-  onLocalizePar2() {
+  onLocalizePar2(item: ISortableLabel) {
     const katuzeKod = this.featureInfoData.lv.find(x => x.id == 'KU').code;
-    const parCislo = this.featureInfoData.par.find(x => x.id == 'PAR_CISLO').value;
+    const parCislo = item.value;
     console.log(`Lokalizace na parcelu: ${katuzeKod}, ${parCislo}.`);
     this.localizationByPar.next({
       katuzeKod: katuzeKod,
