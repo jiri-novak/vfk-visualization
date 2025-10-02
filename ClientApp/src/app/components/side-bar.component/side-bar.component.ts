@@ -196,12 +196,9 @@ export class SideBarComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result !== undefined) {
-            console.log(result);
-            console.log(`Lokalizace na souřadnice: ${result.x}, ${result.y}.`);
-            const katuzeKod = 668150;
-            console.log(result.ku)
+    console.log(`Lokalizace na LV: ${result.kuKod}, ${result.cisloLv}.`);
             this.localizationByLv.next({
-              katuzeKod: katuzeKod,
+              katuzeKod: result.kuKod,
               lvId: result.cisloLv,
             });
           }

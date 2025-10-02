@@ -86,6 +86,7 @@ export interface IExportDetails {
 export interface IPriceDetails extends IPrice {
   pracoviste: string;
   ku: string;
+  kuKod: number;
   cisloLv: number;
 }
 

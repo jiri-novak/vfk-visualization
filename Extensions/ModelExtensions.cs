@@ -57,6 +57,7 @@ internal static class ModelExtensions
                         CisloLv = l.CisloLv!.Value,
                         Pracoviste = l.Pracoviste!,
                         Ku = $"{l.Katuze!} ({l.KatuzeKod})",
+                        KuKod = l.KatuzeKod,
                         TelId = x.TelId,
                         CreatedAt = x.CreatedAtUtc.ToLocalTime(),
                         CenaNabidkova = x.CenaNabidkova,

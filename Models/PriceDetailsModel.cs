@@ -6,5 +6,7 @@ public class PriceDetailsModel : PriceModel
     
     public required string Ku { get; set; }
     
+    public required int KuKod { get; set; }
+    
     public required int CisloLv { get; set; }
 }
