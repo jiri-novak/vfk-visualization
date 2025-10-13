@@ -20,7 +20,7 @@
           </button>
           <button matIconButton (click)="viewExport()" title="Seznam nabídek"
             [disabled]="!exportForm.controls.name.value">
-            <mat-icon>view_list</mat-icon>
+            <mat-icon [matBadge]="getActiveExportPricesCount()" matBadgeSize="medium">view_list</mat-icon>
           </button>
           <button matIconButton (click)="export()" title="Stažení nabídek" [disabled]="!exportForm.controls.name.value">
             <mat-icon>cloud_download</mat-icon>

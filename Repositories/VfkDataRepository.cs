@@ -120,6 +120,7 @@ public class VfkDataRepository(
     {
         var existing = vfkDataReadWriteContext.Sessions
             .Include(x => x.ActiveExport)
+            .Include(x => x.ActiveExport!.Prices)
             .FirstOrDefault();
 
         if (existing == null)
@@ -174,7 +175,7 @@ public class VfkDataRepository(
         return session;
     }
 
-    public void SetPriceAndComment(long telId, int exportId, int? price, string? comment)
+    public VfkDataSession SetPriceAndComment(long telId, int exportId, int? price, string? comment)
     {
         vfkDataReadWriteContext.ExportPrices
             .Where(x => x.ExportId == exportId && x.TelId == telId)
@@ -194,5 +195,8 @@ public class VfkDataRepository(
             
             vfkDataReadWriteContext.SaveChanges();
         }
+
+        var session = GetOrCreateSession();
+        return session;
     }
 }

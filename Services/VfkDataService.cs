@@ -121,8 +121,8 @@ public class VfkDataService(VfkDataRepository repository)
         return repository.SetActiveExport(activeExport.ExportId);
     }
 
-    public void SetPriceAndComment(long telId, int exportId, int? price, string? comment)
+    public VfkDataSession SetPriceAndComment(long telId, int exportId, int? price, string? comment)
     {
-        repository.SetPriceAndComment(telId, exportId, price, comment);
+        return repository.SetPriceAndComment(telId, exportId, price, comment);
     }
 }

@@ -33,7 +33,7 @@ export class ServerAppService {
     return this.http.delete<ISession>(`api/vfkData/session/export`);
   }
 
-  public setPriceAndComment(telId: number, setPriceAndComment: ISetPriceAndComment): Observable<Object> {
+  public setPriceAndComment(telId: number, setPriceAndComment: ISetPriceAndComment): Observable<ISession> {
     return this.http.post(`api/vfkData/${telId}/price-and-comment`, setPriceAndComment);
   }
 

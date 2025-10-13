@@ -75,6 +75,10 @@ export class SideBarComponent implements OnInit {
     });
   }
 
+  getActiveExportPricesCount(): number {
+    return (this.session?.activeExport?.prices ?? []).length;
+  }
+
   confirmPriceAndComment() {
     this.busy = this.serverAppService.setPriceAndComment(this.featureInfoData.telId,
       {
@@ -82,7 +86,7 @@ export class SideBarComponent implements OnInit {
         price: this.lvInfoForm.controls.cena.value,
         comment: this.lvInfoForm.controls.poznamka.value
       })
-      .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu a poznámku: ${e.message}`));
+      .subscribe(s => this.session = s, (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu a poznámku: ${e.message}`));
   }
 
   ngOnInit() {

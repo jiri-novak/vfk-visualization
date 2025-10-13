@@ -35,8 +35,8 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpPost("{telId}/price-and-comment")]
     public IActionResult SetPrice([FromRoute] long telId, [FromBody] SetPriceAndCommentModel model)
     {
-        service.SetPriceAndComment(telId, model.ExportId, model.Price, model.Comment);
-        return Ok();
+        var session = service.SetPriceAndComment(telId, model.ExportId, model.Price, model.Comment).ToModel();
+        return Ok(session);
     }
 
     [HttpPost("generate/excel")]

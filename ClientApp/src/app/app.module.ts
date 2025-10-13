@@ -33,6 +33,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatBadgeModule } from '@angular/material/badge';
 import { NewExportDialog } from './components/new-export.dialog/new-export.dialog';
 import { CurrentListDialog } from './components/current-list.dialog/current-list.dialog';
 import { ExistingListsDialog } from './components/existing-lists.dialog/existing-lists.dialog';
@@ -73,6 +74,7 @@ export function busyConfigFactory(): BusyConfig {
     MatTableModule,
     MatTabsModule,
     MatDialogModule,
+    MatBadgeModule,
   ],
   providers: [
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } }
