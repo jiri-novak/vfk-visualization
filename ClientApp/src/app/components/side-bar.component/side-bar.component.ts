@@ -2,7 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { debounceTime, iif, Observable, Subscription, switchMap } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ISortableLabel, IExport } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ISortableLabel, IExport, IPriceDetails } from '../models/models';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -199,12 +199,14 @@ export class SideBarComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(result => {
-          if (result !== undefined) {
+          if ((result as IPriceDetails)?.kuKod != null) {
             console.log(`Lokalizace na LV: ${result.kuKod}, ${result.cisloLv}.`);
             this.localizationByLv.next({
               katuzeKod: result.kuKod,
               lvId: result.cisloLv,
             });
+          } else if ((result as ISession)?.activeExport != null) {
+            this.session = result;
           }
         });
       },

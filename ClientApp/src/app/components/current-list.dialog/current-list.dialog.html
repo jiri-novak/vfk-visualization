@@ -36,7 +36,7 @@
     </table>
 </mat-dialog-content>
 
-<mat-dialog-actions>
+<mat-dialog-actions [ngBusy]="busy">
     <button matButton (click)="close()" title="Zrušit">
         <mat-icon>cancel</mat-icon>
         Zrušit

@@ -75,6 +75,7 @@ export interface IExport {
 }
 
 export interface IExportDetails {
+  exportId: number;
   prices: IPriceDetails[];
 }
 

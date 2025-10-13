@@ -48,6 +48,7 @@ internal static class ModelExtensions
     {
         return new ExportDetailsModel
         {
+            ExportId = e.Id,
             Prices = e.Prices
                 .Select(x =>
                 {
