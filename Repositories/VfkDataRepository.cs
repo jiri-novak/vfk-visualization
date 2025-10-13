@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using VfkVisualization.Services;
 
 namespace VfkVisualization.Repositories;
 
@@ -81,7 +80,7 @@ public class VfkDataRepository(
 
     public VfkDataSession DeleteExport(int id)
     {
-        var session = vfkDataReadWriteContext.Sessions.First();
+        var session = GetOrCreateSession();
         if (session.ActiveExportId == id)
         {
             session.ActiveExport = null;
@@ -101,7 +100,7 @@ public class VfkDataRepository(
             .Include(x => x.Prices)
             .FirstOrDefault(x => x.Id == id);
     }
-    
+
     public IEnumerable<VfkDataExport> GetAllExports()
     {
         return vfkDataReadWriteContext.Exports.AsNoTracking()
@@ -119,7 +118,7 @@ public class VfkDataRepository(
 
     public VfkDataSession GetOrCreateSession()
     {
-        var existing = vfkDataReadWriteContext.Sessions.AsNoTracking()
+        var existing = vfkDataReadWriteContext.Sessions
             .Include(x => x.ActiveExport)
             .FirstOrDefault();
 
@@ -135,16 +134,16 @@ public class VfkDataRepository(
 
     public VfkDataSession SetActiveKatuze(int katuzeCode, string katuzeName)
     {
-        var session = vfkDataReadWriteContext.Sessions.First();
+        var session = GetOrCreateSession();
         session.ActiveKatuzeKod = katuzeCode;
         session.ActiveKatuzeName = katuzeName;
         vfkDataReadWriteContext.SaveChanges();
         return session;
     }
-    
+
     public VfkDataSession SetNoActiveKatuze()
     {
-        var session = vfkDataReadWriteContext.Sessions.First();
+        var session = GetOrCreateSession();
         session.ActiveKatuzeKod = null;
         session.ActiveKatuzeName = null;
         vfkDataReadWriteContext.SaveChanges();
@@ -153,7 +152,7 @@ public class VfkDataRepository(
 
     public VfkDataSession SetActiveExport(int exportId)
     {
-        var session = vfkDataReadWriteContext.Sessions.First();
+        var session = GetOrCreateSession();
         var export = vfkDataReadWriteContext.Exports.FirstOrDefault(x => x.Id == exportId);
         if (export != null)
         {
@@ -164,81 +163,36 @@ public class VfkDataRepository(
         vfkDataReadWriteContext.SaveChanges();
         return session;
     }
-    
+
     public VfkDataSession SetNoActiveExport()
     {
-        var session = vfkDataReadWriteContext.Sessions.First();
+        var session = GetOrCreateSession();
         session.ActiveExportId = null;
         session.ActiveExport = null;
-
+        
         vfkDataReadWriteContext.SaveChanges();
         return session;
     }
 
-    public void SetPrice(long telId, int exportId, int? price)
+    public void SetPriceAndComment(long telId, int exportId, int? price, string? comment)
     {
-        var existing = vfkDataReadWriteContext.ExportPrices
-            .FirstOrDefault(x => x.ExportId == exportId && x.TelId == telId);
+        vfkDataReadWriteContext.ExportPrices
+            .Where(x => x.ExportId == exportId && x.TelId == telId)
+            .ExecuteDelete();
 
-        if (existing != null && price == null && string.IsNullOrEmpty(existing.Poznamka))
+        if (price.HasValue || !string.IsNullOrEmpty(comment))
         {
-            vfkDataReadWriteContext.Remove(existing);
-        }
-        else if (price.HasValue)
-        {
+            vfkDataReadWriteContext.ExportPrices
+                .Add(new VfkDataExportPrice
+                {
+                    TelId = telId,
+                    CreatedAtUtc = DateTime.UtcNow,
+                    CenaNabidkova = price,
+                    Poznamka = comment,
+                    ExportId = exportId,
+                });
             
-            if (existing != null)
-            {
-                existing.CenaNabidkova = price.Value;
-                existing.CreatedAtUtc = DateTime.UtcNow;
-            }
-            else
-            {
-                vfkDataReadWriteContext.ExportPrices
-                    .Add(new VfkDataExportPrice
-                    {
-                        TelId = telId,
-                        CreatedAtUtc = DateTime.UtcNow,
-                        CenaNabidkova = price.Value,
-                        Poznamka = null,
-                        ExportId = exportId,
-                    });
-            }
+            vfkDataReadWriteContext.SaveChanges();
         }
-
-        vfkDataReadWriteContext.SaveChanges();
-    }
-
-    public void SetComment(long telId, int exportId, string? comment)
-    {
-        var existing = vfkDataReadWriteContext.ExportPrices
-            .FirstOrDefault(x => x.ExportId == exportId && x.TelId == telId);
-
-        if (existing != null && string.IsNullOrEmpty(comment) && existing.CenaNabidkova == null)
-        {
-            vfkDataReadWriteContext.Remove(existing);
-        }
-        else if (!string.IsNullOrEmpty(comment))
-        {
-            if (existing != null)
-            {
-                existing.Poznamka = comment;
-                existing.CreatedAtUtc = DateTime.UtcNow;
-            }
-            else
-            {
-                vfkDataReadWriteContext.ExportPrices
-                    .Add(new VfkDataExportPrice
-                    {
-                        TelId = telId,
-                        CreatedAtUtc = DateTime.UtcNow,
-                        CenaNabidkova = null,
-                        Poznamka = comment,
-                        ExportId = exportId,
-                    });
-            }
-        }
-
-        vfkDataReadWriteContext.SaveChanges();
     }
 }

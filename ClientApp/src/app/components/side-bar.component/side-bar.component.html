@@ -96,11 +96,13 @@
                     <div style="display: flex; align-items: center;">
                       <input type="number" min="1" formControlName="cena" matInput oninput="validity.valid||(value='');"
                         [readonly]="!session || !session.activeExport" style="flex-grow: 1;">
-                      <button matIconButton title="Potvrdit" class="compact" (click)="confirmPrice()"
-                        [disabled]="!session || !session.activeExport">
-                        <mat-icon>check</mat-icon>
-                      </button>
                     </div>
+                  </td>
+                  <td rowspan="2">
+                    <button matIconButton title="Potvrdit" class="compact" (click)="confirmPriceAndComment()"
+                      [disabled]="!session || !session.activeExport">
+                      <mat-icon>save</mat-icon>
+                    </button>
                   </td>
                 </tr>
                 <tr>
@@ -110,10 +112,6 @@
                       <input type="text" maxlength="20" formControlName="poznamka" matInput
                         oninput="validity.valid||(value='');" class="full-width"
                         [readonly]="!session || !session.activeExport" style="flex-grow: 1;">
-                      <button matIconButton title="Potvrdit" class="compact" (click)="confirmComment()"
-                        [disabled]="!session || !session.activeExport">
-                        <mat-icon>check</mat-icon>
-                      </button>
                     </div>
                   </td>
                 </tr>

@@ -47,6 +47,7 @@ public class VfkDataReadWriteContext(IOptions<DbOptions> options) : DbContext
                 e.Property(x => x.CenaNabidkova).HasColumnName("cena_nabidkova");
                 e.Property(x => x.Poznamka).HasColumnName("poznamka");
                 e.HasKey(x => new { x.ExportId, x.TelId });
+                e.HasIndex(x => x.TelId);
             });
 
         modelBuilder.Entity<VfkDataSession>(e =>

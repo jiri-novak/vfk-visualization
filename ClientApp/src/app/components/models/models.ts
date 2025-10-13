@@ -103,13 +103,9 @@ export interface IKatuze {
   name: string;
 }
 
-export interface ISetPrice {
+export interface ISetPriceAndComment {
   exportId: number;
   price?: number;
-}
-
-export interface ISetComment {
-  exportId: number;
   comment?: string;
 }
 

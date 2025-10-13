@@ -20,6 +20,9 @@
                     <button matIconButton (click)="onLocalize(item)" title="Lokalizace" class="compact">
                         <mat-icon>location_on</mat-icon>
                     </button>
+                    <button matIconButton (click)="onDelete(item)" title="Odstranění" class="compact">
+                        <mat-icon>delete</mat-icon>
+                    </button>
                 </td>
                 <td>{{item.pracoviste}}</td>
                 <td>{{item.ku}}</td>

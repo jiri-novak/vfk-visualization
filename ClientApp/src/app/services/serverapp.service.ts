@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ICreateExport, IExport, IExportDetails, IExportId, IGenerateExcel, IKatuze, ILvInfo, ISession, ISetComment, ISetPrice } from '../components/models/models';
+import { ICreateExport, IExport, IExportDetails, IExportId, IGenerateExcel, IKatuze, ILvInfo, ISession, ISetPriceAndComment } from '../components/models/models';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -33,12 +33,8 @@ export class ServerAppService {
     return this.http.delete<ISession>(`api/vfkData/session/export`);
   }
 
-  public setPrice(telId: number, setPrice: ISetPrice): Observable<Object> {
-    return this.http.post(`api/vfkData/${telId}/price`, setPrice);
-  }
-
-  public setComment(telId: number, setComment: ISetComment): Observable<Object> {
-    return this.http.post(`api/vfkData/${telId}/comment`, setComment);
+  public setPriceAndComment(telId: number, setPriceAndComment: ISetPriceAndComment): Observable<Object> {
+    return this.http.post(`api/vfkData/${telId}/price-and-comment`, setPriceAndComment);
   }
 
   public createExport(createExport: ICreateExport): Observable<IExport> {

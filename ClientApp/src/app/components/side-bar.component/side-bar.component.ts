@@ -1,8 +1,8 @@
 import { ToastrService } from 'ngx-toastr';
-import { debounceTime, Observable, Subscription, switchMap } from 'rxjs';
+import { debounceTime, iif, Observable, Subscription, switchMap } from 'rxjs';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ISortableLabel } from '../models/models';
+import { ILocalizationByKu, ILocalizationByPar, ILocalizationByLv, IFeatureInfoData, IKatuze, ISession, IExportId, ISortableLabel, IExport } from '../models/models';
 import { ServerAppService } from 'src/app/services/serverapp.service';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -52,14 +52,14 @@ export class SideBarComponent implements OnInit {
     });
 
     this.exportOptions = this.exportForm.controls.name.valueChanges
-      .pipe(debounceTime(1000), switchMap(s => this.serverAppService.getExports(s)));
+      .pipe(debounceTime(1000), switchMap(s => this.serverAppService.getExports((s as IExport)?.name ?? s)));
 
     this.katuzeForm = this.formBuilder.group({
       katuze: ['', Validators.required]
     });
 
     this.katuzeOptions = this.katuzeForm.controls.katuze.valueChanges
-      .pipe(debounceTime(1000), switchMap(s => this.serverAppService.getKus(s)));
+      .pipe(debounceTime(1000), switchMap(s => this.serverAppService.getKus((s as IKatuze)?.name ?? s)));
 
     this.parForm = this.formBuilder.group({
       parCislo: ['', Validators.required]
@@ -75,14 +75,14 @@ export class SideBarComponent implements OnInit {
     });
   }
 
-  confirmPrice() {
-    this.busy = this.serverAppService.setPrice(this.featureInfoData.telId, { exportId: this.session.activeExport.id, price: this.lvInfoForm.controls.cena.value })
-      .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu: ${e.message}`));
-  }
-
-  confirmComment() {
-    this.busy = this.serverAppService.setComment(this.featureInfoData.telId, { exportId: this.session.activeExport.id, comment: this.lvInfoForm.controls.poznamka.value })
-      .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit poznámku: ${e.message}`));
+  confirmPriceAndComment() {
+    this.busy = this.serverAppService.setPriceAndComment(this.featureInfoData.telId,
+      {
+        exportId: this.session.activeExport.id,
+        price: this.lvInfoForm.controls.cena.value,
+        comment: this.lvInfoForm.controls.poznamka.value
+      })
+      .subscribe(() => { }, (e) => this.toastrService.error(`Nepodařilo se uložit nabídkovou cenu a poznámku: ${e.message}`));
   }
 
   ngOnInit() {
@@ -122,16 +122,17 @@ export class SideBarComponent implements OnInit {
   }
 
   katuzeFocus() {
+    console.log('katuzeFocus');
     this.katuzeForm.controls.katuze.updateValueAndValidity({ onlySelf: false, emitEvent: true });
   }
 
   katuzeFocusOut() {
     if (!!this.session.activeKatuzeKod && !!this.session.activeKatuzeName) {
       const katuze: IKatuze = { id: this.session.activeKatuzeKod, name: this.session.activeKatuzeName }
-      this.katuzeForm.controls.katuze.setValue(katuze, { emit: false });
+      this.katuzeForm.controls.katuze.setValue(katuze, { emitEvent: false });
     }
     else {
-      this.katuzeForm.controls.katuze.setValue('', { emit: false });
+      this.katuzeForm.controls.katuze.setValue('', { emitEvent: false });
     }
   }
 
@@ -141,10 +142,10 @@ export class SideBarComponent implements OnInit {
 
   exportFocusOut() {
     if (!!this.session.activeExport) {
-      this.exportForm.controls.name.setValue(this.session.activeExport, { emit: false });
+      this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
     }
     else {
-      this.exportForm.controls.name.setValue('', { emit: false });
+      this.exportForm.controls.name.setValue('', { emitEvent: false });
     }
   }
 
@@ -195,7 +196,7 @@ export class SideBarComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result !== undefined) {
-    console.log(`Lokalizace na LV: ${result.kuKod}, ${result.cisloLv}.`);
+            console.log(`Lokalizace na LV: ${result.kuKod}, ${result.cisloLv}.`);
             this.localizationByLv.next({
               katuzeKod: result.kuKod,
               lvId: result.cisloLv,
@@ -224,6 +225,7 @@ export class SideBarComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result !== undefined) {
             this.session = result;
+            console.log(this.session);
             this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
           }
         });

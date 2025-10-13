@@ -21,4 +21,8 @@ export class CurrentListDialog {
     onLocalize(item: IPriceDetails): void {
         this.dialogRef.close(item);
     }
+
+    onDelete(item: IPriceDetails): void {
+        
+    }
 }
