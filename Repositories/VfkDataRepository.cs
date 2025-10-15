@@ -63,6 +63,13 @@ public class VfkDataRepository(
             .OrderBy(x => x.Name)
             .Take(10);
     }
+    
+    public IReadOnlyCollection<Ku> GetAllKus()
+    {
+        return vfkDbReadOnlyContext.Kus
+            .OrderBy(x => x.Name)
+            .ToList();
+    }
 
     public VfkDataExport CreateExport(string name)
     {

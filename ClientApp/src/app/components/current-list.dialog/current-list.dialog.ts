@@ -1,9 +1,10 @@
 import { Component, Inject } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { IExportDetails, IPriceDetails, ISession, ISetPriceAndComment } from "../models/models";
 import { ServerAppService } from "src/app/services/serverapp.service";
-import { Subscription, switchMap } from "rxjs";
+import { Subscription } from "rxjs";
 import { ToastrService } from "ngx-toastr";
+import { ConfirmDialog } from "../confirm.dialog/confirm.dialog";
 
 @Component({
     selector: 'current-list-dialog',
@@ -14,6 +15,7 @@ import { ToastrService } from "ngx-toastr";
 export class CurrentListDialog {
     constructor(
         private dialogRef: MatDialogRef<CurrentListDialog>,
+        private dialog: MatDialog,
         private serverAppService: ServerAppService,
         private toastrService: ToastrService,
         @Inject(MAT_DIALOG_DATA) public data: IExportDetails) {
@@ -31,15 +33,20 @@ export class CurrentListDialog {
     }
 
     onDelete(item: IPriceDetails): void {
-        const setPriceAndComment: ISetPriceAndComment = { exportId: this.data.exportId, price: null, comment: null };
-        this.busy = this.serverAppService.setPriceAndComment(item.telId, setPriceAndComment)
-            .pipe(switchMap(s => {
-                this.session = s;
-                return this.serverAppService.getExportDetails(this.data.exportId);
-            }))
-            .subscribe(s => {
-                this.data = s;
-            },
-                (e) => this.toastrService.error(`Nepodařilo se smazat cenu: ${e.message}`));
+        const dialogRef = this.dialog.open(ConfirmDialog, {
+            data: `nabídkovou cenu pro ${item.pracoviste} - ${item.ku} - ${item.cisloLv}`
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result == true) {
+                const setPriceAndComment: ISetPriceAndComment = { exportId: this.data.exportId, price: null, comment: null };
+                this.busy = this.serverAppService.setPriceAndComment(item.telId, setPriceAndComment)
+                    .subscribe(s => {
+                        this.session = s;
+                        this.data.prices = this.data.prices.filter(x => x.telId != item.telId);
+                    },
+                        (e) => this.toastrService.error(`Nepodařilo se smazat cenu pro ${item.pracoviste} - ${item.ku} - ${item.cisloLv}: ${e.message}`));
+            }
+        });
     }
 }

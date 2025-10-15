@@ -30,6 +30,8 @@ public class Startup(IConfiguration configuration)
         services.AddDbContext<VfkDataReadWriteContext>();
         services.AddScoped<VfkDataRepository>();
         services.AddScoped<VfkDataService>();
+        services.AddSingleton<KusCache>();
+        services.AddHostedService<KusHostedService>();
         
         services.AddSwaggerGen(c =>
         {

@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Opravdu smazat?</h2>
+
+<mat-dialog-content>
+    Opravdu chcete smazat {{data}}?
+</mat-dialog-content>
+
+<mat-dialog-actions [ngBusy]="busy">
+    <button matButton (click)="close()" title="Ne">
+        <mat-icon>cancel</mat-icon>
+        Ne
+    </button>
+    <button matButton (click)="ok()" title="Ano">
+        <mat-icon>check</mat-icon>
+        Ano
+    </button>
+</mat-dialog-actions>

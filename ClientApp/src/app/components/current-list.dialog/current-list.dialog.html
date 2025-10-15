@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>Aktuální seznam</h2>
 
-<mat-dialog-content>
+<mat-dialog-content [ngBusy]="busy" style="width: 1100px;">
     <table class="table">
         <thead>
             <tr>
@@ -36,7 +36,7 @@
     </table>
 </mat-dialog-content>
 
-<mat-dialog-actions [ngBusy]="busy">
+<mat-dialog-actions>
     <button matButton (click)="close()" title="Zrušit">
         <mat-icon>cancel</mat-icon>
         Zrušit

@@ -6,6 +6,7 @@ import { IExport, IExportId, ISession } from "../models/models";
 import { UntypedFormGroup } from "@angular/forms";
 import { ToastrService } from "ngx-toastr";
 import { NewExportDialog } from "../new-export.dialog/new-export.dialog";
+import { ConfirmDialog } from "../confirm.dialog/confirm.dialog";
 
 @Component({
     selector: 'existing-lists-dialog',
@@ -35,11 +36,19 @@ export class ExistingListsDialog {
     }
 
     delete(exp: IExport) {
-        this.busy = this.serverAppService.deleteExport(exp.id).subscribe(s => {
-            this.session = s;
-            this.data = this.data.filter(x => x.id != exp.id);
-        },
-            (e) => this.toastrService.error(`Nepodařilo se smazat seznam ${exp.name}: ${e.message}`));
+        const dialogRef = this.dialog.open(ConfirmDialog, {
+            data: `seznam ${exp.name}`
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result == true) {
+                this.busy = this.serverAppService.deleteExport(exp.id).subscribe(s => {
+                    this.session = s;
+                    this.data = this.data.filter(x => x.id != exp.id);
+                },
+                    (e) => this.toastrService.error(`Nepodařilo se smazat seznam ${exp.name}: ${e.message}`));
+            }
+        });
     }
 
     select(exp: IExport) {

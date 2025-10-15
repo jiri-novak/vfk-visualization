@@ -37,6 +37,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { NewExportDialog } from './components/new-export.dialog/new-export.dialog';
 import { CurrentListDialog } from './components/current-list.dialog/current-list.dialog';
 import { ExistingListsDialog } from './components/existing-lists.dialog/existing-lists.dialog';
+import { ConfirmDialog } from './components/confirm.dialog/confirm.dialog';
 
 @Component({
   selector: 'app-busy',
@@ -90,6 +91,7 @@ export class MaterialModule { };
     CustomBusyComponent,
     NewExportDialog,
     CurrentListDialog,
+    ConfirmDialog,
     ExistingListsDialog,
   ],
   bootstrap: [AppComponent],

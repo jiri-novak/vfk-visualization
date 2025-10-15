@@ -12,7 +12,7 @@ namespace VfkVisualization.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class VfkDataController(VfkDataService service) : ControllerBase
+public class VfkDataController(VfkDataService service, KusCache kusCache) : ControllerBase
 {
     [HttpGet("{telId}")]
     public ActionResult<IEnumerable<VfkData>> Get([FromRoute] long? telId)
@@ -74,7 +74,8 @@ public class VfkDataController(VfkDataService service) : ControllerBase
     [HttpGet("kus")]
     public IActionResult GetKus([FromQuery] string? startsWith = null)
     {
-        var kus = service.GetKus(startsWith).Select(x => x.ToModel());
+        // var kus = service.GetKus(startsWith).Select(x => x.ToModel());
+        var kus = kusCache.Get(startsWith).Select(x => x.ToModel());
         return Ok(kus);
     }
     
