@@ -1,19 +1,38 @@
 <h2 mat-dialog-title>Existující seznamy</h2>
 
-<mat-dialog-content style="width: 650px;">
+<mat-dialog-content style="width: 700px;">
     <table class="table">
         <thead>
             <tr>
-                <th>Název:</th>
-                <th>Datum:</th>
-                <th>Počet vložených cen:</th>
-                <th>Akce:</th>
+                <th style="width: 200px;">Název:</th>
+                <th style="width: 200px;">Datum:</th>
+                <th style="width: 100px;">Počet cen:</th>
+                <th style="width: 150px;">Akce:</th>
             </tr>
         </thead>
         <tbody>
             @for (item of data; track item) {
             <tr>
-                <td>{{item.name}}</td>
+                <td>
+                    <form [formGroup]="form">
+                        <div *ngIf="!inEdit[item.id]">
+                            {{item.name}}
+                            <button matIconButton (click)="edit(item)" title="Přejmenovat" class="compact">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        </div>
+                        <div *ngIf="inEdit[item.id]">
+                            <div style="display: flex; align-items: center;">
+                                <input type="text" minlength="1" maxlength="20" formControlName="name" matInput
+                                    oninput="validity.valid||(value='');" style="flex-grow: 1;">
+                                <button matIconButton title="Potvrdit" class="compact" (click)="save(item)"
+                                    [disabled]="!form.controls.name.valid">
+                                    <mat-icon>save</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </td>
                 <td>{{item.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</td>
                 <td style="text-align: right;">{{item.prices.length}}</td>
                 <td>
@@ -39,7 +58,7 @@
         <mat-icon>cancel</mat-icon>
         Zrušit
     </button>
-        <button matButton (click)="ok()" title="Potvrdit">
+    <button matButton (click)="ok()" title="Potvrdit">
         <mat-icon>check</mat-icon>
         Potvrdit
     </button>

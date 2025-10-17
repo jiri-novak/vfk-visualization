@@ -126,7 +126,6 @@ export class SideBarComponent implements OnInit {
   }
 
   katuzeFocus() {
-    console.log('katuzeFocus');
     this.katuzeForm.controls.katuze.updateValueAndValidity({ onlySelf: false, emitEvent: true });
   }
 
@@ -231,7 +230,6 @@ export class SideBarComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result !== undefined) {
             this.session = result;
-            console.log(this.session);
             this.exportForm.controls.name.setValue(this.session.activeExport, { emitEvent: false });
           }
         });

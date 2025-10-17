@@ -100,6 +100,21 @@ public class VfkDataRepository(
 
         return session;
     }
+    
+    public VfkDataSession RenameExport(int id, string newName)
+    {
+        var export = vfkDataReadWriteContext.Exports.FirstOrDefault(x => x.Id == id);
+
+        if (export != null)
+        {
+            export.Name = newName;
+            export.CreatedAtUtc = DateTime.UtcNow;
+            vfkDataReadWriteContext.SaveChanges();
+        }
+        
+        var session = GetOrCreateSession();
+        return session;
+    }
 
     public VfkDataExport? GetExport(int id)
     {

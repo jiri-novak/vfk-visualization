@@ -40,7 +40,10 @@ internal static class ModelExtensions
             Id = e.Id,
             Name = e.Name,
             CreatedAt = e.CreatedAtUtc.ToLocalTime(),
-            Prices = e.Prices.Select(x => x.ToModel()).ToList()
+            Prices = e.Prices
+                .OrderByDescending(x => x.CreatedAtUtc)
+                .Select(x => x.ToModel())
+                .ToList()
         };
     }
 

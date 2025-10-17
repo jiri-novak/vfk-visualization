@@ -70,6 +70,13 @@ public class VfkDataController(VfkDataService service, KusCache kusCache) : Cont
         var session = service.DeleteExport(id).ToModel();
         return Ok(session);
     }
+    
+    [HttpPatch("export/{id}")]
+    public IActionResult RenameExport(int id, RenameExportModel export)
+    {
+        var session = service.RenameExport(id, export.NewName).ToModel();
+        return Ok(session);
+    }
 
     [HttpGet("kus")]
     public IActionResult GetKus([FromQuery] string? startsWith = null)

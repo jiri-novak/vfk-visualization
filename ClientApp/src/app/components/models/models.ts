@@ -117,3 +117,7 @@ export interface ISetPriceAndComment {
 export interface ICreateExport {
   name: string;
 }
+
+export interface IRenameExport {
+  newName: string;
+}

@@ -71,6 +71,11 @@ public class VfkDataService(VfkDataRepository repository)
     {
         return repository.DeleteExport(exportId);
     }
+    
+    public VfkDataSession RenameExport(int exportId, string newName)
+    {
+        return repository.RenameExport(exportId, newName);
+    }
 
     public IEnumerable<Ku> GetKus(string? startsWith)
     {

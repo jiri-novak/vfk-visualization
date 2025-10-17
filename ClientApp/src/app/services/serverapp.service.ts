@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ICreateExport, IExport, IExportDetails, IExportId, IGenerateExcel, IKatuze, ILvInfo, ISession, ISetPriceAndComment } from '../components/models/models';
+import { ICreateExport, IExport, IExportDetails, IExportId, IGenerateExcel, IKatuze, ILvInfo, IRenameExport, ISession, ISetPriceAndComment } from '../components/models/models';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -39,6 +39,10 @@ export class ServerAppService {
 
   public createExport(createExport: ICreateExport): Observable<IExport> {
     return this.http.post<IExport>(`api/vfkData/export`, createExport);
+  }
+
+  public renameExport(id: number, renameExport: IRenameExport) {
+    return this.http.patch<ISession>(`api/vfkData/export/${id}`, renameExport);
   }
 
   public deleteExport(id: number): Observable<ISession> {
