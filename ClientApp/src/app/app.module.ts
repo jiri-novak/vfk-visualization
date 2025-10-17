@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, Component, LOCALE_ID } from '@angular/core';
+import { NgModule, Component, LOCALE_ID, Injectable } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { registerLocaleData } from '@angular/common';
@@ -34,6 +34,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { NewExportDialog } from './components/new-export.dialog/new-export.dialog';
 import { CurrentListDialog } from './components/current-list.dialog/current-list.dialog';
 import { ExistingListsDialog } from './components/existing-lists.dialog/existing-lists.dialog';
@@ -65,6 +67,28 @@ export function busyConfigFactory(): BusyConfig {
   };
 }
 
+@Injectable()
+export class CustomMatPaginatorIntl extends MatPaginatorIntl {
+  itemsPerPageLabel = 'Záznamů na stránku';
+  nextPageLabel = 'Další stránka';
+  previousPageLabel = 'Předchozí stránka';
+  firstPageLabel = 'První stránka';
+  lastPageLabel = 'Poslední stránka';
+
+  getRangeLabel = (page: number, pageSize: number, length: number) => {
+    if (length === 0 || pageSize === 0) {
+      return '0 z ' + length;
+    }
+    length = Math.max(length, 0);
+    const startIndex = page * pageSize;
+    // If the start index exceeds the list length, do not try and fix the end index to the end.
+    const endIndex = startIndex < length ?
+      Math.min(startIndex + pageSize, length) :
+      startIndex + pageSize;
+    return startIndex + 1 + ' - ' + endIndex + ' z ' + length;
+  };
+}
+
 @NgModule({
   exports: [
     MatFormFieldModule,
@@ -76,9 +100,12 @@ export function busyConfigFactory(): BusyConfig {
     MatTabsModule,
     MatDialogModule,
     MatBadgeModule,
+    MatPaginatorModule,
+    MatSortModule,
   ],
   providers: [
-    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } }
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } },
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
   ]
 })
 export class MaterialModule { };
