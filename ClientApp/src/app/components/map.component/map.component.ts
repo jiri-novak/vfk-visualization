@@ -310,42 +310,54 @@ export class MapComponent implements OnInit {
   }
 
   private getByCoordinates(x: number, y: number) {
-    const step = 0.5;
+    const step = 0.01;
     const bbox = `${x - step},${y - step},${x + step},${y + step}`;
 
-    this.busy = this.getFeatureByBboxGeoJson$('VFK:LV', bbox, 1)
+    this.busy = this.getFeatureByBboxGeoJson$('VFK:PAR', bbox, 1)
       .pipe(
-        switchMap(respLv => {
-          const featuresLv: Array<Feature> = (new GeoJSON()).readFeatures(respLv);
-          const lvProperties = featuresLv[0].getProperties();
-          const lvId = lvProperties.LVID;
-          const kuKod = lvProperties.KATUZE_KOD;
-          return this.getFeatureGeoJson$('VFK:PAR', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`).pipe(map(resp => [featuresLv, new GeoJSON().readFeatures(resp)]))
-        })).subscribe(([featuresLv, featuresPar]) => {
-          this.getByFeatures(featuresLv, featuresPar, true);
+        switchMap(respPar => {
+          const featuresClickedPar: Array<Feature> = (new GeoJSON()).readFeatures(respPar);
+          const featuresClickedParProperties = featuresClickedPar[0].getProperties();
+          const lvId = featuresClickedParProperties.LVID;
+          const kuKod = featuresClickedParProperties.KATUZE_KOD;
+          return forkJoin([
+            this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`),
+            this.getFeatureGeoJson$('VFK:PAR', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`)
+          ])
+            .pipe(map(resp => [featuresClickedPar, new GeoJSON().readFeatures(resp[0]), new GeoJSON().readFeatures(resp[1])]))
+        })).subscribe(([featuresClickedPar, featuresLv, featuresPar]) => {
+          this.getByFeatures(featuresLv, featuresPar, featuresClickedPar);
         });
   }
 
-  private getByFeatures(featuresLv: Feature<Geometry>[], featuresPar: Feature<Geometry>[], wasManualClick: boolean) {
+  private getByFeatures(featuresLv: Feature<Geometry>[], featuresPar: Feature<Geometry>[], featuresClickedPar: Feature<Geometry>[]) {
     let dataLv: ISortableLabel[] = [];
     let dataPars: ISortableLabel[][] = [];
     let dataVl: ISortableLabel[][] = [];
+    let clickedPars: string[] = [];
 
-    if (wasManualClick) {
+    if (featuresClickedPar.length > 0) {
       this.sourceVector.clear();
+      this.sourceVector.addFeatures(featuresClickedPar);
+      clickedPars = featuresClickedPar.map(x => x.getProperties()['PAR_CISLO']);
     }
 
     if (featuresLv.length > 0 && featuresPar.length > 0) {
-      if (wasManualClick) {
-        this.sourceVector.addFeature(featuresLv[0]);
-      }
-
       const propertiesLv = featuresLv[0].getProperties();
       const propertiesPars = featuresPar.map(x => x.getProperties());
       const telId = propertiesLv.TEL_ID;
 
       dataLv = this.getData(propertiesLv, this.lvAttrTranslate);
-      dataPars = propertiesPars.map(x => this.getData(x, this.parAttrTranslate));
+      dataPars = propertiesPars
+        .sort((a: { [x: string]: any }, b: { [x: string]: any }) => {
+          var aClicked = clickedPars.includes(a['PAR_CISLO']);
+          var bClicked = clickedPars.includes(b['PAR_CISLO']);
+          if (aClicked == bClicked) {
+            return b['VYMERA'] - a['VYMERA']; // vymera DESC
+          }
+          return aClicked ? -1 : 1; // clicked first
+        })
+        .map(x => this.getData(x, this.parAttrTranslate));
 
       this.busy = this.serverAppService.getLvInfo(telId).subscribe(lvInfo => {
         dataVl = lvInfo.vlastnici
@@ -364,6 +376,8 @@ export class MapComponent implements OnInit {
           poznamka: lvInfo.cena?.poznamka,
           datum: lvInfo.cena?.createdAt,
           pracoviste: lvInfo.vlastnici.length >= 1 ? lvInfo.vlastnici[0].pracoviste : null,
+          activeTab: featuresClickedPar.length > 0 ? 'par' : 'lv',
+          clickedParIds: clickedPars,
         });
       }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
     };
@@ -488,25 +502,8 @@ export class MapComponent implements OnInit {
         tap(resp => {
           const lvFeatures = this.localizeToFeature$(resp[0]);
           const parFeatures = (new GeoJSON()).readFeatures(resp[1]);
-          this.getByFeatures(lvFeatures, parFeatures, false);
+          this.getByFeatures(lvFeatures, parFeatures, []);
         }),
-        // switchMap((fLv: Feature<Geometry>[]) => {
-        //   const step = 0.5;
-        //   const bboxes = (<MultiPolygon>(fLv[0].getGeometry()))
-        //     .getPolygons()
-        //     .map(p => p.getInteriorPoint().getFirstCoordinate())
-        //     .map(x => `${x[0] - step},${x[1] - step},${x[0] + step},${x[1] + step}`);
-        //   const features = bboxes.map(b => this.getFeatureByBboxGeoJson$('VFK:PAR', b, 1));
-        //   return forkJoin(features);
-        // }, (lvs, pars) => {
-        //   const featuresPars = pars.map(p => (new GeoJSON()).readFeatures(p))
-        //     .reduce((a, b) => a.concat(b), []);
-        //   return [lvs, featuresPars]
-        // }),
-        // tap(d => {
-        //   this.getByFeatures(d[0], d[1], false);
-        //   return of();
-        // })
       );
   }
 
@@ -524,10 +521,11 @@ export class MapComponent implements OnInit {
         switchMap((fPar: Feature<Geometry>[]) => {
           const parProperties = fPar[0].getProperties();
           const lvId = parProperties.LVID;
-          return this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`).pipe(map(resp => [new GeoJSON().readFeatures(resp), fPar]))
+          return this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`)
+            .pipe(map(resp => [new GeoJSON().readFeatures(resp), fPar]))
         }),
         tap(([fLv, fPar]) => {
-          this.getByFeatures(fLv, fPar, false);
+          this.getByFeatures(fLv, fPar, []);
         }),
       );
   }

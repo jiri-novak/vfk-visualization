@@ -288,4 +288,11 @@ export class SideBarComponent implements OnInit {
       lvId: lvId,
     });
   }
+
+  shouldBeHiglighted(par: ISortableLabel[]): boolean {
+    if (this.featureInfoData == null) return false;
+    const parCislo = par.find(x => x.id == 'PAR_CISLO').value;
+    const shouldBeHiglighted = this.featureInfoData.clickedParIds.indexOf(parCislo) != -1;
+    return shouldBeHiglighted;
+  }
 }

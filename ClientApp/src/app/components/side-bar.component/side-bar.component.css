@@ -89,3 +89,9 @@ input:read-only {
     background-color: var(--mat-form-field-filled-container-color, var(--mat-sys-surface-variant));
     cursor: not-allowed;
 }
+
+.clicked {
+    th {
+        background-color: rgba(44,127,184, 0.5);
+    }
+}
