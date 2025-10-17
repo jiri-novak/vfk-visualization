@@ -323,11 +323,15 @@ export class MapComponent implements OnInit {
           return forkJoin([
             this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`),
             this.getFeatureGeoJson$('VFK:PAR', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`)
-          ])
-            .pipe(map(resp => [featuresClickedPar, new GeoJSON().readFeatures(resp[0]), new GeoJSON().readFeatures(resp[1])]))
-        })).subscribe(([featuresClickedPar, featuresLv, featuresPar]) => {
-          this.getByFeatures(featuresLv, featuresPar, featuresClickedPar);
-        });
+          ]).pipe(
+            map(resp => [
+              featuresClickedPar,
+              new GeoJSON().readFeatures(resp[0]),
+              new GeoJSON().readFeatures(resp[1])]))
+        }))
+      .subscribe(([featuresClickedPar, featuresLv, featuresPar]) => {
+        this.getByFeatures(featuresLv, featuresPar, featuresClickedPar);
+      }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Lokalizace dle souřadnic'));
   }
 
   private getByFeatures(featuresLv: Feature<Geometry>[], featuresPar: Feature<Geometry>[], featuresClickedPar: Feature<Geometry>[]) {
@@ -379,7 +383,7 @@ export class MapComponent implements OnInit {
           activeTab: featuresClickedPar.length > 0 ? 'par' : 'lv',
           clickedParIds: clickedPars,
         });
-      }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Informace'));
+      }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Lokalizace dle souřadnic'));
     };
   }
 
@@ -475,7 +479,7 @@ export class MapComponent implements OnInit {
 
   public localizeByLv(event: any) {
     this.busy = this.localizeByLv$(event.katuzeKod, event.lvId).subscribe(
-      (g) => { console.log(g); }, () => this.toastrService.error('Nepodařilo lokalizovat se zadané LV', 'Lokalizace dle LV'));
+      () => { }, () => this.toastrService.error('Nepodařilo lokalizovat se zadané LV', 'Lokalizace dle LV'));
   }
 
   public localizeByKu(event: any) {
@@ -518,14 +522,20 @@ export class MapComponent implements OnInit {
     return this.getFeatureGeoJson$('VFK:PAR', `PAR_CISLO='${parcelKod}' AND KATUZE_KOD=${kuKod}`)
       .pipe(
         map(resp => this.localizeToFeature$(resp)),
-        switchMap((fPar: Feature<Geometry>[]) => {
-          const parProperties = fPar[0].getProperties();
+        switchMap((fClickedPars: Feature<Geometry>[]) => {
+          const parProperties = fClickedPars[0].getProperties();
           const lvId = parProperties.LVID;
-          return this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`)
-            .pipe(map(resp => [new GeoJSON().readFeatures(resp), fPar]))
+          return forkJoin([
+            this.getFeatureGeoJson$('VFK:LV', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`),
+            this.getFeatureGeoJson$('VFK:PAR', `LVID=${lvId} AND KATUZE_KOD=${kuKod}`)
+          ]).pipe(
+            map(resp => [
+              fClickedPars,
+              new GeoJSON().readFeatures(resp[0]),
+              new GeoJSON().readFeatures(resp[1])]))
         }),
-        tap(([fLv, fPar]) => {
-          this.getByFeatures(fLv, fPar, []);
+        tap(([fClickedPars, fLv, fPar]) => {
+          this.getByFeatures(fLv, fPar, fClickedPars);
         }),
       );
   }
