@@ -3,7 +3,7 @@
 <mat-dialog-content [ngBusy]="busy" style="width: 1200px;">
 
     <table mat-table [dataSource]="dataSource" matSort matSortActive="createdAt" matSortDirection="desc"
-        matSortDisableClear #table>
+        matSortDisableClear>
 
         <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>

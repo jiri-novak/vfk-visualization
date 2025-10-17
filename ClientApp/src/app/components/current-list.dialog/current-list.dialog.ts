@@ -1,11 +1,11 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, Inject, ViewChild } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { IExportDetails, IPriceDetails, ISession, ISetPriceAndComment } from "../models/models";
 import { ServerAppService } from "src/app/services/serverapp.service";
 import { Subscription } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 import { ConfirmDialog } from "../confirm.dialog/confirm.dialog";
-import { MatTable, MatTableDataSource } from "@angular/material/table";
+import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort } from "@angular/material/sort";
 
@@ -14,7 +14,6 @@ import { MatSort } from "@angular/material/sort";
     templateUrl: 'current-list.dialog.html',
     styleUrls: ['./current-list.dialog.css'],
     standalone: false,
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CurrentListDialog implements AfterViewInit {
     constructor(
@@ -22,25 +21,23 @@ export class CurrentListDialog implements AfterViewInit {
         private dialog: MatDialog,
         private serverAppService: ServerAppService,
         private toastrService: ToastrService,
-        private cdr: ChangeDetectorRef,
-        @Inject(MAT_DIALOG_DATA) public data: IExportDetails) {
+        @Inject(MAT_DIALOG_DATA) data: IExportDetails) {
+        this.exportId = data.exportId;
         this.dataSource = new MatTableDataSource<IPriceDetails>(data.prices);
     }
 
+    exportId: number;
     busy: Subscription;
     session?: ISession;
     displayedColumns: string[] = ['actions', 'pracoviste', 'ku', 'cisloLv', 'createdAt', 'cenaNabidkova', 'poznamka'];
     dataSource: MatTableDataSource<IPriceDetails>;
 
-    @ViewChild(MatTable) table: MatTable<IPriceDetails>;
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        this.table.renderRows();
-        this.cdr.detectChanges();
     }
 
     close(): void {
@@ -58,11 +55,11 @@ export class CurrentListDialog implements AfterViewInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result == true) {
-                const setPriceAndComment: ISetPriceAndComment = { exportId: this.data.exportId, price: null, comment: null };
+                const setPriceAndComment: ISetPriceAndComment = { exportId: this.exportId, price: null, comment: null };
                 this.busy = this.serverAppService.setPriceAndComment(item.telId, setPriceAndComment)
                     .subscribe(s => {
                         this.session = s;
-                        this.data.prices = this.data.prices.filter(x => x.telId != item.telId);
+                        this.dataSource.data = this.dataSource.data.filter(x => x.telId != item.telId);
                     },
                         (e) => this.toastrService.error(`Nepodařilo se smazat cenu pro ${item.pracoviste} - ${item.ku} - ${item.cisloLv}: ${e.message}`));
             }
