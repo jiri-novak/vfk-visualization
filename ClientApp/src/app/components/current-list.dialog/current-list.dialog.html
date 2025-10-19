@@ -7,7 +7,7 @@
 
         <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element" style="width: 120px; text-align: center;">
+            <td mat-cell *matCellDef="let element" style="text-align: center;">
                 <button matIconButton (click)="onLocalize(element)" title="Lokalizace" class="compact">
                     <mat-icon>location_on</mat-icon>
                 </button>
@@ -19,42 +19,42 @@
 
         <ng-container matColumnDef="pracoviste">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Pracoviště: </th>
-            <td mat-cell *matCellDef="let element" style="width: 300px; text-align: left;">
+            <td mat-cell *matCellDef="let element" style="text-align: left;">
                 {{element.pracoviste}}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="ku">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> K.ú: </th>
-            <td mat-cell *matCellDef="let element" style="width: 300px; text-align: left;">
+            <td mat-cell *matCellDef="let element" style="text-align: left;">
                 {{element.ku}}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="cisloLv">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Id LV: </th>
-            <td mat-cell *matCellDef="let element" style="width: 100px; text-align: center;">
+            <td mat-cell *matCellDef="let element" style="text-align: center;">
                 {{element.cisloLv}}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="createdAt">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Datum: </th>
-            <td mat-cell *matCellDef="let element" style="width: 200px; text-align: center;">
+            <td mat-cell *matCellDef="let element" style="text-align: center;">
                 {{element.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="cenaNabidkova">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Cena: </th>
-            <td mat-cell *matCellDef="let element" style="width: 100px; text-align: center;">
+            <td mat-cell *matCellDef="let element" style="text-align: center;">
                 {{element.cenaNabidkova}}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="poznamka">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Poznámka: </th>
-            <td mat-cell *matCellDef="let element" style="width: 300px; text-align: left;">
+            <td mat-cell *matCellDef="let element" style="text-align: left;">
                 {{element.poznamka}}
             </td>
         </ng-container>

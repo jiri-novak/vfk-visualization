@@ -50,7 +50,8 @@ export class CurrentListDialog implements AfterViewInit {
 
     onDelete(item: IPriceDetails): void {
         const dialogRef = this.dialog.open(ConfirmDialog, {
-            data: `nabídkovou cenu pro ${item.pracoviste} - ${item.ku} - ${item.cisloLv}`
+            data: `nabídkovou cenu pro ${item.pracoviste} - ${item.ku} - ${item.cisloLv}`,
+            autoFocus: false,
         });
 
         dialogRef.afterClosed().subscribe(result => {

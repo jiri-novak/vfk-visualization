@@ -195,6 +195,7 @@ export class SideBarComponent implements OnInit {
       .subscribe(d => {
         const dialogRef = this.dialog.open(CurrentListDialog, {
           data: d,
+          autoFocus: false,
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -225,6 +226,7 @@ export class SideBarComponent implements OnInit {
       .subscribe((exports) => {
         const dialogRef = this.dialog.open(ExistingListsDialog, {
           data: exports,
+          autoFocus: false,
         });
 
         dialogRef.afterClosed().subscribe(result => {
