@@ -86,7 +86,7 @@
       <b (click)="infoCollapsed = !infoCollapsed">Informace:</b>
     </div>
     <div class="card-body">
-      <mat-tab-group [collapse]="infoCollapsed" [selectedIndex]="featureInfoData.activeTab == 'par' ? 1 : 0">
+      <mat-tab-group [collapse]="infoCollapsed">
         <mat-tab label="LV + Vlastnictví">
           <form [formGroup]="lvInfoForm">
             <table class="table">

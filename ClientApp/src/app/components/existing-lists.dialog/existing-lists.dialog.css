@@ -13,7 +13,28 @@ td {
     vertical-align: middle;
 }
 
-:host ::ng-deep [mat-sort-header].cdk-keyboard-focused .mat-sort-header-container,
-:host ::ng-deep [mat-sort-header].cdk-program-focused .mat-sort-header-container {
-    border-bottom: none;
+.mat-column-name {
+    width: 500px !important;
+
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+.mat-column-createdAt {
+    width: 170px !important;
+}
+
+.mat-column-pricesCount {
+    width: 120px !important;
+}
+
+.mat-column-actions {
+    width: 80px !important;
 }

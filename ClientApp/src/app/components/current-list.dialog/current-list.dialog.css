@@ -13,7 +13,65 @@ td {
     vertical-align: middle;
 }
 
-:host ::ng-deep [mat-sort-header].cdk-keyboard-focused .mat-sort-header-container,
+/* :host ::ng-deep [mat-sort-header].cdk-keyboard-focused .mat-sort-header-container,
 :host ::ng-deep [mat-sort-header].cdk-program-focused .mat-sort-header-container {
     border-bottom: none;
+} */
+
+.mat-column-actions {
+    min-width: 80px !important;
+}
+
+.mat-column-pracoviste {
+    width: 270px !important;
+
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+.mat-column-ku {
+    width: 270px !important;
+
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+.mat-column-cisloLv {
+    width: 100px !important;
+}
+
+.mat-column-createdAt {
+    width: 170px !important;
+}
+
+.mat-column-cenaNabidkova {
+    width: 100px !important;
+}
+
+.mat-column-poznamka {
+    width: 150px !important;
+
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }

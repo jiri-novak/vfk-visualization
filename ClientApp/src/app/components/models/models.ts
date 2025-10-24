@@ -21,11 +21,9 @@ export interface IFeatureInfoData {
   datum: Date;
   pracoviste?: string;
   pars: ISortableLabel[][];
-  activeTab: ActiveTab;
   clickedParIds: string[];
 }
 
-export type ActiveTab = 'lv' | 'par';
 
 export interface ISortableLabelDefinition {
   label: string;

@@ -179,6 +179,7 @@ public class VfkDataRepository(
         var export = vfkDataReadWriteContext.Exports
             .Include(x => x.Prices)
             .FirstOrDefault(x => x.Id == exportId);
+        
         if (export != null)
         {
             session.ActiveExportId = export.Id;

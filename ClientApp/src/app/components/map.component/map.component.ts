@@ -380,7 +380,6 @@ export class MapComponent implements OnInit {
           poznamka: lvInfo.cena?.poznamka,
           datum: lvInfo.cena?.createdAt,
           pracoviste: lvInfo.vlastnici.length >= 1 ? lvInfo.vlastnici[0].pracoviste : null,
-          activeTab: featuresClickedPar.length > 0 ? 'par' : 'lv',
           clickedParIds: clickedPars,
         });
       }, () => this.toastrService.error('Nepodařilo se načíst informace pro daný bod v mapě.', 'Lokalizace dle souřadnic'));
