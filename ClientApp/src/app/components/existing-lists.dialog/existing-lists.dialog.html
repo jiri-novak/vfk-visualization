@@ -44,7 +44,7 @@
 
         <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let item" style="text-align: center;">
+            <td mat-cell *matCellDef="let item" style="min-width: 80px !important; text-align: center;">
                 <button matIconButton (click)="delete(item)" title="Smazat" class="compact">
                     <mat-icon>delete</mat-icon>
                 </button>
